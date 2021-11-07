@@ -33,7 +33,7 @@ module SRAM(
     output wire uart_wrn,
     input wire uart_dataready,
     input wire uart_tbre,
-    input wire uart_tsre,
+    input wire uart_tsre
     );
 
 //controll sigals
