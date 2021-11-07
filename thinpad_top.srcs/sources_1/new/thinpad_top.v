@@ -133,6 +133,7 @@ reg[31:0] r4_wb_data;
 // CONTROLLER SIGNAL
 reg r4_pc_sel;
 reg r4_reg_sel;
+reg[31:0] r4_alu_res;
 
 CONTROLLER _CONTROLLER(
     .instr(r1_instr),
@@ -199,7 +200,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
     end
     else begin
         
-        r0_pc <= r4_pc_sel ? r0_pc+4 : r4_pc;
+        r0_pc <= r4_pc_sel ? r0_pc+4 : r4_alu_res;
         /*
         TODO: data_in <= r0_pc;
         */
@@ -226,6 +227,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         r4_instr <= r3_instr;
         r4_pc_sel <= r3_pc_sel;
         r4_reg_sel <= r3_reg_sel;
+        r4_alu_res <= r3_alu_res;
         
     end
 end
