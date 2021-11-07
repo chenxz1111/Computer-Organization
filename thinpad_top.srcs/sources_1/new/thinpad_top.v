@@ -148,6 +148,12 @@ CONTROLLER _CONTROLLER(
     .wb_sel(r2_wb_sel)
 );
 
+reg oe;
+reg we;
+reg[3:0] be_n;
+reg[31:0] address;
+reg[31:0] data_in;
+reg[31:0] data_out;
 SRAM _SRAM (
     // TODO
 );
@@ -204,8 +210,13 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         /*
         TODO: data_in <= r0_pc;
         */
+        oe <= 1'b1;
+        we <= 1'b0;
+        be_n <= 4'b0000;
+        address <= r0_pc;
 
         r1_pc <= r0_pc;
+        r1_instr <= data_out;
         /*
         TODO: r1_instr <= data_out;
         */
