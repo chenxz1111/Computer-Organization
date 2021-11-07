@@ -105,7 +105,7 @@ reg r2_pc_sel;
 reg[2:0] r2_imm_sel;
 reg r2_data_a_sel;
 reg r2_data_b_sel;
-reg r2_alu_sel;
+reg[2:0] r2_alu_sel;
 reg r2_mem_sel;
 reg r2_reg_sel;
 reg[1:0] r2_wb_sel;
