@@ -107,6 +107,7 @@ reg[2:0] r2_imm_sel;
 reg r2_data_a_sel;
 reg r2_data_b_sel;
 reg[2:0] r2_alu_sel;
+reg[1:0] r2_bq_sel;
 reg r2_mem_sel;
 reg r2_reg_sel;
 reg[1:0] r2_wb_sel;
@@ -144,6 +145,7 @@ CONTROLLER _CONTROLLER(
     .data_a_sel(r2_data_a_sel),
     .data_b_sel(r2_data_b_sel),
     .alu_sel(r2_alu_sel),
+    .bq_sel(r2_bq_sel),
     .mem_sel(r2_mem_sel),
     .reg_sel(r2_reg_sel),
     .wb_sel(r2_wb_sel)
@@ -180,6 +182,14 @@ IMMGEN _IMMGEN(
     .imm(imm)
 );
 
+BCOMP _BCOMP(
+    .r2_pc_sel(r2_pc_sel),
+    .sel(r2_bq_sel),
+    .data_a(r2_data_a),
+    .data_b(r2_data_b),
+    .r3_pc_sel(r3_pc_sel),
+);
+
 ALU _ALU(
     .op(r2_alu_sel),
     .asel(r2_data_a_sel),
@@ -191,6 +201,7 @@ ALU _ALU(
 
     .res(r3_alu_res)
 );
+
 
 WBSEL _WBSEL(
     .sel(r3_wb_sel),
@@ -228,7 +239,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         r3_pc <= r2_pc;
         r3_instr <= r2_instr;
         r3_data_b <= r2_data_b;
-        r3_pc_sel <= r2_pc_sel;
+        //r3_pc_sel <= r2_pc_sel; --BC获得
         r3_mem_sel <= r2_mem_sel;
         r3_reg_sel <= r2_reg_sel;
         r3_wb_sel <= r2_wb_sel;
