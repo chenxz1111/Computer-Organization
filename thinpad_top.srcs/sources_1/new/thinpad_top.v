@@ -98,46 +98,59 @@ reg[31:0] r0_pc;
 // DATA
 reg[31:0] r1_pc;
 reg[31:0] r1_instr;
-
+wire[31:0] r1_data_a;
+wire[31:0] r1_data_b;
+//CONTROLLER SIGNAL
+wire r1_pc_sel;
+wire[2:0] r1_imm_sel;
+wire r1_data_a_sel;
+wire r1_data_b_sel;
+wire[2:0] r1_alu_sel;
+wire[1:0] r1_bq_sel;
+wire r1_mem_sel;
+wire r1_reg_sel;
+wire[1:0] r1_wb_sel;
 /*
     ID_EXE
 */
 // DATA
 reg[31:0] r2_pc;
 reg[31:0] r2_instr;
-wire[31:0] r2_data_a;
-wire[31:0] r2_data_b;
+reg[31:0] r2_data_a;
+reg[31:0] r2_data_b;
 // CONTROLLER SIGNAL
-wire r2_pc_sel;
-wire[2:0] r2_imm_sel;
-wire r2_data_a_sel;
-wire r2_data_b_sel;
-wire[2:0] r2_alu_sel;
-wire[1:0] r2_bq_sel;
-wire r2_mem_sel;
-wire r2_reg_sel;
-wire[1:0] r2_wb_sel;
-
+reg r2_pc_sel;
+reg[2:0] r2_imm_sel;
+reg r2_data_a_sel;
+reg r2_data_b_sel;
+reg[2:0] r2_alu_sel;
+reg[1:0] r2_bq_sel;
+reg r2_mem_sel;
+reg r2_reg_sel;
+reg[1:0] r2_wb_sel;
+wire r2_new_pc_sel;
+wire[31:0] r2_alu_res;
 /*
     EXE_MEM
 */
 // DATA
 reg[31:0] r3_pc;
 reg[31:0] r3_instr;
-wire[31:0] r3_alu_res;
+reg[31:0] r3_alu_res;
 reg[31:0] r3_data_b; // data_b是用来data_write的
 // CONTROLLER SIGNAL
-wire r3_pc_sel;
+reg r3_pc_sel;
 reg r3_mem_sel;
 reg r3_reg_sel;
 reg[1:0] r3_wb_sel;
+wire[31:0] r3_wb_data;
 
 /*
     MEM_WB
 */
 // DATA
 reg[31:0] r4_instr;
-wire[31:0] r4_wb_data;
+reg[31:0] r4_wb_data;
 // CONTROLLER SIGNAL
 reg r4_pc_sel;
 reg r4_reg_sel;
@@ -146,15 +159,15 @@ reg[31:0] r4_alu_res;
 CONTROLLER _CONTROLLER(
     .instr(r1_instr),
 
-    .pc_sel(r2_pc_sel),
-    .imm_sel(r2_imm_sel),
-    .data_a_sel(r2_data_a_sel),
-    .data_b_sel(r2_data_b_sel),
-    .alu_sel(r2_alu_sel),
-    .bq_sel(r2_bq_sel),
-    .mem_sel(r2_mem_sel),
-    .reg_sel(r2_reg_sel),
-    .wb_sel(r2_wb_sel)
+    .pc_sel(r1_pc_sel),
+    .imm_sel(r1_imm_sel),
+    .data_a_sel(r1_data_a_sel),
+    .data_b_sel(r1_data_b_sel),
+    .alu_sel(r1_alu_sel),
+    .bq_sel(r1_bq_sel),
+    .mem_sel(r1_mem_sel),
+    .reg_sel(r1_reg_sel),
+    .wb_sel(r1_wb_sel)
 );
 
 reg oe;
@@ -200,9 +213,9 @@ REG _REG(
     .waddr(r4_instr[11:7]),
     .wdata(r4_wb_data),
     .raddr1         (r1_instr[19:15]),
-    .rdata1         (r2_data_a),
+    .rdata1         (r1_data_a),
     .raddr2         (r1_instr[24:20]),
-    .rdata2         (r2_data_b)
+    .rdata2         (r1_data_b)
 );
 
 wire[31:0] imm;
@@ -219,7 +232,8 @@ BCOMP _BCOMP(
     .sel(r2_bq_sel),
     .data_a(r2_data_a),
     .data_b(r2_data_b),
-    .r3_pc_sel(r3_pc_sel)
+
+    .r3_pc_sel(r2_new_pc_sel)
 );
 
 ALU _ALU(
@@ -231,7 +245,7 @@ ALU _ALU(
     .data_b(r2_data_b),
     .imm(imm),
 
-    .res(r3_alu_res)
+    .res(r2_alu_res)
 );
 
 
@@ -241,7 +255,7 @@ WBSEL _WBSEL(
     .alu_res(r3_alu_res),
     // TODO: .ram_data(?) r3给ram，dataout给选择器
     
-    .wb_data(r4_wb_data)
+    .wb_data(r3_wb_data)
 );
 
 always @(posedge clk_11M0592 or posedge reset_btn) begin
@@ -255,13 +269,29 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         r1_instr <= NOP;
         r2_pc <= 32'h0;
         r2_instr <= NOP;
+        r2_data_a <= 32'h0;
+        r2_data_b <= 32'h0;
+        r2_pc_sel <= 1'b0;
+        r2_imm_sel <= `N_IMM;
+        r2_data_a_sel <= 1'b0;
+        r2_data_b_sel <= 1'b0;
+        r2_alu_sel <= `ADD;
+        r2_bq_sel <= `NO_BQ;
+        r2_mem_sel <= 1'b0;
+        r2_reg_sel <= 1'b1;
+        r2_wb_sel <= `ALU_WB;
+
         r3_pc <= 32'h0;
         r3_instr <= NOP;
+        r3_alu_res <= 32'h0;
         r3_data_b <= 32'h0;
+        r3_pc_sel <= 1'b0;
         r3_mem_sel <= 1'b0;
         r3_reg_sel <= 1'b1;
         r3_wb_sel <= `ALU_WB;
+
         r4_instr <= NOP;
+        r4_wb_data <= 32'h0;
         r4_pc_sel <= 1'b0;
         r4_reg_sel <= 1'b1;
         r4_alu_res <= 32'h0;
@@ -285,13 +315,23 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
 
         r2_pc <= r1_pc;
         r2_instr <= r1_instr;
-        if (r3_wb_sel == `ALU_WB) begin 
-            debug_leds <= r3_alu_res;
-        end
+        r2_data_a <= r1_data_a;
+        r2_data_b <= r1_data_b;
+        r2_pc_sel <= r1_pc_sel;
+        r2_imm_sel <= r1_imm_sel;
+        r2_data_a_sel <= r1_data_a_sel;
+        r2_data_b_sel <= r1_data_b_sel;
+        r2_alu_sel <= r1_alu_sel;
+        r2_bq_sel <= r1_bq_sel;
+        r2_mem_sel <= r1_mem_sel;
+        r2_reg_sel <= r1_reg_sel;
+        r2_wb_sel <= r1_wb_sel;
+
         r3_pc <= r2_pc;
         r3_instr <= r2_instr;
+        r3_alu_res <= r2_alu_res;
         r3_data_b <= r2_data_b;
-        //r3_pc_sel <= r2_pc_sel; --BC获得
+        r3_pc_sel <= r2_new_pc_sel; 
         r3_mem_sel <= r2_mem_sel;
         r3_reg_sel <= r2_reg_sel;
         r3_wb_sel <= r2_wb_sel;
@@ -300,6 +340,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         */
 
         r4_instr <= r3_instr;
+        r4_wb_data <= r3_wb_data;
         r4_pc_sel <= r3_pc_sel;
         r4_reg_sel <= r3_reg_sel;
         r4_alu_res <= r3_alu_res;

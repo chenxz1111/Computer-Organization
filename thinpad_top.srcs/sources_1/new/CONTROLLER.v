@@ -86,7 +86,7 @@ always @(*) begin
         end
         7'b0110111: begin //LUI
             pc_sel = 1'b0;
-            imm_sel = `J_IMM;
+            imm_sel = `U_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;
             alu_sel = `LUI;
