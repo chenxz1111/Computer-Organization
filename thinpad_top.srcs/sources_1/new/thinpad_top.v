@@ -202,12 +202,12 @@ REG _REG(
 
 wire[31:0] imm;
 
-// IMMGEN _IMMGEN(
-//     .instr(r2_instr),
-//     .sel(r2_imm_sel),
+IMMGEN _IMMGEN(
+    .instr(r2_instr),
+    .sel(r2_imm_sel),
 
-//     .imm(imm)
-// );
+    .imm(imm)
+);
 
 BCOMP _BCOMP(
     .r2_pc_sel(r2_pc_sel),
