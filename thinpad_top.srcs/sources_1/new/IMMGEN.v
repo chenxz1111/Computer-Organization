@@ -3,7 +3,7 @@
 
 module IMMGEN(
     input wire[31:0] instr,
-    input wire[2:0] r2_imm_sel,
+    input wire[2:0] sel,
     output reg[31:0] imm 
     );
 
@@ -15,7 +15,7 @@ module IMMGEN(
     assign sign_ext_1 = {12{sign}};
 
     always @(*) begin
-        case(r2_imm_sel)
+        case(sel)
             `N_IMM: begin 
                 imm = 32'b0;
             end
