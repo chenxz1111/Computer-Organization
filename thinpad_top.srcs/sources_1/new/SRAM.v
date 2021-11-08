@@ -56,14 +56,14 @@ assign base_ram_addr = address[21:2];
 assign base_ram_be_n = be_n;
 assign base_ram_ce_n = read_uart || write_uart;
 assign base_ram_oe_n = read_uart || write_uart;
-assign base_ram_we_n = write_base ? ~clk : 1'b1;
+assign base_ram_we_n = write_base ? clk : 1'b1;
 
 assign ext_ram_data_wire = write_ext ? data_in : 32'bz;
 assign ext_ram_addr = address[21:2];
 assign ext_ram_be_n = be_n;
 assign ext_ram_ce_n = 1'b0;
 assign ext_ram_oe_n = 1'b0;
-assign ext_ram_we_n = write_ext ? ~clk : 1'b1;
+assign ext_ram_we_n = write_ext ? clk : 1'b1;
 
 assign uart_rdn = ~read_uart;
 assign uart_wrn = ~write_uart;
@@ -71,6 +71,7 @@ assign uart_wrn = ~write_uart;
 // TODO uart
 wire[31:0] uart_output_reg;
 
-assign data_out = read_base ? base_ram_data_wire : read_ext ? ext_ram_data_wire : uart_output_reg;
+assign data_out = read_base ? base_ram_data_wire : read_ext ? ext_ram_data_wire : read_uart ? uart_output_reg : 32'b00000000000000000000000000010011;
+
 
 endmodule
