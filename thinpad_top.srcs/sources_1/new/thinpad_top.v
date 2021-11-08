@@ -160,6 +160,32 @@ reg[31:0] data_in;
 reg[31:0] data_out;
 SRAM _SRAM (
     // TODO
+    .oe(oe),
+    .we(we),
+    .be_n(be_n),
+    .address(address),
+    .data_in(data_in),
+    .data_out(data_out),
+    
+    .base_ram_data_wire(base_ram_data),
+    .base_ram_addr(base_ram_addr),
+    .base_ram_be_n(base_ram_be_n),
+    .base_ram_ce_n(base_ram_ce_n),
+    .base_ram_oe_n(base_ram_oe_n),
+    .base_ram_we_n(base_ram_we_n),
+
+    .ext_ram_data_wire(ext_ram_data),
+    .ext_ram_addr(ext_ram_addr),
+    .ext_ram_be_n(ext_ram_be_n),
+    .ext_ram_ce_n(ext_ram_ce_n),
+    .ext_ram_oe_n(ext_ram_oe_n),
+    .ext_ram_we_n(ext_ram_we_n),
+    
+    .uart_rdn(uart_rdn),
+    .uart_wrn(uart_wrn),
+    .uart_dataready(uart_dataready),
+    .uart_tbre(uart_tbre),
+    .uart_tsre(uart_tsre)
 );
 
 REG _REG(
@@ -218,7 +244,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         r0_pc <= 32'h0;
         oe <= 1'b0;
         we <= 1'b0;
-        be_n <= 4'b1111;
+        be_n <= 4'b0000;
         r1_pc <= 32'h0;
         r1_instr <= NOP;
         r2_pc <= 32'h0;
