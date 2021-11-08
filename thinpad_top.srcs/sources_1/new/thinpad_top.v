@@ -157,7 +157,7 @@ reg we;
 reg[3:0] be_n;
 reg[31:0] address;
 reg[31:0] data_in;
-reg[31:0] data_out;
+wire[31:0] data_out;
 SRAM _SRAM (
     // TODO
     .oe(oe),
