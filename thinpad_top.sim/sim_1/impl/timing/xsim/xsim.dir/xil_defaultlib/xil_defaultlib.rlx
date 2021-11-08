@@ -1,0 +1,17 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+C:/cod21-grp30/thinpad_top.sim/sim_1/impl/timing/xsim/tb_time_impl.v,1636369509,verilog,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/28F640P30.v,,ALU;BCOMP;CONTROLLER;IMMGEN;REG;WBSEL;glbl;thinpad_top,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/28F640P30.v,1636355595,verilog,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/clock.v,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/def.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/CUIcommandData.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/data.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/UserData.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/BankLib.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/TimingData.h,BlankCheckModule;BlockLockModule;BuffEnhancedFactProgramModule;BurstModule;CFIqueryModule;CUIdecoder1;CUIdecoder2;CUIdecoder_Busy1;ConfigRegModule;DataErrorModule;DebugModule;EraseModule;KernelModule;MemoryModule;OutputBufferModule;ProgramBufferModule;ProgramModule;ProtectRegModule;ReadModule;SignatureModule;StatusRegModule;TimingLibModule;x28fxxxp30,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/clock.v,1636355595,verilog,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/cpld_model.v,,clock,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/cpld_model.v,1636355595,verilog,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/flag_sync_cpld.v,,cpld_model,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/flag_sync_cpld.v,1636355595,verilog,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/sram_model.v,,flag_sync_cpld,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/BankLib.h,1636355595,verilog,,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/def.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/data.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/UserData.h,BankLib,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/CUIcommandData.h,1636355595,verilog,,,,,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/TimingData.h,1636355595,verilog,,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/data.h;C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/UserData.h,TimingDataModule,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/UserData.h,1636355595,verilog,,,,,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/data.h,1636355595,verilog,,,C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/UserData.h,,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/include/def.h,1636355595,verilog,,,,,,,,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/sram_model.v,1636355595,verilog,,,,sram_model,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,
+C:/cod21-grp30/thinpad_top.srcs/sim_1/new/tb.sv,1636369471,systemVerilog,,,,tb,,,../../../../../thinpad_top.srcs/sim_1/new/include,,,,,

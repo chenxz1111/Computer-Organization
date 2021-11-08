@@ -46,7 +46,7 @@ wire uart_tbre;          //发送数据标志
 wire uart_tsre;          //数据发送完毕标志
 
 //Windows需要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
+parameter BASE_RAM_INIT_FILE = "C:\\Users\\wangb\\Desktop\\test.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 
@@ -59,16 +59,17 @@ initial begin
     reset_btn = 1;
     #100;
     reset_btn = 0;
-    for (integer i = 0; i < 20; i = i+1) begin
-        #100; //等待100ns
-        clock_btn = 1; //按下手工时钟按钮
-        #100; //等待100ns
-        clock_btn = 0; //松开手工时钟按钮
-    end
-    // 模拟PC通过串口发送字符
-    cpld.pc_send_byte(8'h32);
-    #10000;
-    cpld.pc_send_byte(8'h33);
+    #100;
+    // for (integer i = 0; i < 20; i = i+1) begin
+    //     #100; //等待100ns
+    //     clock_btn = 1; //按下手工时钟按钮
+    //     #100; //等待100ns
+    //     clock_btn = 0; //松开手工时钟按钮
+    // end
+    // // 模拟PC通过串口发送字符
+    // cpld.pc_send_byte(8'h32);
+    // #10000;
+    // cpld.pc_send_byte(8'h33);
 end
 
 // 待测试用户设计
@@ -205,24 +206,24 @@ initial begin
 end
 
 // 从文件加载 ExtRAM
-initial begin 
-    reg [31:0] tmp_array[0:1048575];
-    integer n_File_ID, n_Init_Size;
-    n_File_ID = $fopen(EXT_RAM_INIT_FILE, "rb");
-    if(!n_File_ID)begin 
-        n_Init_Size = 0;
-        $display("Failed to open ExtRAM init file");
-    end else begin
-        n_Init_Size = $fread(tmp_array, n_File_ID);
-        n_Init_Size /= 4;
-        $fclose(n_File_ID);
-    end
-    $display("ExtRAM Init Size(words): %d",n_Init_Size);
-    for (integer i = 0; i < n_Init_Size; i++) begin
-        ext1.mem_array0[i] = tmp_array[i][24+:8];
-        ext1.mem_array1[i] = tmp_array[i][16+:8];
-        ext2.mem_array0[i] = tmp_array[i][8+:8];
-        ext2.mem_array1[i] = tmp_array[i][0+:8];
-    end
-end
+// initial begin 
+//     reg [31:0] tmp_array[0:1048575];
+//     integer n_File_ID, n_Init_Size;
+//     n_File_ID = $fopen(EXT_RAM_INIT_FILE, "rb");
+//     if(!n_File_ID)begin 
+//         n_Init_Size = 0;
+//         $display("Failed to open ExtRAM init file");
+//     end else begin
+//         n_Init_Size = $fread(tmp_array, n_File_ID);
+//         n_Init_Size /= 4;
+//         $fclose(n_File_ID);
+//     end
+//     $display("ExtRAM Init Size(words): %d",n_Init_Size);
+//     for (integer i = 0; i < n_Init_Size; i++) begin
+//         ext1.mem_array0[i] = tmp_array[i][24+:8];
+//         ext1.mem_array1[i] = tmp_array[i][16+:8];
+//         ext2.mem_array0[i] = tmp_array[i][8+:8];
+//         ext2.mem_array1[i] = tmp_array[i][0+:8];
+//     end
+// end
 endmodule
