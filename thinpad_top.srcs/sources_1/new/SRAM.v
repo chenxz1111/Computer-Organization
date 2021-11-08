@@ -2,13 +2,12 @@
 
 module SRAM(
     input wire clk,
-
-    // clk_btn, rst_btn
+    //input wire rst_btn,
 
     input wire oe,
     input wire we,
     input wire[3:0] be_n,
-    input wire[31:0] address,//may be need to modify
+    input wire[31:0] address,
     input wire[31:0] data_in,
     output wire[31:0] data_out,
 
@@ -43,6 +42,7 @@ wire read_ext;
 wire write_ext;
 wire read_uart;
 wire write_uart;
+wire uart_status;
 
 assign read_base = oe && (address >= 32'h80000000) && (address <= 32'h803fffff);
 assign write_base = we && (address >= 32'h80000000) && (address <= 32'h803fffff);
@@ -50,27 +50,34 @@ assign read_ext = oe && (address >= 32'h80400000) && (address <= 32'h807fffff);
 assign write_ext = we && (address >= 32'h80400000) && (address <= 32'h807fffff);
 assign read_uart = oe && (address == 32'h10000000);
 assign write_uart = we && (address == 32'h10000000);
+assign uart_status = oe && (address == 32'h10000005);
 
 assign base_ram_data_wire = (write_base || write_uart) ? data_in : 32'bz;
 assign base_ram_addr = address[21:2];
 assign base_ram_be_n = be_n;
 assign base_ram_ce_n = read_uart || write_uart;
 assign base_ram_oe_n = read_uart || write_uart;
-assign base_ram_we_n = write_base ? ~clk : 1'b1;
+assign base_ram_we_n = write_base ? clk : 1'b1;
 
 assign ext_ram_data_wire = write_ext ? data_in : 32'bz;
 assign ext_ram_addr = address[21:2];
 assign ext_ram_be_n = be_n;
 assign ext_ram_ce_n = 1'b0;
 assign ext_ram_oe_n = 1'b0;
-assign ext_ram_we_n = write_ext ? ~clk : 1'b1;
+assign ext_ram_we_n = write_ext ? clk : 1'b1;
 
 assign uart_rdn = ~read_uart;
 assign uart_wrn = ~write_uart;
 
-// TODO uart
-wire[31:0] uart_output_reg;
+wire[31:0] uart_status_reg;
+wire uart_free;
 
-assign data_out = read_base ? base_ram_data_wire : read_ext ? ext_ram_data_wire : uart_output_reg;
+//maybe need to modify
+assign uart_free = uart_tbre && uart_tsre;
+
+assign uart_status_reg = {16'h0000, 2'b00, uart_free, 4'b0000, uart_dataready, 8'h00};
+
+assign data_out = (read_base || read_uart) ? base_ram_data_wire : read_ext ? ext_ram_data_wire : uart_status ? uart_status_reg : 32'b00000000000000000000000000010011;
+
 
 endmodule
