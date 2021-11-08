@@ -200,14 +200,14 @@ REG _REG(
     .rdata2         (r2_data_b)
 );
 
-wire[31:0] imm;
+reg[31:0] imm;
 
-IMMGEN _IMMGEN(
-    .instr(r2_instr),
-    .sel(r2_imm_sel),
+// IMMGEN _IMMGEN(
+//     .instr(r2_instr),
+//     .sel(r2_imm_sel),
 
-    .imm(imm)
-);
+//     .imm(imm)
+// );
 
 BCOMP _BCOMP(
     .r2_pc_sel(r2_pc_sel),
@@ -279,6 +279,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
 
         r2_pc <= r1_pc;
         r2_instr <= r1_instr;
+        if (r2_alu_sel == `XOR) leds <= 16'hff0f;
         r3_pc <= r2_pc;
         r3_instr <= r2_instr;
         r3_data_b <= r2_data_b;
