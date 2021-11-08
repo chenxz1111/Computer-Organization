@@ -285,7 +285,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
 
         r2_pc <= r1_pc;
         r2_instr <= r1_instr;
-        if (r2_alu_sel == `ADD) begin 
+        if (r2_alu_sel == `XOR) begin 
             debug_leds <= 16'hff0f;
         end
         r3_pc <= r2_pc;
