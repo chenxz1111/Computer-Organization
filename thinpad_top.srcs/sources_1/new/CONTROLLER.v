@@ -4,15 +4,15 @@ module CONTROLLER (
     
     input wire[31:0] instr,
 
-    output wire pc_sel, // 0:pc+4, 1:ALU
-    output wire[2:0] imm_sel,
-    output wire data_a_sel, // 0: Reg, 1:PC
-    output wire data_b_sel, // 0: Reg, 1:IMM
-    output wire[2:0] alu_sel,
-    output wire[1:0] bq_sel, 
-    output wire mem_sel, // 0: Read, 1:Write // TODO:*** NEED TO REDEFINE!
-    output wire reg_sel, // 1: enable
-    output wire[1:0] wb_sel
+    output reg pc_sel, // 0:pc+4, 1:ALU
+    output reg[2:0] imm_sel,
+    output reg data_a_sel, // 0: Reg, 1:PC
+    output reg data_b_sel, // 0: Reg, 1:IMM
+    output reg[2:0] alu_sel,
+    output reg[1:0] bq_sel, 
+    output reg mem_sel, // 0: Read, 1:Write // TODO:*** NEED TO REDEFINE!
+    output reg reg_sel, // 1: enable
+    output reg[1:0] wb_sel
 
 );
 
@@ -28,6 +28,7 @@ always @(*) begin
                 3'b111: alu_sel = `AND;
                 3'b110: alu_sel = `OR;
                 3'b100: alu_sel = `XOR;
+            endcase
             bq_sel = `NO_BQ;
             mem_sel = 1'b0;
             reg_sel = 1'b1;
@@ -44,6 +45,7 @@ always @(*) begin
                 3'b110: alu_sel = `OR;
                 3'b001: alu_sel = `SLL;
                 3'b101: alu_sel = `SRL;
+            endcase
             bq_sel = `NO_BQ;
             mem_sel = 1'b0;
             reg_sel = 1'b1;
@@ -59,6 +61,7 @@ always @(*) begin
             mem_sel = 1'b0;
             reg_sel = 1'b1;
             wb_sel = `PC_WB;
+        end
         7'b1100111: begin //JALR
             pc_sel = 1'b1;
             imm_sel = `I_IMM;
@@ -68,7 +71,8 @@ always @(*) begin
             bq_sel = `NO_BQ;
             mem_sel = 1'b0;
             reg_sel = 1'b1;
-            wb_sel = `PC_WB; 
+            wb_sel = `PC_WB;
+        end 
         7'b0010111: begin //AUIPC
             pc_sel = 1'b0;
             imm_sel = `U_IMM;
@@ -100,6 +104,7 @@ always @(*) begin
             case (instr[14:12])
                 3'b000: bq_sel = `EN_BQ;
                 3'b001: bq_sel = `NE_BQ;
+            endcase
             mem_sel = 1'b0;
             reg_sel = 1'b0;
             wb_sel = `NO_WB;

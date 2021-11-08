@@ -1,5 +1,5 @@
 `default_nettype none
-`include "commmon.h"
+`include "common.vh"
 
 module thinpad_top(
     input wire clk_50M,           //50MHz 时钟输入
@@ -176,19 +176,19 @@ REG _REG(
 
 reg[31:0] imm;
 
-IMMGEN _IMMGEN(
-    .instr(r2_instr),
-    .sel(r2_imm_sel),
+// IMMGEN _IMMGEN(
+//     .instr(r2_instr),
+//     .sel(r2_imm_sel),
 
-    .imm(imm)
-);
+//     .imm(imm)
+// );
 
 BCOMP _BCOMP(
     .r2_pc_sel(r2_pc_sel),
     .sel(r2_bq_sel),
     .data_a(r2_data_a),
     .data_b(r2_data_b),
-    .r3_pc_sel(r3_pc_sel),
+    .r3_pc_sel(r3_pc_sel)
 );
 
 ALU _ALU(

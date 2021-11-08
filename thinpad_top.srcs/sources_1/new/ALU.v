@@ -9,7 +9,7 @@ module ALU(
     input wire[31:0] data_b,
     input wire[31:0] imm,
 
-    output wire[31:0] res
+    output reg[31:0] res
 );
 
 wire[31:0] a;
@@ -43,3 +43,5 @@ always @(*) begin
         end
     endcase
 end
+
+endmodule
