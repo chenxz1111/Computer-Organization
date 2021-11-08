@@ -100,18 +100,18 @@ reg[31:0] r1_instr;
 // DATA
 reg[31:0] r2_pc;
 reg[31:0] r2_instr;
-reg[31:0] r2_data_a;
-reg[31:0] r2_data_b;
+wire[31:0] r2_data_a;
+wire[31:0] r2_data_b;
 // CONTROLLER SIGNAL
-reg r2_pc_sel;
-reg[2:0] r2_imm_sel;
-reg r2_data_a_sel;
-reg r2_data_b_sel;
-reg[2:0] r2_alu_sel;
-reg[1:0] r2_bq_sel;
-reg r2_mem_sel;
-reg r2_reg_sel;
-reg[1:0] r2_wb_sel;
+wire r2_pc_sel;
+wire[2:0] r2_imm_sel;
+wire r2_data_a_sel;
+wire r2_data_b_sel;
+wire[2:0] r2_alu_sel;
+wire[1:0] r2_bq_sel;
+wire r2_mem_sel;
+wire r2_reg_sel;
+wire[1:0] r2_wb_sel;
 
 /*
     EXE_MEM
@@ -119,10 +119,10 @@ reg[1:0] r2_wb_sel;
 // DATA
 reg[31:0] r3_pc;
 reg[31:0] r3_instr;
-reg[31:0] r3_alu_res;
+wire[31:0] r3_alu_res;
 reg[31:0] r3_data_b; // data_b是用来data_write的
 // CONTROLLER SIGNAL
-reg r3_pc_sel;
+wire r3_pc_sel;
 reg r3_mem_sel;
 reg r3_reg_sel;
 reg[1:0] r3_wb_sel;
@@ -132,7 +132,7 @@ reg[1:0] r3_wb_sel;
 */
 // DATA
 reg[31:0] r4_instr;
-reg[31:0] r4_wb_data;
+wire[31:0] r4_wb_data;
 // CONTROLLER SIGNAL
 reg r4_pc_sel;
 reg r4_reg_sel;
