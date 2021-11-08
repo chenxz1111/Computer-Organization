@@ -279,7 +279,6 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
 
         r2_pc <= r1_pc;
         r2_instr <= r1_instr;
-
         r3_pc <= r2_pc;
         r3_instr <= r2_instr;
         r3_data_b <= r2_data_b;
