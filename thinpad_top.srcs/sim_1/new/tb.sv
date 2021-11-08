@@ -145,7 +145,7 @@ sram_model ext2(/*autoinst*/
             .WE_n(ext_ram_we_n),
             .LB_n(ext_ram_be_n[2]),
             .UB_n(ext_ram_be_n[3]));
-// Flash 仿真模型
+// // Flash 仿真模型
 x28fxxxp30 #(.FILENAME_MEM(FLASH_INIT_FILE)) flash(
     .A(flash_a[1+:22]), 
     .DQ(flash_d), 

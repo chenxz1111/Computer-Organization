@@ -10,7 +10,7 @@ module IMMGEN(
     wire sign;
     wire[19:0] sign_ext;
     wire[19:0] sign_ext_1;
-    assign sign = instr[31:0];
+    assign sign = instr[31];
     assign sign_ext = {20{sign}};
     assign sign_ext_1 = {12{sign}};
 
