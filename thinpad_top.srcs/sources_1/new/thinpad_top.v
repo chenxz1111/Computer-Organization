@@ -80,6 +80,7 @@ module thinpad_top(
     output wire video_de           //行数据有效信号，用于区分消隐区
 );
 
+localparam NOP = 32'b00000000000000000000000000010011;
 /*
     WB_IF
 */
@@ -196,7 +197,7 @@ WBSEL _WBSEL(
     .pc(r3_pc),
     .alu_res(r3_alu_res),
     // TODO: .ram_data(?) r3给ram，dataout给选择器
-
+    
     .wb_data(r4_wb_data)
 );
 
