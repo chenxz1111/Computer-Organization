@@ -92,7 +92,7 @@ always @(*) begin
             wb_sel = `ALU_WB;
         end
         7'b1100011: begin //BEQ, BNE
-            pc_sel = 1'b0; // 到时候会改
+            pc_sel = 1'b0; // 到时候会在B_COMP改
             imm_sel = `B_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;

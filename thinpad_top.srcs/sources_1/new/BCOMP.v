@@ -19,4 +19,5 @@ always @(*) begin
             if (data_a == data_b) r3_pc_sel = 1'b0;
             else r3_pc_sel = 1'b1;
         end
+    endcase
 end
