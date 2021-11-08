@@ -144,6 +144,7 @@ reg r3_mem_sel;
 reg r3_reg_sel;
 reg[1:0] r3_wb_sel;
 wire[31:0] r3_wb_data;
+reg r3_stall;
 
 /*
     MEM_WB

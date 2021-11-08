@@ -60,13 +60,13 @@ module REG(
         if (raddr1 == 32'b0)
             rdata1 <= 32'b0;
         else
-            rdata1 <= registers[raddr1];
+            rdata1 <= (raddr1 == waddr) ? wdata : registers[raddr1];
     end
     
     always @(*) begin
         if (raddr2 == 32'b0)
             rdata2 <= 32'b0;
         else
-            rdata2 <= registers[raddr2];
+            rdata2 <= (raddr2 == waddr) ? wdata : registers[raddr2];
     end
 endmodule
