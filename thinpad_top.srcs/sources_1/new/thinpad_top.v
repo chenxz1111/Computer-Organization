@@ -207,12 +207,12 @@ REG _REG(
 
 reg[31:0] imm;
 
-// IMMGEN _IMMGEN(
-//     .instr(r2_instr),
-//     .sel(r2_imm_sel),
+IMMGEN _IMMGEN(
+    .instr(r2_instr),
+    .sel(r2_imm_sel),
 
-//     .imm(imm)
-// );
+    .imm(imm)
+);
 
 BCOMP _BCOMP(
     .r2_pc_sel(r2_pc_sel),
@@ -246,6 +246,7 @@ WBSEL _WBSEL(
 
 always @(posedge clk_11M0592 or posedge reset_btn) begin
     if (reset_btn) begin
+        debug_leds <= 16'h0;
         r0_pc <= 32'h0;
         oe <= 1'b0;
         we <= 1'b0;
