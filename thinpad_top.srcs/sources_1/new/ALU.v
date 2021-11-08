@@ -38,5 +38,8 @@ always @(*) begin
         `SRL : begin
             res = a >> b;
         end
+        `LUI : begin
+            res = b;
+        end
     endcase
 end
