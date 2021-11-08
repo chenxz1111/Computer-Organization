@@ -285,7 +285,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
 
         r2_pc <= r1_pc;
         r2_instr <= r1_instr;
-        if (r3_wb_sel) begin 
+        if (r3_wb_sel == `ALU_WB) begin 
             debug_leds <= r4_wb_data;
         end
         r3_pc <= r2_pc;
