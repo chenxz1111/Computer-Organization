@@ -205,7 +205,7 @@ REG _REG(
     .rdata2         (r2_data_b)
 );
 
-reg[31:0] imm;
+wire[31:0] imm;
 
 IMMGEN _IMMGEN(
     .instr(r2_instr),
