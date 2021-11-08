@@ -55,11 +55,17 @@ assign rxd = 1'b1; //idle state
 initial begin 
     //在这里可以自定义测试输入序列，例如：
     dip_sw = 32'h2;
-    touch_btn = 0;
+    #1000
+    // touch_btn = 0;
     reset_btn = 1;
     #100;
     reset_btn = 0;
-    #100;
+    
+    // #100;
+    // reset_btn = 1;
+    // #100;
+    // reset_btn = 0;
+    // #100;
     // for (integer i = 0; i < 20; i = i+1) begin
     //     #100; //等待100ns
     //     clock_btn = 1; //按下手工时钟按钮
@@ -160,7 +166,7 @@ sram_model ext2(/*autoinst*/
             .WE_n(ext_ram_we_n),
             .LB_n(ext_ram_be_n[2]),
             .UB_n(ext_ram_be_n[3]));
-// Flash 仿真模型
+// // Flash 仿真模型
 x28fxxxp30 #(.FILENAME_MEM(FLASH_INIT_FILE)) flash(
     .A(flash_a[1+:22]), 
     .DQ(flash_d), 
@@ -206,24 +212,24 @@ initial begin
 end
 
 // 从文件加载 ExtRAM
-// initial begin 
-//     reg [31:0] tmp_array[0:1048575];
-//     integer n_File_ID, n_Init_Size;
-//     n_File_ID = $fopen(EXT_RAM_INIT_FILE, "rb");
-//     if(!n_File_ID)begin 
-//         n_Init_Size = 0;
-//         $display("Failed to open ExtRAM init file");
-//     end else begin
-//         n_Init_Size = $fread(tmp_array, n_File_ID);
-//         n_Init_Size /= 4;
-//         $fclose(n_File_ID);
-//     end
-//     $display("ExtRAM Init Size(words): %d",n_Init_Size);
-//     for (integer i = 0; i < n_Init_Size; i++) begin
-//         ext1.mem_array0[i] = tmp_array[i][24+:8];
-//         ext1.mem_array1[i] = tmp_array[i][16+:8];
-//         ext2.mem_array0[i] = tmp_array[i][8+:8];
-//         ext2.mem_array1[i] = tmp_array[i][0+:8];
-//     end
-// end
+initial begin 
+    reg [31:0] tmp_array[0:1048575];
+    integer n_File_ID, n_Init_Size;
+    n_File_ID = $fopen(EXT_RAM_INIT_FILE, "rb");
+    if(!n_File_ID)begin 
+        n_Init_Size = 0;
+        $display("Failed to open ExtRAM init file");
+    end else begin
+        n_Init_Size = $fread(tmp_array, n_File_ID);
+        n_Init_Size /= 4;
+        $fclose(n_File_ID);
+    end
+    $display("ExtRAM Init Size(words): %d",n_Init_Size);
+    for (integer i = 0; i < n_Init_Size; i++) begin
+        ext1.mem_array0[i] = tmp_array[i][24+:8];
+        ext1.mem_array1[i] = tmp_array[i][16+:8];
+        ext2.mem_array0[i] = tmp_array[i][8+:8];
+        ext2.mem_array1[i] = tmp_array[i][0+:8];
+    end
+end
 endmodule

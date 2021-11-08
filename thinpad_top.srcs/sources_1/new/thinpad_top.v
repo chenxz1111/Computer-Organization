@@ -246,7 +246,7 @@ WBSEL _WBSEL(
 
 always @(posedge clk_11M0592 or posedge reset_btn) begin
     if (reset_btn) begin
-        debug_leds <= 16'h0;
+        // debug_leds <= 16'hffff;
         r0_pc <= 32'h80000000;
         oe <= 1'b0;
         we <= 1'b0;

@@ -1,7 +1,7 @@
 // Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
-// Date        : Mon Nov  8 19:05:09 2021
+// Date        : Mon Nov  8 20:06:02 2021
 // Host        : LAPTOP-09H9TAOV running 64-bit major release  (build 9200)
 // Command     : write_verilog -mode timesim -nolib -sdf_anno true -force -file
 //               C:/cod21-grp30/thinpad_top.sim/sim_1/impl/timing/xsim/tb_time_impl.v
@@ -1079,7 +1079,7 @@ module CONTROLLER
         .O(data_b_sel_reg_i_1_n_2));
   LUT3 #(
     .INIT(8'h40)) 
-    \debug_leds[15]_i_1 
+    \debug_leds[7]_i_1 
        (.I0(r2_alu_sel),
         .I1(\r1_instr_reg[14] [0]),
         .I2(\r1_instr_reg[14] [1]),
@@ -8119,7 +8119,7 @@ module WBSEL
         .O(wb_data_reg_i_1_n_2));
 endmodule
 
-(* ECO_CHECKSUM = "f5e6364" *) (* NOP = "19" *) 
+(* ECO_CHECKSUM = "11a2078" *) (* NOP = "19" *) 
 (* NotValidForBitStream *)
 module thinpad_top
    (clk_50M,
@@ -8539,17 +8539,9 @@ module thinpad_top
   wire clk_11M0592_IBUF_BUFG;
   wire [31:0]data0;
   wire [31:0]data_out;
-  wire \debug_leds_reg[15]_lopt_replica_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_10_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_11_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_2_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_3_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_4_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_5_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_6_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_7_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_8_1 ;
-  wire \debug_leds_reg[15]_lopt_replica_9_1 ;
+  wire \debug_leds_reg[7]_lopt_replica_1 ;
+  wire \debug_leds_reg[7]_lopt_replica_2_1 ;
+  wire \debug_leds_reg[7]_lopt_replica_3_1 ;
   wire dm9k_cmd;
   wire dm9k_cs_n;
   wire dm9k_ior_n;
@@ -8574,7 +8566,7 @@ module thinpad_top
   wire flash_we_n;
   wire [31:1]imm;
   wire [15:0]leds;
-  wire [0:0]leds_OBUF;
+  wire [4:4]leds_OBUF;
   wire n_0_161_BUFG;
   wire n_0_161_BUFG_inst_n_1;
   wire n_1_547_BUFG;
@@ -10150,124 +10142,44 @@ end
   IBUF clk_11M0592_IBUF_inst
        (.I(clk_11M0592),
         .O(clk_11M0592_IBUF));
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15] 
+  FDPE #(
+    .INIT(1'b1)) 
+    \debug_leds_reg[7] 
        (.C(clk_11M0592_IBUF_BUFG),
         .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
+        .D(1'b0),
+        .PRE(reset_btn_IBUF),
         .Q(leds_OBUF));
   (* OPT_INSERTED_REPDRIVER *) 
   (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica 
+  FDPE #(
+    .INIT(1'b1)) 
+    \debug_leds_reg[7]_lopt_replica 
        (.C(clk_11M0592_IBUF_BUFG),
         .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_1 ));
+        .D(1'b0),
+        .PRE(reset_btn_IBUF),
+        .Q(\debug_leds_reg[7]_lopt_replica_1 ));
   (* OPT_INSERTED_REPDRIVER *) 
   (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_10 
+  FDPE #(
+    .INIT(1'b1)) 
+    \debug_leds_reg[7]_lopt_replica_2 
        (.C(clk_11M0592_IBUF_BUFG),
         .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_10_1 ));
+        .D(1'b0),
+        .PRE(reset_btn_IBUF),
+        .Q(\debug_leds_reg[7]_lopt_replica_2_1 ));
   (* OPT_INSERTED_REPDRIVER *) 
   (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_11 
+  FDPE #(
+    .INIT(1'b1)) 
+    \debug_leds_reg[7]_lopt_replica_3 
        (.C(clk_11M0592_IBUF_BUFG),
         .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_11_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_2 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_2_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_3 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_3_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_4 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_4_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_5 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_5_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_6 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_6_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_7 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_7_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_8 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_8_1 ));
-  (* OPT_INSERTED_REPDRIVER *) 
-  (* OPT_MODIFIED = "SWEEP" *) 
-  FDCE #(
-    .INIT(1'b0)) 
-    \debug_leds_reg[15]_lopt_replica_9 
-       (.C(clk_11M0592_IBUF_BUFG),
-        .CE(_CONTROLLER_n_85),
-        .CLR(reset_btn_IBUF),
-        .D(1'b1),
-        .Q(\debug_leds_reg[15]_lopt_replica_9_1 ));
+        .D(1'b0),
+        .PRE(reset_btn_IBUF),
+        .Q(\debug_leds_reg[7]_lopt_replica_3_1 ));
   OBUFT dm9k_cmd_OBUF_inst
        (.I(1'b0),
         .O(dm9k_cmd),
@@ -10665,65 +10577,57 @@ end
        (.I(1'b0),
         .O(flash_we_n),
         .T(1'b1));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[0]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_1 ),
+       (.I(1'b1),
         .O(leds[0]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[10]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_2_1 ),
+       (.I(1'b1),
         .O(leds[10]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[11]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_3_1 ),
+       (.I(1'b1),
         .O(leds[11]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[12]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_4_1 ),
+       (.I(1'b1),
         .O(leds[12]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[13]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_5_1 ),
+       (.I(1'b1),
         .O(leds[13]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[14]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_6_1 ),
+       (.I(1'b1),
         .O(leds[14]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[15]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_7_1 ),
+       (.I(1'b1),
         .O(leds[15]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[1]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_8_1 ),
+       (.I(1'b1),
         .O(leds[1]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[2]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_9_1 ),
+       (.I(1'b1),
         .O(leds[2]));
-  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[3]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_10_1 ),
+       (.I(1'b1),
         .O(leds[3]));
+  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[4]_inst 
-       (.I(1'b0),
+       (.I(\debug_leds_reg[7]_lopt_replica_1 ),
         .O(leds[4]));
+  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[5]_inst 
-       (.I(1'b0),
+       (.I(\debug_leds_reg[7]_lopt_replica_2_1 ),
         .O(leds[5]));
+  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[6]_inst 
-       (.I(1'b0),
+       (.I(\debug_leds_reg[7]_lopt_replica_3_1 ),
         .O(leds[6]));
+  (* OPT_MODIFIED = "SWEEP" *) 
   OBUF \leds_OBUF[7]_inst 
-       (.I(1'b0),
-        .O(leds[7]));
-  (* OPT_MODIFIED = "SWEEP" *) 
-  OBUF \leds_OBUF[8]_inst 
-       (.I(\debug_leds_reg[15]_lopt_replica_11_1 ),
-        .O(leds[8]));
-  (* OPT_MODIFIED = "SWEEP" *) 
-  OBUF \leds_OBUF[9]_inst 
        (.I(leds_OBUF),
+        .O(leds[7]));
+  OBUF \leds_OBUF[8]_inst 
+       (.I(1'b1),
+        .O(leds[8]));
+  OBUF \leds_OBUF[9]_inst 
+       (.I(1'b1),
         .O(leds[9]));
   BUFG n_0_161_BUFG_inst
        (.I(n_0_161_BUFG_inst_n_1),
@@ -11210,13 +11114,13 @@ end
         .CLR(reset_btn_IBUF),
         .D(\r0_pc_reg[29]_i_1_n_8 ),
         .Q(r0_pc_reg[30]));
-  FDCE #(
-    .INIT(1'b0)) 
+  FDPE #(
+    .INIT(1'b1)) 
     \r0_pc_reg[31] 
        (.C(clk_11M0592_IBUF_BUFG),
         .CE(1'b1),
-        .CLR(reset_btn_IBUF),
         .D(\r0_pc_reg[29]_i_1_n_7 ),
+        .PRE(reset_btn_IBUF),
         .Q(r0_pc_reg[31]));
   FDCE #(
     .INIT(1'b0)) 
