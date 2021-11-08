@@ -1,4 +1,5 @@
 `default_nettype none
+`include "commmon.h"
 
 module thinpad_top(
     input wire clk_50M,           //50MHz 时钟输入
@@ -214,11 +215,28 @@ WBSEL _WBSEL(
 
 always @(posedge clk_11M0592 or posedge reset_btn) begin
     if (reset_btn) begin
-        
+        r0_pc <= 32'h0;
+        oe <= 1'b0;
+        we <= 1'b0;
+        be_n <= 4'b1111;
+        r1_pc <= 32'h0;
+        r1_instr <= NOP;
+        r2_pc <= 32'h0;
+        r2_instr <= NOP;
+        r3_pc <= 32'h0;
+        r3_instr <= NOP;
+        r3_data_b <= 32'h0;
+        r3_mem_sel <= 1'b0;
+        r3_reg_sel <= 1'b1;
+        r3_wb_sel <= `ALU_WB;
+        r4_instr <= NOP;
+        r4_pc_sel <= 1'b0;
+        r4_reg_sel <= 1'b1;
+        r4_alu_res <= 32'h0;
     end
     else begin
         
-        r0_pc <= r4_pc_sel ? r0_pc+4 : r4_alu_res;
+        r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
         /*
         TODO: data_in <= r0_pc;
         */
