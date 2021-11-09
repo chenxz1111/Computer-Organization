@@ -5,7 +5,7 @@ module WBSEL(
     input wire[31:0] pc,
     input wire[31:0] alu_res,
     //TODO:input baseram内存中取得值
-    output reg wb_data
+    output reg[31:0] wb_data
 );
 
 always @(*) begin
