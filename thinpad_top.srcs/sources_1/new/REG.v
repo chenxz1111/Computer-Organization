@@ -14,7 +14,7 @@ module REG(
     output reg[31:0]    rdata2
     );
     
-    reg[31:0] registers[0:31];
+    (* dont_touch = "true" *) reg[31:0] registers[0:31];
     
     always @(posedge clk or posedge rst) begin
         if(rst) begin
