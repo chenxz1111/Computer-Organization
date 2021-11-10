@@ -9,7 +9,7 @@ module CONTROLLER (
     output reg data_a_sel, // 0: Reg, 1:PC
     output reg data_b_sel, // 0: Reg, 1:IMM
     output reg data_type, //0: Word, 1: Byte
-    output reg[2:0] alu_sel,
+    output reg[3:0] alu_sel,
     output reg[1:0] bq_sel, 
     output reg[1:0] mem_sel, // 0: Read, 1:Write // TODO:*** NEED TO REDEFINE!
     output reg reg_sel, // 1: enable
@@ -19,7 +19,7 @@ module CONTROLLER (
 
 always @(*) begin
     case (instr[6:0])
-        7'b0110011: begin// ADD, AND, OR, XOR
+        7'b0110011: begin// ADD, AND, OR, XOR, MIN, MINU
             pc_sel = 1'b0;
             imm_sel = `N_IMM;
             data_a_sel = 1'b0;
@@ -28,15 +28,26 @@ always @(*) begin
             case (instr[14:12])
                 3'b000: alu_sel = `ADD;
                 3'b111: alu_sel = `AND;
-                3'b110: alu_sel = `OR;
-                3'b100: alu_sel = `XOR;
+                3'b110: begin
+                    case (instr[31:25])
+                        7'b0000000: alu_sel = `OR;
+                        7'b0000101: alu_sel = `MINU; 
+                    endcase
+                end
+                
+                3'b100: begin
+                    case (instr[31:25])
+                        7'b0000000: alu_sel = `XOR;
+                        7'b0000101: alu_sel = `MIN;
+                    endcase
+                end
             endcase
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;
             reg_sel = 1'b1;
             wb_sel = `ALU_WB;
         end
-        7'b0010011: begin // ADDI, ANDI, ORI, SLLI, SRLI
+        7'b0010011: begin // ADDI, ANDI, ORI, SLLI, SRLI, CTZ
             pc_sel = 1'b0;
             imm_sel = `I_IMM;
             data_a_sel = 1'b0;
@@ -47,7 +58,12 @@ always @(*) begin
                 3'b111: alu_sel = `AND;
                 3'b110: alu_sel = `OR;
                 3'b001: alu_sel = `SLL;
-                3'b101: alu_sel = `SRL;
+                3'b101: begin
+                    case (instr[31:27])
+                        5'b00000: alu_sel = `SRL;
+                        5'b01100: alu_sel = `CTZ;
+                    endcase
+                end
             endcase
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;

@@ -1,10 +1,13 @@
-`define ADD 3'h0
-`define AND 3'h1
-`define OR  3'h2
-`define SLL 3'h3
-`define SRL 3'h4
-`define XOR 3'h5
-`define LUI 3'h6
+`define ADD 4'h0
+`define AND 4'h1
+`define OR  4'h2
+`define SLL 4'h3
+`define SRL 4'h4
+`define XOR 4'h5
+`define LUI 4'h6
+`define CTZ 4'h7
+`define MIN 4'h8
+`define MINU 4'h9
 
 `define N_IMM 3'h0
 `define I_IMM 3'h1
