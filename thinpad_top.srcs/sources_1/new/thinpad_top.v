@@ -266,7 +266,7 @@ WBSEL _WBSEL(
 
 always @(posedge clk_11M0592 or posedge reset_btn) begin
     if (reset_btn) begin
-        // debug_leds <= 16'hffff;
+        debug_leds <= 16'hffff;
         r0_pc <= 32'h80000000;
         oe <= 1'b0;
         we <= 1'b0;
@@ -339,7 +339,10 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
             r3_instr <= r2_instr;
             r3_alu_res <= r2_alu_res;
             r3_data_b <= r2_data_b;
-            if (read_from_saved) r3_ram_data <= data_out;
+            if (read_from_saved) begin 
+                r3_ram_data <= data_out;
+                debug_leds <= data_out[15:0];
+            end
             else r3_ram_data <= 32'h0;
             r3_pc_sel <= r2_new_pc_sel; 
             r3_mem_sel <= r2_mem_sel;
