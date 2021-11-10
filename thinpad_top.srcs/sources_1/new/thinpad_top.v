@@ -370,15 +370,16 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
                 mem_stall <= 1'b0;
                 read_from_saved <= 1'b1;
             end
-            // else if (r2_mem_sel = `WRITE_RAM) begin
-            //     saved_r1_instr <= data_out;
-            //     oe <= 1'b0;
-            //     we <= 1'b1;
-            //     be_n <= 4'b0000;
-            //     address <= r2_alu_res;
-            //     mem_stall <= 1'b0;
-            //     read_from_saved <= 1'b1;
-            // end
+            else if (r2_mem_sel = `WRITE_RAM) begin
+                saved_r1_instr <= data_out;
+                oe <= 1'b0;
+                we <= 1'b1;
+                be_n <= 4'b0000;
+                address <= r2_alu_res;
+                data_in <= r2_data_b;
+                mem_stall <= 1'b0;
+                read_from_saved <= 1'b1;
+            end
         end
     end
 end
