@@ -54,7 +54,7 @@ assign read_uart = oe && (address == 32'h10000000);
 assign write_uart = we && (address == 32'h10000000);
 assign uart_status = oe && (address == 32'h10000005);
 
-assign base_ext_be_n = (4'b0001 << address[1:0]);
+assign base_ext_be_n = ~(4'b0001 << address[1:0]);
 
 assign base_ram_data_wire = (write_base || write_uart) ? data_in : 32'bz;
 assign base_ram_addr = address[21:2];
