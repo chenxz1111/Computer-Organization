@@ -183,7 +183,7 @@ reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
     // TODO
-    .clk            (clk_11M0592),
+    .clk            (clk_50M),
     .oe(oe),
     .we(we),
     .be_n(be_n),
@@ -213,7 +213,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_11M0592),
+    .clk            (clk_50M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -264,7 +264,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_11M0592 or posedge reset_btn) begin
+always @(posedge clk_50M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff;
         r0_pc <= 32'h80000000;
@@ -318,7 +318,6 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
             r1_pc <= r0_pc;
             if (read_from_saved) r1_instr <= saved_r1_instr;
             else r1_instr <= data_out;
-            r1_instr <= data_out;
             r2_pc <= r1_pc;
             r2_instr <= r1_instr;
             r2_data_a <= r1_data_a;
