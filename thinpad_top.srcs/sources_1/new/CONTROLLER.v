@@ -119,6 +119,7 @@ always @(*) begin
             mem_sel = `READ_RAM;
             reg_sel = 1'b1;
             wb_sel = `MEM_WB;
+        end
         7'b0000011: begin //SW, SB
             pc_sel = 1'b0;
             imm_sel = `S_IMM;
@@ -129,6 +130,7 @@ always @(*) begin
             mem_sel = `WRITE_RAM;
             reg_sel = 1'b0;
             wb_sel = `NO_WB;
+        end
     endcase
 end
 
