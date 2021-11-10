@@ -44,7 +44,7 @@ wire read_uart;
 wire write_uart;
 wire uart_status;
 
-wire base_ext_be_n;
+wire[3:0] base_ext_be_n;
 wire[31:0] write_data;
 wire[31:0] read_data;
 wire[31:0] data_wire;
