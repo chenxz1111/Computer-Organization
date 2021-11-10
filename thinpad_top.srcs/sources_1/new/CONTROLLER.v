@@ -120,7 +120,7 @@ always @(*) begin
             reg_sel = 1'b1;
             wb_sel = `MEM_WB;
         end
-        7'b0000011: begin //SW, SB
+        7'b0100011: begin //SW, SB
             pc_sel = 1'b0;
             imm_sel = `S_IMM;
             data_a_sel = 1'b0;

@@ -341,7 +341,6 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
             r3_data_b <= r2_data_b;
             if (read_from_saved) begin 
                 r3_ram_data <= data_out;
-                debug_leds <= data_out[15:0];
             end
             else r3_ram_data <= 32'h0;
             r3_pc_sel <= r2_new_pc_sel; 
@@ -379,6 +378,7 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
                 data_in <= r2_data_b;
                 mem_stall <= 1'b0;
                 read_from_saved <= 1'b1;
+                debug_leds <= r2_data_b;
             end
         end
     end
