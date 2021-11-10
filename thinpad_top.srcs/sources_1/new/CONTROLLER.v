@@ -8,6 +8,7 @@ module CONTROLLER (
     output reg[2:0] imm_sel,
     output reg data_a_sel, // 0: Reg, 1:PC
     output reg data_b_sel, // 0: Reg, 1:IMM
+    output reg data_type, //0: Word, 1: Byte
     output reg[2:0] alu_sel,
     output reg[1:0] bq_sel, 
     output reg[1:0] mem_sel, // 0: Read, 1:Write // TODO:*** NEED TO REDEFINE!
@@ -23,6 +24,7 @@ always @(*) begin
             imm_sel = `N_IMM;
             data_a_sel = 1'b0;
             data_b_sel = 1'b0;
+            data_type = 1'b0;
             case (instr[14:12])
                 3'b000: alu_sel = `ADD;
                 3'b111: alu_sel = `AND;
@@ -39,6 +41,7 @@ always @(*) begin
             imm_sel = `I_IMM;
             data_a_sel = 1'b0;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             case (instr[14:12])
                 3'b000: alu_sel = `ADD;
                 3'b111: alu_sel = `AND;
@@ -56,6 +59,7 @@ always @(*) begin
             imm_sel = `J_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;
@@ -67,6 +71,7 @@ always @(*) begin
             imm_sel = `I_IMM;
             data_a_sel = 1'b0;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;
@@ -78,6 +83,7 @@ always @(*) begin
             imm_sel = `U_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;
@@ -89,6 +95,7 @@ always @(*) begin
             imm_sel = `U_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             alu_sel = `LUI;
             bq_sel = `NO_BQ;
             mem_sel = `NO_RAM;
@@ -100,6 +107,7 @@ always @(*) begin
             imm_sel = `B_IMM;
             data_a_sel = 1'b1;
             data_b_sel = 1'b1;
+            data_type = 1'b0;
             alu_sel = `ADD;
             case (instr[14:12])
                 3'b000: bq_sel = `EN_BQ;
@@ -114,6 +122,10 @@ always @(*) begin
             imm_sel = `I_IMM;
             data_a_sel = 1'b0;
             data_b_sel = 1'b1;
+            case (instr[14:12])
+                3'b000: data_type = 1'b1; //LB
+                3'b010: data_type = 1'b0; //LW
+            endcase
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `READ_RAM;
@@ -125,6 +137,10 @@ always @(*) begin
             imm_sel = `S_IMM;
             data_a_sel = 1'b0;
             data_b_sel = 1'b1;
+            case (instr[14:12])
+                3'b000: data_type = 1'b1; //SB
+                3'b010: data_type = 1'b0; //SW
+            endcase
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `WRITE_RAM;
