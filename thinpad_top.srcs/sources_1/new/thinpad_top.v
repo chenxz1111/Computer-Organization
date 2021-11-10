@@ -318,7 +318,6 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
             r1_pc <= r0_pc;
             if (read_from_saved) r1_instr <= saved_r1_instr;
             else r1_instr <= data_out;
-            r1_instr <= data_out;
             r2_pc <= r1_pc;
             r2_instr <= r1_instr;
             r2_data_a <= r1_data_a;
