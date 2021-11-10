@@ -6,7 +6,7 @@ module SRAM(
 
     input wire oe,
     input wire we,
-    input wire[3:0] be_n,
+    input wire be,
     input wire[31:0] address,
     input wire[31:0] data_in,
     output wire[31:0] data_out,
@@ -44,6 +44,8 @@ wire read_uart;
 wire write_uart;
 wire uart_status;
 
+wire base_ext_be_n;
+
 assign read_base = oe && (address >= 32'h80000000) && (address <= 32'h803fffff);
 assign write_base = we && (address >= 32'h80000000) && (address <= 32'h803fffff);
 assign read_ext = oe && (address >= 32'h80400000) && (address <= 32'h807fffff);
@@ -52,16 +54,18 @@ assign read_uart = oe && (address == 32'h10000000);
 assign write_uart = we && (address == 32'h10000000);
 assign uart_status = oe && (address == 32'h10000005);
 
+assign base_ext_be_n = (4'b0001 << address[1:0]);
+
 assign base_ram_data_wire = (write_base || write_uart) ? data_in : 32'bz;
 assign base_ram_addr = address[21:2];
-assign base_ram_be_n = be_n;
+assign base_ram_be_n = be ? base_ext_be_n : 4'b0000;
 assign base_ram_ce_n = read_uart || write_uart;
 assign base_ram_oe_n = read_uart || write_uart;
 assign base_ram_we_n = write_base ? clk : 1'b1;
 
 assign ext_ram_data_wire = write_ext ? data_in : 32'bz;
 assign ext_ram_addr = address[21:2];
-assign ext_ram_be_n = be_n;
+assign ext_ram_be_n = be ? base_ext_be_n : 4'b0000;
 assign ext_ram_ce_n = 1'b0;
 assign ext_ram_oe_n = 1'b0;
 assign ext_ram_we_n = write_ext ? clk : 1'b1;
