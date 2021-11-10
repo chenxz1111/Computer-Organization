@@ -107,7 +107,7 @@ wire r1_data_a_sel;
 wire r1_data_b_sel;
 wire[2:0] r1_alu_sel;
 wire[1:0] r1_bq_sel;
-wire r1_mem_sel;
+wire[1:0] r1_mem_sel;
 wire r1_reg_sel;
 wire[1:0] r1_wb_sel;
 /*
@@ -125,7 +125,7 @@ reg r2_data_a_sel;
 reg r2_data_b_sel;
 reg[2:0] r2_alu_sel;
 reg[1:0] r2_bq_sel;
-reg r2_mem_sel;
+reg[1:0] r2_mem_sel;
 reg r2_reg_sel;
 reg[1:0] r2_wb_sel;
 wire r2_new_pc_sel;
@@ -138,13 +138,17 @@ reg[31:0] r3_pc;
 reg[31:0] r3_instr;
 reg[31:0] r3_alu_res;
 reg[31:0] r3_data_b; // data_b是用来data_write的
+reg[31:0] r3_ram_data; //--------R3阶段从内存中读出来的数据
 // CONTROLLER SIGNAL
 reg r3_pc_sel;
-reg r3_mem_sel;
+reg[1:0] r3_mem_sel;
 reg r3_reg_sel;
 reg[1:0] r3_wb_sel;
 wire[31:0] r3_wb_data;
-reg r3_stall;
+//内存结构冲突
+reg mem_stall;
+reg read_from_saved;
+reg[31:0] saved_r1_instr;
 
 /*
     MEM_WB
@@ -179,6 +183,7 @@ reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
     // TODO
+    .clk            (clk_50M),
     .oe(oe),
     .we(we),
     .be_n(be_n),
@@ -208,7 +213,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_11M0592),
+    .clk            (clk_50M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -254,14 +259,14 @@ WBSEL _WBSEL(
     .sel(r3_wb_sel),
     .pc(r3_pc),
     .alu_res(r3_alu_res),
-    // TODO: .ram_data(?) r3给ram，dataout给选择器
+    .ram_data(r3_ram_data),
     
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_11M0592 or posedge reset_btn) begin
+always @(posedge clk_50M or posedge reset_btn) begin
     if (reset_btn) begin
-        // debug_leds <= 16'hffff;
+        debug_leds <= 16'hffff;
         r0_pc <= 32'h80000000;
         oe <= 1'b0;
         we <= 1'b0;
@@ -278,18 +283,23 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
         r2_data_b_sel <= 1'b0;
         r2_alu_sel <= `ADD;
         r2_bq_sel <= `NO_BQ;
-        r2_mem_sel <= 1'b0;
+        r2_mem_sel <= `NO_RAM;
         r2_reg_sel <= 1'b1;
         r2_wb_sel <= `ALU_WB;
 
         r3_pc <= 32'h0;
         r3_instr <= NOP;
         r3_alu_res <= 32'h0;
+        r3_ram_data <= 32'h0;
         r3_data_b <= 32'h0;
         r3_pc_sel <= 1'b0;
-        r3_mem_sel <= 1'b0;
+        r3_mem_sel <=`NO_RAM;
         r3_reg_sel <= 1'b1;
         r3_wb_sel <= `ALU_WB;
+
+        mem_stall <= 1'b0;
+        read_from_saved <= 1'b0;
+        saved_r1_instr <= NOP;
 
         r4_instr <= NOP;
         r4_wb_data <= 32'h0;
@@ -299,53 +309,78 @@ always @(posedge clk_11M0592 or posedge reset_btn) begin
     end
     else begin
         
-        r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
-        /*
-        TODO: data_in <= r0_pc;
-        */
-        oe <= 1'b1;
-        we <= 1'b0;
-        be_n <= 4'b0000;
-        address <= r0_pc;
+        if (!mem_stall) begin
+            r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
+            oe <= 1'b1;
+            we <= 1'b0;
+            be_n <= 4'b0000;
+            address <= r0_pc;
+            r1_pc <= r0_pc;
+            if (read_from_saved) r1_instr <= saved_r1_instr;
+            else r1_instr <= data_out;
+            r1_instr <= data_out;
+            r2_pc <= r1_pc;
+            r2_instr <= r1_instr;
+            r2_data_a <= r1_data_a;
+            r2_data_b <= r1_data_b;
+            r2_pc_sel <= r1_pc_sel;
+            r2_imm_sel <= r1_imm_sel;
+            r2_data_a_sel <= r1_data_a_sel;
+            r2_data_b_sel <= r1_data_b_sel;
+            r2_alu_sel <= r1_alu_sel;
+            r2_bq_sel <= r1_bq_sel;
+            r2_mem_sel <= r1_mem_sel;
+            r2_reg_sel <= r1_reg_sel;
+            r2_wb_sel <= r1_wb_sel;
+            
+            mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
 
-        r1_pc <= r0_pc;
-        r1_instr <= data_out;
-        /*
-        TODO: r1_instr <= data_out;
-        */
+            r3_pc <= r2_pc;
+            r3_instr <= r2_instr;
+            r3_alu_res <= r2_alu_res;
+            r3_data_b <= r2_data_b;
+            if (read_from_saved) begin 
+                r3_ram_data <= data_out;
+            end
+            else r3_ram_data <= 32'h0;
+            r3_pc_sel <= r2_new_pc_sel; 
+            r3_mem_sel <= r2_mem_sel;
+            r3_reg_sel <= r2_reg_sel;
+            r3_wb_sel <= r2_wb_sel;
 
-        r2_pc <= r1_pc;
-        r2_instr <= r1_instr;
-        r2_data_a <= r1_data_a;
-        r2_data_b <= r1_data_b;
-        r2_pc_sel <= r1_pc_sel;
-        r2_imm_sel <= r1_imm_sel;
-        r2_data_a_sel <= r1_data_a_sel;
-        r2_data_b_sel <= r1_data_b_sel;
-        r2_alu_sel <= r1_alu_sel;
-        r2_bq_sel <= r1_bq_sel;
-        r2_mem_sel <= r1_mem_sel;
-        r2_reg_sel <= r1_reg_sel;
-        r2_wb_sel <= r1_wb_sel;
+            read_from_saved <= 1'b0;
+            /*
+            TODO: 把 alu结果和data_B(可能要写入的值)给baseram，消耗了r3_mem_sel信号
+            */
 
-        r3_pc <= r2_pc;
-        r3_instr <= r2_instr;
-        r3_alu_res <= r2_alu_res;
-        r3_data_b <= r2_data_b;
-        r3_pc_sel <= r2_new_pc_sel; 
-        r3_mem_sel <= r2_mem_sel;
-        r3_reg_sel <= r2_reg_sel;
-        r3_wb_sel <= r2_wb_sel;
-        /*
-        TODO: 把 alu结果和data_B(可能要写入的值)给baseram，消耗了r3_mem_sel信号
-        */
-
-        r4_instr <= r3_instr;
-        r4_wb_data <= r3_wb_data;
-        r4_pc_sel <= r3_pc_sel;
-        r4_reg_sel <= r3_reg_sel;
-        r4_alu_res <= r3_alu_res;
-        
+            r4_instr <= r3_instr;
+            r4_wb_data <= r3_wb_data;
+            r4_pc_sel <= r3_pc_sel;
+            r4_reg_sel <= r3_reg_sel;
+            r4_alu_res <= r3_alu_res;
+        end
+        else begin
+            if (r2_mem_sel == `READ_RAM) begin
+                saved_r1_instr <= data_out;
+                oe <= 1'b1;
+                we <= 1'b0;
+                be_n <= 4'b0000;
+                address <= r2_alu_res;
+                mem_stall <= 1'b0;
+                read_from_saved <= 1'b1;
+            end
+            else if (r2_mem_sel == `WRITE_RAM) begin
+                saved_r1_instr <= data_out;
+                oe <= 1'b0;
+                we <= 1'b1;
+                be_n <= 4'b0000;
+                address <= r2_alu_res;
+                data_in <= r2_data_b;
+                mem_stall <= 1'b0;
+                read_from_saved <= 1'b1;
+                debug_leds <= r2_data_b;
+            end
+        end
     end
 end
 
