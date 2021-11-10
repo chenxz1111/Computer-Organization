@@ -105,6 +105,7 @@ wire r1_pc_sel;
 wire[2:0] r1_imm_sel;
 wire r1_data_a_sel;
 wire r1_data_b_sel;
+wire r1_data_type;
 wire[2:0] r1_alu_sel;
 wire[1:0] r1_bq_sel;
 wire[1:0] r1_mem_sel;
@@ -123,6 +124,7 @@ reg r2_pc_sel;
 reg[2:0] r2_imm_sel;
 reg r2_data_a_sel;
 reg r2_data_b_sel;
+reg r2_data_type;
 reg[2:0] r2_alu_sel;
 reg[1:0] r2_bq_sel;
 reg[1:0] r2_mem_sel;
@@ -168,6 +170,7 @@ CONTROLLER _CONTROLLER(
     .imm_sel(r1_imm_sel),
     .data_a_sel(r1_data_a_sel),
     .data_b_sel(r1_data_b_sel),
+    .data_type(r1_data_type),
     .alu_sel(r1_alu_sel),
     .bq_sel(r1_bq_sel),
     .mem_sel(r1_mem_sel),
@@ -177,16 +180,15 @@ CONTROLLER _CONTROLLER(
 
 reg oe;
 reg we;
-reg[3:0] be_n;
+reg be;
 reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
-    // TODO
     .clk            (clk_50M),
     .oe(oe),
     .we(we),
-    .be_n(be_n),
+    .be(be),
     .address(address),
     .data_in(data_in),
     .data_out(data_out),
@@ -270,7 +272,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
         r0_pc <= 32'h80000000;
         oe <= 1'b0;
         we <= 1'b0;
-        be_n <= 4'b0000;
+        be <= 1'b0;
         r1_pc <= 32'h0;
         r1_instr <= NOP;
         r2_pc <= 32'h0;
@@ -281,6 +283,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
         r2_imm_sel <= `N_IMM;
         r2_data_a_sel <= 1'b0;
         r2_data_b_sel <= 1'b0;
+        r2_data_type <= 1'b0;
         r2_alu_sel <= `ADD;
         r2_bq_sel <= `NO_BQ;
         r2_mem_sel <= `NO_RAM;
@@ -313,7 +316,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
             oe <= 1'b1;
             we <= 1'b0;
-            be_n <= 4'b0000;
+            be <= 1'b0;
             address <= r0_pc;
             r1_pc <= r0_pc;
             if (read_from_saved) r1_instr <= saved_r1_instr;
@@ -326,6 +329,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r2_imm_sel <= r1_imm_sel;
             r2_data_a_sel <= r1_data_a_sel;
             r2_data_b_sel <= r1_data_b_sel;
+            r2_data_type <= r1_data_type;
             r2_alu_sel <= r1_alu_sel;
             r2_bq_sel <= r1_bq_sel;
             r2_mem_sel <= r1_mem_sel;
@@ -363,7 +367,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
                 saved_r1_instr <= data_out;
                 oe <= 1'b1;
                 we <= 1'b0;
-                be_n <= 4'b0000;
+                be <= r2_data_type;
                 address <= r2_alu_res;
                 mem_stall <= 1'b0;
                 read_from_saved <= 1'b1;
@@ -372,7 +376,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
                 saved_r1_instr <= data_out;
                 oe <= 1'b0;
                 we <= 1'b1;
-                be_n <= 4'b0000;
+                be <= r2_data_type;
                 address <= r2_alu_res;
                 data_in <= r2_data_b;
                 mem_stall <= 1'b0;
