@@ -246,8 +246,15 @@ BCOMP _BCOMP(
 wire[31:0] forward_data_a;
 wire[31:0] forward_data_b;
 FORWARD _FORWARD(
+    .r2_instr(r2_instr),
     .r2_data_a(r2_data_a),
     .r2_data_b(r2_data_b),
+    .r3_instr(r3_instr),
+    .r3_wb_data(r3_wb_data),
+    .r3_reg_sel(r3_reg_sel),
+    .r4_instr(r4_instr),
+    .r4_wb_data(r4_wb_data),
+    .r4_reg_sel(r4_reg_sel),
 
     .forward_data_a(forward_data_a),
     .forward_data_b(forward_data_b)
