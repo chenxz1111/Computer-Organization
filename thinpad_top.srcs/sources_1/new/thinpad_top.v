@@ -358,7 +358,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r3_pc <= r2_pc;
             r3_instr <= r2_instr;
             r3_alu_res <= r2_alu_res;
-            r3_data_b <= r2_data_b;
+            //r3_data_b <= r2_data_b;
             if (read_from_saved) begin 
                 r3_ram_data <= data_out;
             end
@@ -392,7 +392,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
                 we <= 1'b1;
                 be <= r2_data_type;
                 address <= r2_alu_res;
-                data_in <= r2_data_b;
+                data_in <= forward_data_b;
                 mem_stall <= 1'b0;
                 read_from_saved <= 1'b1;
             end
