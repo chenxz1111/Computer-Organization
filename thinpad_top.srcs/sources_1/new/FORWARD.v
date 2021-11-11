@@ -1,26 +1,16 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2021/11/11 15:36:22
-// Design Name: 
-// Module Name: FORWARD
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 module FORWARD(
 
-    );
+    input wire[31:0] r2_data_a,
+    input wire[31:0] r2_data_b,
+    
+    output reg[31:0] forward_data_a,
+    output reg[31:0] forward_data_b
+
+);
+
+always @(*) begin
+    forward_data_a = r2_data_a;
+    forward_data_b = r2_data_b;
+end
+
 endmodule

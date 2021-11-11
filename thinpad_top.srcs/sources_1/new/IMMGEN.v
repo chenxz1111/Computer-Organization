@@ -5,7 +5,7 @@ module IMMGEN(
     input wire[31:0] instr,
     input wire[2:0] sel,
     output reg[31:0] imm 
-    );
+);
 
     wire sign;
     wire[19:0] sign_ext;

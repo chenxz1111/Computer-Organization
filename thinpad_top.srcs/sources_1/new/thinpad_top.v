@@ -227,7 +227,6 @@ REG _REG(
 );
 
 wire[31:0] imm;
-
 IMMGEN _IMMGEN(
     .instr(r2_instr),
     .sel(r2_imm_sel),
@@ -244,14 +243,25 @@ BCOMP _BCOMP(
     .r3_pc_sel(r2_new_pc_sel)
 );
 
+wire[31:0] forward_data_a;
+wire[31:0] forward_data_b;
+FORWARD _FORWARD(
+    .r2_data_a(r2_data_a),
+    .r2_data_b(r2_data_b),
+
+    .forward_data_a(forward_data_a),
+    .forward_data_b(forward_data_b)
+);
+
 ALU _ALU(
     .op(r2_alu_sel),
     .asel(r2_data_a_sel),
     .bsel(r2_data_b_sel),
     .pc(r2_pc),
-    .data_a(r2_data_a),
-    .data_b(r2_data_b),
     .imm(imm),
+
+    .data_a(forward_data_a),
+    .data_b(forward_data_b),
 
     .res(r2_alu_res)
 );
@@ -268,7 +278,7 @@ WBSEL _WBSEL(
 
 always @(posedge clk_50M or posedge reset_btn) begin
     if (reset_btn) begin
-        debug_leds <= 16'hffff;
+        debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
         oe <= 1'b0;
         we <= 1'b0;
@@ -311,7 +321,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
         r4_alu_res <= 32'h0;
     end
     else begin
-        
         if (!mem_stall) begin
             r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
             oe <= 1'b1;
@@ -321,6 +330,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r1_pc <= r0_pc;
             if (read_from_saved) r1_instr <= saved_r1_instr;
             else r1_instr <= data_out;
+
             r2_pc <= r1_pc;
             r2_instr <= r1_instr;
             r2_data_a <= r1_data_a;
@@ -350,11 +360,8 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r3_mem_sel <= r2_mem_sel;
             r3_reg_sel <= r2_reg_sel;
             r3_wb_sel <= r2_wb_sel;
-
+            
             read_from_saved <= 1'b0;
-            /*
-            TODO: �? alu结果和data_B(可能要写入的�?)给baseram，消耗了r3_mem_sel信号
-            */
 
             r4_instr <= r3_instr;
             r4_wb_data <= r3_wb_data;
@@ -381,7 +388,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
                 data_in <= r2_data_b;
                 mem_stall <= 1'b0;
                 read_from_saved <= 1'b1;
-                debug_leds <= r2_data_b;
             end
         end
     end
