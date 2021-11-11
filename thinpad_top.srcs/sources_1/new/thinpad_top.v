@@ -139,7 +139,6 @@ wire[31:0] r2_alu_res;
 reg[31:0] r3_pc;
 reg[31:0] r3_instr;
 reg[31:0] r3_alu_res;
-reg[31:0] r3_data_b; // data_b是用来data_write�?
 reg[31:0] r3_ram_data; //--------R3阶段从内存中读出来的数据
 // CONTROLLER SIGNAL
 reg r3_pc_sel;
@@ -311,7 +310,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
         r3_instr <= NOP;
         r3_alu_res <= 32'h0;
         r3_ram_data <= 32'h0;
-        r3_data_b <= 32'h0;
         r3_pc_sel <= 1'b0;
         r3_mem_sel <=`NO_RAM;
         r3_reg_sel <= 1'b1;
@@ -358,7 +356,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
             r3_pc <= r2_pc;
             r3_instr <= r2_instr;
             r3_alu_res <= r2_alu_res;
-            //r3_data_b <= r2_data_b;
             if (read_from_saved) begin 
                 r3_ram_data <= data_out;
             end
