@@ -236,12 +236,12 @@ IMMGEN _IMMGEN(
 wire is_jmp;
 wire[31:0] next_pc;
 BCOMP _BCOMP(
-    .bq_sel(r1_bq_sel),
-    .pc(r1_pc),
-    .data_a(r1_data_a),
-    .data_b(r1_data_b),
-    .data_a_sel(r1_data_a_sel),
-    .imm(r1_imm),
+    .bq_sel(r2_bq_sel),
+    .pc(r2_pc),
+    .data_a(forward_data_a),
+    .data_b(forward_data_b),
+    .data_a_sel(r2_data_a_sel),
+    .imm(r2_imm),
 
     .is_jmp(is_jmp),
     .next_pc(next_pc)
@@ -337,27 +337,43 @@ always @(posedge clk_50M or posedge reset_btn) begin
             we <= 1'b0;
             be <= 1'b0;
             address <= r0_pc;
-            r1_pc <= r0_pc;
+            r1_pc <= is_jmp ? 32'h0 : r0_pc;
             if (read_from_saved) r1_instr <= is_jmp ? NOP : saved_r1_instr;
             else r1_instr <= is_jmp ? NOP : data_out;
-
-            r2_pc <= r1_pc;
-            r2_instr <= r1_instr;
-            r2_data_a <= r1_data_a;
-            r2_data_b <= r1_data_b;
-            r2_imm <= r1_imm;
-            r2_pc_sel <= r1_pc_sel;
-            r2_data_a_sel <= r1_data_a_sel;
-            r2_data_b_sel <= r1_data_b_sel;
-            r2_data_type <= r1_data_type;
-            r2_alu_sel <= r1_alu_sel;
-            r2_bq_sel <= r1_bq_sel;
-            r2_mem_sel <= r1_mem_sel;
-            r2_reg_sel <= r1_reg_sel;
-            r2_wb_sel <= r1_wb_sel;
+            if (is_jmp) begin
+                r2_pc <= 32'h0;
+                r2_instr <= NOP;
+                r2_data_a <= 32'h0;
+                r2_data_b <= 32'h0;
+                r2_imm <= 32'h0;
+                r2_pc_sel <= 1'b0;
+                r2_data_a_sel <= 1'b0;
+                r2_data_b_sel <= 1'b0;
+                r2_data_type <= 1'b0;
+                r2_alu_sel <= `ADD;
+                r2_bq_sel <= `NO_BQ;
+                r2_mem_sel <= `NO_RAM;
+                r2_reg_sel <= 1'b1;
+                r2_wb_sel <= `ALU_WB;
+            end 
+            else begin
+                r2_pc <= r1_pc;
+                r2_instr <= r1_instr;
+                r2_data_a <= r1_data_a;
+                r2_data_b <= r1_data_b;
+                r2_imm <= r1_imm;
+                r2_pc_sel <= r1_pc_sel;
+                r2_data_a_sel <= r1_data_a_sel;
+                r2_data_b_sel <= r1_data_b_sel;
+                r2_data_type <= r1_data_type;
+                r2_alu_sel <= r1_alu_sel;
+                r2_bq_sel <= r1_bq_sel;
+                r2_mem_sel <= r1_mem_sel;
+                r2_reg_sel <= r1_reg_sel;
+                r2_wb_sel <= r1_wb_sel;  
+                mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
+            end
             
-            mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
-
             r3_pc <= r2_pc;
             r3_instr <= r2_instr;
             r3_alu_res <= r2_alu_res;
