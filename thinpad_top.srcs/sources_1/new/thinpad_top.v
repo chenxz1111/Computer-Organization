@@ -239,6 +239,7 @@ BCOMP _BCOMP(
     .bq_sel(r1_bq_sel),
     .pc(r1_pc),
     .data_a(r1_data_a),
+    .data_b(r1_data_b),
     .data_a_sel(r1_data_a_sel),
     .imm(r1_imm),
 
