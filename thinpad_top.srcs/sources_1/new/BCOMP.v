@@ -24,7 +24,7 @@ always @(*) begin
                 next_pc = pc+imm;
             end
             else begin
-                    is_jmp = 1'b0;
+                is_jmp = 1'b0;
                 next_pc = pc+4;
             end
         end
