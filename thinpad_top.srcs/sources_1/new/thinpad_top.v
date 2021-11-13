@@ -341,7 +341,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
             if (read_from_saved) r1_instr <= is_jmp ? NOP : saved_r1_instr;
             else r1_instr <= is_jmp ? NOP : data_out;
             if (is_jmp) begin
-                debug_leds <= next_pc[15:0];
                 r2_pc <= 32'h0;
                 r2_instr <= NOP;
                 r2_data_a <= 32'h0;
@@ -356,6 +355,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
                 r2_mem_sel <= `NO_RAM;
                 r2_reg_sel <= 1'b1;
                 r2_wb_sel <= `ALU_WB;
+                mem_stall <= 1'b0;
             end 
             else begin
                 r2_pc <= r1_pc;
