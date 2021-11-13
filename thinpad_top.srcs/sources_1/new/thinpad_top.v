@@ -233,19 +233,14 @@ IMMGEN _IMMGEN(
     .imm(r1_imm)
 );
 
-wire[31:0] next_pc;
-wire is_jmp;
-BCOMP _BCOMP(
-    .bq_sel(r1_bq_sel),
-    .pc(r1_pc),
-    .data_a(r1_data_a),
-    .data_b(r1_data_b),
-    .data_a_sel(r1_data_a_sel),
-    .imm(r1_imm),
+// BCOMP _BCOMP(
+//     .r2_pc_sel(r2_pc_sel),
+//     .sel(r2_bq_sel),
+//     .data_a(r2_data_a),
+//     .data_b(r2_data_b),
 
-    .next_pc(next_pc),
-    .is_jmp(is_jmp)
-);
+//     .r3_pc_sel(r2_new_pc_sel)
+// );
 
 wire[31:0] forward_data_a;
 wire[31:0] forward_data_b;
@@ -332,14 +327,14 @@ always @(posedge clk_50M or posedge reset_btn) begin
     end
     else begin
         if (!mem_stall) begin
-            r0_pc <= is_jmp ? next_pc : r0_pc+4;
+            r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
             oe <= 1'b1;
             we <= 1'b0;
             be <= 1'b0;
             address <= r0_pc;
             r1_pc <= r0_pc;
-            if (read_from_saved) r1_instr <= is_jmp ? saved_r1_instr : NOP;
-            else r1_instr <= is_jmp ? data_out : NOP;
+            if (read_from_saved) r1_instr <= saved_r1_instr;
+            else r1_instr <= data_out;
 
             r2_pc <= r1_pc;
             r2_instr <= r1_instr;
