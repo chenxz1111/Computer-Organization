@@ -28,3 +28,4 @@
 `define NO_BQ 2'b00
 `define EN_BQ 2'b01
 `define NE_BQ 2'b10
+`define JMP_BQ 2'b11

@@ -100,6 +100,7 @@ reg[31:0] r1_pc;
 reg[31:0] r1_instr;
 wire[31:0] r1_data_a;
 wire[31:0] r1_data_b;
+wire[31:0] r1_imm;
 //CONTROLLER SIGNAL
 wire r1_pc_sel;
 wire[2:0] r1_imm_sel;
@@ -119,9 +120,9 @@ reg[31:0] r2_pc;
 reg[31:0] r2_instr;
 reg[31:0] r2_data_a;
 reg[31:0] r2_data_b;
+reg[31:0] r2_imm;
 // CONTROLLER SIGNAL
 reg r2_pc_sel;
-reg[2:0] r2_imm_sel;
 reg r2_data_a_sel;
 reg r2_data_b_sel;
 reg r2_data_type;
@@ -225,21 +226,24 @@ REG _REG(
     .rdata2         (r1_data_b)
 );
 
-wire[31:0] imm;
 IMMGEN _IMMGEN(
-    .instr(r2_instr),
-    .sel(r2_imm_sel),
+    .instr(r1_instr),
+    .sel(r1_imm_sel),
 
-    .imm(imm)
+    .imm(r1_imm)
 );
 
+wire[31:0] next_pc;
+wire is_jmp;
 BCOMP _BCOMP(
-    .r2_pc_sel(r2_pc_sel),
-    .sel(r2_bq_sel),
-    .data_a(r2_data_a),
-    .data_b(r2_data_b),
+    .bq_sel(r1_bq_sel),
+    .pc(r1_pc),
+    .data_a(r1_data_a),
+    .data_a_sel(r1_data_a_sel),
+    .imm(r1_imm),
 
-    .r3_pc_sel(r2_new_pc_sel)
+    .next_pc(next_pc),
+    .is_jmp(is_jmp)
 );
 
 wire[31:0] forward_data_a;
@@ -264,7 +268,7 @@ ALU _ALU(
     .asel(r2_data_a_sel),
     .bsel(r2_data_b_sel),
     .pc(r2_pc),
-    .imm(imm),
+    .imm(r2_imm),
 
     .data_a(forward_data_a),
     .data_b(forward_data_b),
@@ -295,8 +299,8 @@ always @(posedge clk_50M or posedge reset_btn) begin
         r2_instr <= NOP;
         r2_data_a <= 32'h0;
         r2_data_b <= 32'h0;
+        r2_imm <= 32'h0;
         r2_pc_sel <= 1'b0;
-        r2_imm_sel <= `N_IMM;
         r2_data_a_sel <= 1'b0;
         r2_data_b_sel <= 1'b0;
         r2_data_type <= 1'b0;
@@ -327,21 +331,21 @@ always @(posedge clk_50M or posedge reset_btn) begin
     end
     else begin
         if (!mem_stall) begin
-            r0_pc <= r4_pc_sel ? r4_alu_res : r0_pc+4;
+            r0_pc <= is_jmp ? next_pc : r0_pc+4;
             oe <= 1'b1;
             we <= 1'b0;
             be <= 1'b0;
             address <= r0_pc;
             r1_pc <= r0_pc;
-            if (read_from_saved) r1_instr <= saved_r1_instr;
-            else r1_instr <= data_out;
+            if (read_from_saved) r1_instr <= is_jmp ? saved_r1_instr : NOP;
+            else r1_instr <= is_jmp ? data_out : NOP;
 
             r2_pc <= r1_pc;
             r2_instr <= r1_instr;
             r2_data_a <= r1_data_a;
             r2_data_b <= r1_data_b;
+            r2_imm <= r1_imm;
             r2_pc_sel <= r1_pc_sel;
-            r2_imm_sel <= r1_imm_sel;
             r2_data_a_sel <= r1_data_a_sel;
             r2_data_b_sel <= r1_data_b_sel;
             r2_data_type <= r1_data_type;

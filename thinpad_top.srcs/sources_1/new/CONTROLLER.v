@@ -4,7 +4,7 @@ module CONTROLLER (
     
     input wire[31:0] instr,
 
-    output reg pc_sel, // 0:pc+4, 1:ALU
+    output reg pc_sel, // 0:pc+4, 1:jmp
     output reg[2:0] imm_sel,
     output reg data_a_sel, // 0: Reg, 1:PC
     output reg data_b_sel, // 0: Reg, 1:IMM
@@ -77,7 +77,7 @@ always @(*) begin
             data_b_sel = 1'b1;
             data_type = 1'b0;
             alu_sel = `ADD;
-            bq_sel = `NO_BQ;
+            bq_sel = `JMP_BQ;
             mem_sel = `NO_RAM;
             reg_sel = 1'b1;
             wb_sel = `PC_WB;
@@ -89,7 +89,7 @@ always @(*) begin
             data_b_sel = 1'b1;
             data_type = 1'b0;
             alu_sel = `ADD;
-            bq_sel = `NO_BQ;
+            bq_sel = `JMP_BQ;
             mem_sel = `NO_RAM;
             reg_sel = 1'b1;
             wb_sel = `PC_WB;
