@@ -291,9 +291,10 @@ always @(posedge clk_50M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
-        oe <= 1'b0;
+        oe <= 1'b1;
         we <= 1'b0;
         be <= 1'b0;
+        address <= 32'h80000000;
         r1_pc <= 32'h0;
         r1_instr <= NOP;
         r2_pc <= 32'h0;
