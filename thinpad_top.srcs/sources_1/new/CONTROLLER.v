@@ -57,10 +57,10 @@ always @(*) begin
                 3'b000: alu_sel = `ADD;
                 3'b111: alu_sel = `AND;
                 3'b110: alu_sel = `OR;
-                3'b001: alu_sel = `SLL;
-                3'b101: begin
+                3'b101: alu_sel = `SRL;
+                3'b001: begin
                     case (instr[31:27])
-                        5'b00000: alu_sel = `SRL;
+                        5'b00000: alu_sel = `SLL;
                         5'b01100: alu_sel = `CTZ;
                     endcase
                 end
