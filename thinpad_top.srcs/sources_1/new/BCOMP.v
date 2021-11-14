@@ -47,7 +47,7 @@ always @(*) begin
                 1'b1: begin
                     is_jmp = 1'b1;
                     next_pc = pc+imm;
-                end//JAR
+                end//JAL
             endcase
         end
     endcase
