@@ -82,14 +82,14 @@ module thinpad_top(
 );
 
 // PLL��Ƶʾ��
-wire locked, clk_10M, clk_20M;
+wire locked, clk_10M, clk_25M;
 pll_example clock_gen 
 (
  // Clock in ports
  .clk_in1(clk_50M),  // �ⲿʱ������
  // Clock out ports
  .clk_out1(clk_10M), // ʱ�����1��Ƶ����IP���ý���������
- .clk_out2(clk_20M), // ʱ�����2��Ƶ����IP���ý���������
+ .clk_out2(clk_25M), // ʱ�����2��Ƶ����IP���ý���������
  // Status and control signals
  .reset(reset_btn), // PLL��λ����
  .locked(locked)    // PLL����ָʾ�����"1"��ʾʱ���ȶ���
@@ -200,7 +200,7 @@ reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
-    .clk            (clk_20M),
+    .clk            (clk_25M),
     .oe(oe),
     .we(we),
     .be(be),
@@ -230,7 +230,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_20M),
+    .clk            (clk_25M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -302,7 +302,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_20M or posedge reset_btn) begin
+always @(posedge clk_25M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
