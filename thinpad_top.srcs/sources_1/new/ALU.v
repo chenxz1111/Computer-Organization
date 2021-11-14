@@ -52,7 +52,8 @@ always @(*) begin
             res = a < b ? a : b;
         end
         `MINU : begin
-            res = (a[31] ^ b[31]) ? (a < 0 ? b : a) : (a < b ? a : b);
+            // res = (a[31] ^ b[31]) ? (a < 0 ? b : a) : (a < b ? a : b);
+            res = a < b ? a : b;
         end
     endcase
 end
