@@ -337,7 +337,7 @@ always @(posedge clk_50M or posedge reset_btn) begin
             oe <= 1'b1;
             we <= 1'b0;
             be <= 1'b0;
-            address <= r0_pc;
+            address <= is_jmp ? next_pc : r0_pc+4;
             r1_pc <= is_jmp ? 32'h0 : r0_pc;
             if (read_from_saved) r1_instr <= is_jmp ? NOP : saved_r1_instr;
             else r1_instr <= is_jmp ? NOP : data_out;
