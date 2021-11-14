@@ -49,10 +49,10 @@ always @(*) begin
                   (a[7:0] == 0) ? 8 : (a[6:0] == 0) ? 7 : (a[5:0] == 0) ? 6 : (a[4:0] == 0) ? 5 : (a[3:0] == 0) ? 4 : (a[2:0] == 0) ? 3 : (a[1:0] == 0) ? 2 : (a[0:0] == 0) ? 1 : 0;
         end
         `MIN : begin
-            res = a < b ? a : b;
+            res = (a[31] ^ b[31]) ? (a < b ? b : a) : (a < b ? a : b);
         end
         `MINU : begin
-            res = (a[31] ^ b[31]) ? (a < 0 ? b : a) : (a < b ? a : b);
+            res = a < b ? a : b;
         end
     endcase
 end

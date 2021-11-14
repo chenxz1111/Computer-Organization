@@ -57,10 +57,10 @@ always @(*) begin
                 3'b000: alu_sel = `ADD;
                 3'b111: alu_sel = `AND;
                 3'b110: alu_sel = `OR;
-                3'b001: alu_sel = `SLL;
-                3'b101: begin
+                3'b101: alu_sel = `SRL;
+                3'b001: begin
                     case (instr[31:27])
-                        5'b00000: alu_sel = `SRL;
+                        5'b00000: alu_sel = `SLL;
                         5'b01100: alu_sel = `CTZ;
                     endcase
                 end
@@ -160,6 +160,18 @@ always @(*) begin
             alu_sel = `ADD;
             bq_sel = `NO_BQ;
             mem_sel = `WRITE_RAM;
+            reg_sel = 1'b0;
+            wb_sel = `NO_WB;
+        end
+        default: begin
+            pc_sel = 1'b0;
+            imm_sel = `N_IMM;
+            data_a_sel = 1'b0;
+            data_b_sel = 1'b0;
+            data_type = 1'b0;
+            alu_sel = `ADD;
+            bq_sel = `NO_BQ;
+            mem_sel = `NO_RAM;
             reg_sel = 1'b0;
             wb_sel = `NO_WB;
         end
