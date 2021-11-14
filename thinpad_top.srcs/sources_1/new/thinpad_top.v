@@ -185,7 +185,7 @@ reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
-    .clk            (clk_50M),
+    .clk            (clk_11M0592),
     .oe(oe),
     .we(we),
     .be(be),
@@ -215,7 +215,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_50M),
+    .clk            (clk_11M0592),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -234,7 +234,7 @@ IMMGEN _IMMGEN(
 );
 
 wire is_jmp;
-wire[31:0] next_pc;
+(* dont_touch = "true" *)wire[31:0] next_pc;
 BCOMP _BCOMP(
     .bq_sel(r1_bq_sel),
     .pc(r1_pc),
@@ -287,7 +287,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_50M or posedge reset_btn) begin
+always @(posedge clk_11M0592 or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
