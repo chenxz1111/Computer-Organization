@@ -148,8 +148,8 @@ always @(posedge clk or posedge rst) begin
         btb_next[6] <= INVALID;
         btb_next[7] <= INVALID;
 
-        // handle_type <= 3'h0;
-        // handle_target <= 3'h0;
+        handle_type <= 3'h0;
+        handle_target <= 3'h0;
     end
     else begin
         if (handle_type == `ADD_TARGET) begin //把表项移到最前面
