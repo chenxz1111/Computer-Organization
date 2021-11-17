@@ -63,7 +63,7 @@ reg[2:0] handle_type;
 reg[2:0] handle_target;
 
 always @(*) begin
-    if (real_shot == 8'00000000) begin //未命中
+    if (real_shot == 8'b00000000) begin //未命中
         if (!is_jmp) begin //没跳转
             error = 1'b0;
             handle_type = `NO_HANDLE;
@@ -143,6 +143,7 @@ always @(posedge clk or posedge rst) begin
                 btb_pc[btb_num] <= r2_pc;
                 btb_next[btb_num] <= real_next_pc;
                 btb_valid[btb_num] <= 1'b1;
+            end
             else begin
                 btb_pc[7] <= r2_pc;
                 btb_next[7] <= real_next_pc;
@@ -155,7 +156,6 @@ always @(posedge clk or posedge rst) begin
         else if (handle_type == `CHANGE_TARGET) begin
             btb_next[handle_target] <= real_next_pc;
         end
-        else 
     end
 end
 
