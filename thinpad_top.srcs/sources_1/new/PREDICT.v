@@ -81,7 +81,7 @@ always @(*) begin
                 8'b10000000 : handle_target = 3'h7;
                 default     : handle_target = 3'h7;
             endcase
-            error = 1'b1;
+            error = 1'b0;
             handle_type = `DELETE_TARGET;
         end
         else begin
