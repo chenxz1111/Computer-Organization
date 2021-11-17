@@ -187,7 +187,7 @@ PREDICT _PREDICT(
     .is_jmp(is_jmp),
     .real_next_pc(next_pc),
 
-    .error(error),
+    .error(error)
 );
 
 CONTROLLER _CONTROLLER(
