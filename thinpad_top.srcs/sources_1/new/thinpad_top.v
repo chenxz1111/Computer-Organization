@@ -81,19 +81,16 @@ module thinpad_top(
     output wire video_de           //行数据有效信号，用于区分消隐�??
 );
 
-// PLL��Ƶʾ��
+// Clks
 wire locked, clk_10M, clk_25M;
 pll_example clock_gen 
 (
- // Clock in ports
- .clk_in1(clk_50M),  // �ⲿʱ������
- // Clock out ports
- .clk_out1(clk_10M), // ʱ�����1��Ƶ����IP���ý���������
- .clk_out2(clk_25M), // ʱ�����2��Ƶ����IP���ý���������
- // Status and control signals
- .reset(reset_btn), // PLL��λ����
- .locked(locked)    // PLL����ָʾ�����"1"��ʾʱ���ȶ���
-                    // �󼶵�·��λ�ź�Ӧ���������ɣ����£�
+ .clk_in1(clk_50M),  
+
+ .clk_out1(clk_10M), 
+ .clk_out2(clk_25M), 
+ .reset(reset_btn), 
+ .locked(locked)                   
 );
 
 localparam NOP = 32'b00000000000000000000000000010011;
