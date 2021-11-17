@@ -57,48 +57,55 @@ reg[2:0] handle_type;
 reg[2:0] handle_target;
 
 always @(*) begin
-
-    if (real_shot == 8'b00000000) begin //未命中
-        if (!is_jmp) begin //没跳转
-            error = 1'b0;
-            handle_type = `NO_HANDLE;
-        end
-        else begin
-            error = 1'b1;
-            handle_type = `ADD_TARGET;
-        end
+    if (!is_jmp) begin //没跳转
+        error = 1'b0;
+        handle_type = `NO_HANDLE;
     end
-    else begin //命中
-        if (!is_jmp) begin //没跳转
-            case (real_shot)
-                8'b00000001 : handle_target = 3'h0;
-                8'b00000010 : handle_target = 3'h1;
-                8'b00000100 : handle_target = 3'h2;
-                8'b00001000 : handle_target = 3'h3;
-                8'b00010000 : handle_target = 3'h4;
-                8'b00100000 : handle_target = 3'h5;
-                8'b01000000 : handle_target = 3'h6;
-                8'b10000000 : handle_target = 3'h7;
-                default     : handle_target = 3'h7;
-            endcase
-            error = 1'b1;
-            handle_type = `DELETE_TARGET;
-        end
-        else begin
-            case (real_shot)
-                8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
-                8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
-                8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
-                8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
-                8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
-                8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
-                8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
-                8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
-                default     : error = 1'b1;
-            endcase
-            handle_type = `CHANGE_TARGET;
-        end
+    else begin
+        error = 1'b1;
+        handle_type = `NO_HANDLE;
     end
+    // if (real_shot == 8'b00000000) begin //未命中
+    //     if (!is_jmp) begin //没跳转
+    //         error = 1'b0;
+    //         handle_type = `NO_HANDLE;
+    //     end
+    //     else begin
+    //         error = 1'b1;
+    //         handle_type = `ADD_TARGET;
+    //     end
+    // end
+    // else begin //命中
+    //     if (!is_jmp) begin //没跳转
+    //         case (real_shot)
+    //             8'b00000001 : handle_target = 3'h0;
+    //             8'b00000010 : handle_target = 3'h1;
+    //             8'b00000100 : handle_target = 3'h2;
+    //             8'b00001000 : handle_target = 3'h3;
+    //             8'b00010000 : handle_target = 3'h4;
+    //             8'b00100000 : handle_target = 3'h5;
+    //             8'b01000000 : handle_target = 3'h6;
+    //             8'b10000000 : handle_target = 3'h7;
+    //             default     : handle_target = 3'h7;
+    //         endcase
+    //         error = 1'b1;
+    //         handle_type = `DELETE_TARGET;
+    //     end
+    //     else begin
+    //         case (real_shot)
+    //             8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
+    //             8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
+    //             8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
+    //             8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
+    //             8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
+    //             8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
+    //             8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
+    //             8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
+    //             default     : error = 1'b1;
+    //         endcase
+    //         handle_type = `CHANGE_TARGET;
+    //     end
+    // end
 end
 
 always @(posedge clk or posedge rst) begin
@@ -120,6 +127,9 @@ always @(posedge clk or posedge rst) begin
         btb_next[5] <= INVALID;
         btb_next[6] <= INVALID;
         btb_next[7] <= INVALID;
+
+        // handle_type <= 3'h0;
+        // handle_target <= 3'h0;
     end
     else begin
         if (handle_type == `ADD_TARGET) begin //把表项移到最前面

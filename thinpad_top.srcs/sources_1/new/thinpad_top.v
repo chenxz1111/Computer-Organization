@@ -178,7 +178,7 @@ reg[31:0] r4_alu_res;
 wire[31:0] predict_pc;
 wire error;
 PREDICT _PREDICT(
-    .clk(clk_50M),
+    .clk(clk_25M),
     .rst(reset_btn),
     .origin_pc(r0_pc),
 
@@ -212,7 +212,7 @@ reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
 SRAM _SRAM (
-    .clk            (clk_50M),
+    .clk            (clk_25M),
     .oe(oe),
     .we(we),
     .be(be),
@@ -242,7 +242,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_50M),
+    .clk            (clk_25M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -314,7 +314,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_50M or posedge reset_btn) begin
+always @(posedge clk_25M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
