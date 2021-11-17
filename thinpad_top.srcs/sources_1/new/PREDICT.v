@@ -8,7 +8,7 @@ module PREDICT(
     output reg[31:0] predict_pc,
 
     input wire is_jmp,
-    input wire r2_pc,
+    input wire[31:0] r2_pc,
     input wire[31:0] real_next_pc,
 
     output reg error
@@ -16,16 +16,17 @@ module PREDICT(
 
 reg[31:0] btb_pc[7:0];
 reg[31:0] btb_next[7:0];
+reg btb_valid[7:0];
 
 wire[7:0] predict_shot;
-assign predict_shot[0] = (origin_pc == btb_pc[0]) ? 1'b1 : 1'b0;
-assign predict_shot[1] = (origin_pc == btb_pc[1]) ? 1'b1 : 1'b0;
-assign predict_shot[2] = (origin_pc == btb_pc[2]) ? 1'b1 : 1'b0;
-assign predict_shot[3] = (origin_pc == btb_pc[3]) ? 1'b1 : 1'b0;
-assign predict_shot[4] = (origin_pc == btb_pc[4]) ? 1'b1 : 1'b0;
-assign predict_shot[5] = (origin_pc == btb_pc[5]) ? 1'b1 : 1'b0;
-assign predict_shot[6] = (origin_pc == btb_pc[6]) ? 1'b1 : 1'b0;
-assign predict_shot[7] = (origin_pc == btb_pc[7]) ? 1'b1 : 1'b0;
+assign predict_shot[0] = (origin_pc == btb_pc[0] && btb_valid[0]) ? 1'b1 : 1'b0;
+assign predict_shot[1] = (origin_pc == btb_pc[1] && btb_valid[1]) ? 1'b1 : 1'b0;
+assign predict_shot[2] = (origin_pc == btb_pc[2] && btb_valid[2]) ? 1'b1 : 1'b0;
+assign predict_shot[3] = (origin_pc == btb_pc[3] && btb_valid[3]) ? 1'b1 : 1'b0;
+assign predict_shot[4] = (origin_pc == btb_pc[4] && btb_valid[4]) ? 1'b1 : 1'b0;
+assign predict_shot[5] = (origin_pc == btb_pc[5] && btb_valid[5]) ? 1'b1 : 1'b0;
+assign predict_shot[6] = (origin_pc == btb_pc[6] && btb_valid[6]) ? 1'b1 : 1'b0;
+assign predict_shot[7] = (origin_pc == btb_pc[7] && btb_valid[7]) ? 1'b1 : 1'b0;
 
 always @(*) begin
     case (predict_shot)
@@ -43,14 +44,20 @@ always @(*) begin
 end
 
 wire[7:0] real_shot;
-assign real_shot[0] = (r2_pc == btb_pc[0]) ? 1'b1 : 1'b0;
-assign real_shot[1] = (r2_pc == btb_pc[1]) ? 1'b1 : 1'b0;
-assign real_shot[2] = (r2_pc == btb_pc[2]) ? 1'b1 : 1'b0;
-assign real_shot[3] = (r2_pc == btb_pc[3]) ? 1'b1 : 1'b0;
-assign real_shot[4] = (r2_pc == btb_pc[4]) ? 1'b1 : 1'b0;
-assign real_shot[5] = (r2_pc == btb_pc[5]) ? 1'b1 : 1'b0;
-assign real_shot[6] = (r2_pc == btb_pc[6]) ? 1'b1 : 1'b0;
-assign real_shot[7] = (r2_pc == btb_pc[7]) ? 1'b1 : 1'b0;
+assign real_shot[0] = (r2_pc == btb_pc[0] && btb_valid[0]) ? 1'b1 : 1'b0;
+assign real_shot[1] = (r2_pc == btb_pc[1] && btb_valid[1]) ? 1'b1 : 1'b0;
+assign real_shot[2] = (r2_pc == btb_pc[2] && btb_valid[2]) ? 1'b1 : 1'b0;
+assign real_shot[3] = (r2_pc == btb_pc[3] && btb_valid[3]) ? 1'b1 : 1'b0;
+assign real_shot[4] = (r2_pc == btb_pc[4] && btb_valid[4]) ? 1'b1 : 1'b0;
+assign real_shot[5] = (r2_pc == btb_pc[5] && btb_valid[5]) ? 1'b1 : 1'b0;
+assign real_shot[6] = (r2_pc == btb_pc[6] && btb_valid[6]) ? 1'b1 : 1'b0;
+assign real_shot[7] = (r2_pc == btb_pc[7] && btb_valid[7]) ? 1'b1 : 1'b0;
+
+wire[4:0] btb_num;
+assign btb_num = btb_valid[7] ? 4'h8 : btb_valid[6] ? 4'h7 : btb_valid[5] ? 4'h6 :
+                btb_valid[4] ? 4'h5 : btb_valid[3] ? 4'h4 : btb_valid[2] ? 4'h3 :
+                btb_valid[1] ? 4'h2 : btb_valid[0] ? 4'h1 : 4'h0;
+
 
 reg[2:0] handle_type;
 reg[2:0] handle_target;
@@ -98,9 +105,6 @@ always @(*) begin
         end
     end
 end
-
-integer i;
-
 always @(posedge clk or posedge rst) begin
     if(rst) begin
         btb_pc[0] <= 32'h0;
@@ -121,47 +125,36 @@ always @(posedge clk or posedge rst) begin
         btb_next[6] <= 32'h0;
         btb_next[7] <= 32'h0;
 
+        btb_valid[0] <= 1'b0;
+        btb_valid[1] <= 1'b0;
+        btb_valid[2] <= 1'b0;
+        btb_valid[3] <= 1'b0;
+        btb_valid[4] <= 1'b0;
+        btb_valid[5] <= 1'b0;
+        btb_valid[6] <= 1'b0;
+        btb_valid[7] <= 1'b0;
+
         handle_type <= 3'h0;
         handle_target <= 3'h0;
     end
     else begin
-        if (handle_type == `ADD_TARGET) begin //把表项移到最前面
-            btb_pc[0] <= r2_pc;
-            btb_pc[1] <= btb_pc[0];
-            btb_pc[2] <= btb_pc[1];
-            btb_pc[3] <= btb_pc[2];
-            btb_pc[4] <= btb_pc[3];
-            btb_pc[5] <= btb_pc[4];
-            btb_pc[6] <= btb_pc[5];
-            btb_pc[7] <= btb_pc[6];
-            btb_next[0] <= real_next_pc;
-            btb_next[1] <= btb_next[0];
-            btb_next[2] <= btb_next[1];
-            btb_next[3] <= btb_next[2];
-            btb_next[4] <= btb_next[3];
-            btb_next[5] <= btb_next[4];
-            btb_next[6] <= btb_next[5];
-            btb_next[7] <= btb_next[6];
+        if (handle_type == `ADD_TARGET) begin
+            if (btb_num != 3'h8) begin
+                btb_pc[btb_num] <= r2_pc;
+                btb_next[btb_num] <= real_next_pc;
+                btb_valid[btb_num] <= 1'b1;
+            end
+            else begin
+                btb_pc[7] <= r2_pc;
+                btb_next[7] <= real_next_pc;
+            end
         end
         else if (handle_type == `DELETE_TARGET) begin
-            if (handle_target < 3'h7) begin
-                for (i = handle_target; i < 7; i = i+1) begin
-                    btb_pc[i] <= btb_pc[i+1];
-                    btb_next[i] <= btb_next[i+1];
-                end
-            end
-            btb_pc[7] <= 32'h0;
-            btb_next[7] <= 32'h0;
+            btb_pc[handle_target] <= 32'h0;
+            btb_next[handle_target] <= 32'h0;
         end
         else if (handle_type == `CHANGE_TARGET) begin
-            if (handle_target > 3'h0) begin
-                for (i = 1; i <= handle_target; i = i+1) begin
-                    btb_pc[i] <= btb_pc[i-1];
-                    btb_next[i] <= btb_next[i-1];
-                end
-            end
-            btb_pc[0] <= r2_pc;
-            btb_next[0] <= real_next_pc;
+            btb_next[handle_target] <= real_next_pc;
         end
     end
 end
