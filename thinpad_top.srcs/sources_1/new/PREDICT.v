@@ -81,20 +81,47 @@ always @(*) begin
                 8'b10000000 : handle_target = 3'h7;
                 default     : handle_target = 3'h7;
             endcase
-            error = 1'b0;
+            error = 1'b1;//////////////
             handle_type = `DELETE_TARGET;
         end
         else begin
             case (real_shot)
-                8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
-                8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
-                8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
-                8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
-                8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
-                8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
-                8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
-                8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
-                default     : error = 1'b1;
+                8'b00000001 : begin
+                    error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h0;
+                end
+                8'b00000010 : begin
+                    error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h1;
+                end
+                8'b00000100 : begin
+                    error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h2;
+                end
+                8'b00001000 : begin
+                    error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h3;
+                end
+                8'b00010000 : begin
+                    error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h4;
+                end
+                8'b00100000 : begin
+                    error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h5;
+                end
+                8'b01000000 : begin
+                    error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h6;
+                end
+                8'b10000000 : begin
+                    error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h7;
+                end
+                default     : begin
+                    error = 1'b0;
+                    handle_target = 3'h7;
+                end
             endcase
             handle_type = `CHANGE_TARGET;
         end
