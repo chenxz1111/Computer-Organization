@@ -56,18 +56,21 @@ reg[2:0] handle_type;
 reg[2:0] handle_target;
 
 always @(*) begin
-    if (is_jmp) error = 1'b1;
-    else error = 1'b0;
-    // if (real_shot == 8'b00000000) begin //未命中
-    //     if (!is_jmp) begin //没跳转
-    //         error = 1'b0;
-    //         handle_type = `NO_HANDLE;
-    //     end
-    //     else begin
-    //         error = 1'b1;
-    //         handle_type = `ADD_TARGET;
-    //     end
-    // end
+
+    if (real_shot == 8'b00000000) begin //未命中
+        if (!is_jmp) begin //没跳转
+            error = 1'b0;
+            handle_type = `NO_HANDLE;
+        end
+        else begin
+            error = 1'b1;
+            handle_type = `ADD_TARGET;
+        end
+    end
+    else begin
+        if (is_jmp) error = 1'b1;
+        else error = 1'b0;
+    end
     // else begin //命中
     //     if (!is_jmp) begin //没跳转
     //         case (real_shot)
