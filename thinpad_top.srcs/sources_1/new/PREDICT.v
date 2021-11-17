@@ -31,14 +31,14 @@ assign predict_shot[7] = (origin_pc == btb_pc[7]) ? 1'b1 : 1'b0;
 
 always @(*) begin
     case (predict_shot)
-        8'b00000001 : predict_pc = btb_next[0];
-        8'b00000010 : predict_pc = btb_next[1];
-        8'b00000100 : predict_pc = btb_next[2];
-        8'b00001000 : predict_pc = btb_next[3];
-        8'b00010000 : predict_pc = btb_next[4];
-        8'b00100000 : predict_pc = btb_next[5];
-        8'b01000000 : predict_pc = btb_next[6];
-        8'b10000000 : predict_pc = btb_next[7];
+        // 8'b00000001 : predict_pc = btb_next[0];
+        // 8'b00000010 : predict_pc = btb_next[1];
+        // 8'b00000100 : predict_pc = btb_next[2];
+        // 8'b00001000 : predict_pc = btb_next[3];
+        // 8'b00010000 : predict_pc = btb_next[4];
+        // 8'b00100000 : predict_pc = btb_next[5];
+        // 8'b01000000 : predict_pc = btb_next[6];
+        // 8'b10000000 : predict_pc = btb_next[7];
         default     : predict_pc = origin_pc+4;
     endcase
 end
@@ -64,8 +64,9 @@ always @(*) begin
             handle_type = `NO_HANDLE;
         end
         else begin
+
             error = 1'b1;
-            handle_type = `NO_HANDLE;
+            handle_type = `ADD_TARGET;
         end
     end
     else begin
