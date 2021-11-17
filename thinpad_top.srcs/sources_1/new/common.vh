@@ -29,3 +29,12 @@
 `define EN_BQ 2'b01
 `define NE_BQ 2'b10
 `define JMP_BQ 2'b11
+
+`define CSRRC 3'b000
+`define CSRRS 3'b001
+`define CSRRW 3'b010
+`define EBREAK 3'b011
+`define ECALL 3'b100
+`define MRET 3'b101
+`define SLTU 3'b110
+`define CSR_NOP 3'b111
