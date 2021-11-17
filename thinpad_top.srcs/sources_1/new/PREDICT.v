@@ -31,7 +31,6 @@ assign predict_shot[7] = (origin_pc == btb_pc[7]) ? 1'b1 : 1'b0;
 
 always @(*) begin
     case (predict_shot)
-        8'b00000000 : predict_pc = origin_pc+4;
         8'b00000001 : predict_pc = btb_next[0];
         8'b00000010 : predict_pc = btb_next[1];
         8'b00000100 : predict_pc = btb_next[2];
@@ -101,8 +100,6 @@ always @(*) begin
         end
     end
 end
-
-integer i;
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin
