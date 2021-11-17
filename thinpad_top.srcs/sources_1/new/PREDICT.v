@@ -31,14 +31,14 @@ assign predict_shot[7] = (origin_pc == btb_pc[7]) ? 1'b1 : 1'b0;
 
 always @(*) begin
     case (predict_shot)
-        // 8'b00000001 : predict_pc = btb_next[0];
-        // 8'b00000010 : predict_pc = btb_next[1];
-        // 8'b00000100 : predict_pc = btb_next[2];
-        // 8'b00001000 : predict_pc = btb_next[3];
-        // 8'b00010000 : predict_pc = btb_next[4];
-        // 8'b00100000 : predict_pc = btb_next[5];
-        // 8'b01000000 : predict_pc = btb_next[6];
-        // 8'b10000000 : predict_pc = btb_next[7];
+        8'b00000001 : predict_pc = btb_next[0];
+        8'b00000010 : predict_pc = btb_next[1];
+        8'b00000100 : predict_pc = btb_next[2];
+        8'b00001000 : predict_pc = btb_next[3];
+        8'b00010000 : predict_pc = btb_next[4];
+        8'b00100000 : predict_pc = btb_next[5];
+        8'b01000000 : predict_pc = btb_next[6];
+        8'b10000000 : predict_pc = btb_next[7];
         default     : predict_pc = origin_pc+4;
     endcase
 end
@@ -64,52 +64,41 @@ always @(*) begin
             handle_type = `NO_HANDLE;
         end
         else begin
-
             error = 1'b1;
             handle_type = `ADD_TARGET;
         end
     end
-    else begin
+    else begin //命中
         if (!is_jmp) begin //没跳转
+            case (real_shot)
+                8'b00000001 : handle_target = 3'h0;
+                8'b00000010 : handle_target = 3'h1;
+                8'b00000100 : handle_target = 3'h2;
+                8'b00001000 : handle_target = 3'h3;
+                8'b00010000 : handle_target = 3'h4;
+                8'b00100000 : handle_target = 3'h5;
+                8'b01000000 : handle_target = 3'h6;
+                8'b10000000 : handle_target = 3'h7;
+                default     : handle_target = 3'h7;
+            endcase
             error = 1'b1;
-            handle_type = `NO_HANDLE;
+            handle_type = `DELETE_TARGET;
         end
         else begin
-            error = 1'b1;
-            handle_type = `NO_HANDLE;
+            case (real_shot)
+                8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
+                8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
+                8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
+                8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
+                8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
+                8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
+                8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
+                8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
+                default     : error = 1'b1;
+            endcase
+            handle_type = `CHANGE_TARGET;
         end
     end
-    // else begin //命中
-    //     if (!is_jmp) begin //没跳转
-    //         case (real_shot)
-    //             8'b00000001 : handle_target = 3'h0;
-    //             8'b00000010 : handle_target = 3'h1;
-    //             8'b00000100 : handle_target = 3'h2;
-    //             8'b00001000 : handle_target = 3'h3;
-    //             8'b00010000 : handle_target = 3'h4;
-    //             8'b00100000 : handle_target = 3'h5;
-    //             8'b01000000 : handle_target = 3'h6;
-    //             8'b10000000 : handle_target = 3'h7;
-    //             default     : handle_target = 3'h7;
-    //         endcase
-    //         error = 1'b1;
-    //         handle_type = `DELETE_TARGET;
-    //     end
-    //     else begin
-    //         case (real_shot)
-    //             8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
-    //             8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
-    //             8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
-    //             8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
-    //             8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
-    //             8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
-    //             8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
-    //             8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
-    //             default     : error = 1'b1;
-    //         endcase
-    //         handle_type = `CHANGE_TARGET;
-    //     end
-    // end
 end
 
 always @(posedge clk or posedge rst) begin
