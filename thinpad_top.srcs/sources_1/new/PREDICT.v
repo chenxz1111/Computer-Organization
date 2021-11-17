@@ -65,7 +65,7 @@ always @(*) begin
         end
         else begin
             error = 1'b1;
-            handle_type = `ADD_TARGET;
+            handle_type = `NO_HANDLE;
         end
     end
     else begin
