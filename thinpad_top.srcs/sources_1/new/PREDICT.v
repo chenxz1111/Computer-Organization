@@ -144,12 +144,6 @@ always @(posedge clk or posedge rst) begin
             btb_next[7] <= btb_next[6];
         end
         else if (handle_type == `DELETE_TARGET) begin
-            if (handle_target < 3'h7) begin
-                for (i = handle_target; i < 7; i = i+1) begin
-                    btb_pc[i] <= btb_pc[i+1];
-                    btb_next[i] <= btb_next[i+1];
-                end
-            end
             btb_pc[0] <= (handle_target > 0) ? btb_pc[0] : btb_pc[1];
             btb_pc[1] <= (handle_target > 1) ? btb_pc[1] : btb_pc[2];
             btb_pc[2] <= (handle_target > 2) ? btb_pc[2] : btb_pc[3];
