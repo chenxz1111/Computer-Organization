@@ -29,3 +29,8 @@
 `define EN_BQ 2'b01
 `define NE_BQ 2'b10
 `define JMP_BQ 2'b11
+
+`define NO_HANDLE 3'h0
+`define CHANGE_TARGET 3'h1
+`define DELETE_TARGET 3'h2
+`define ADD_TARGET 3'h3
