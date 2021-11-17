@@ -146,42 +146,42 @@ always @(posedge clk or posedge rst) begin
             btb_next[6] <= btb_next[5];
             btb_next[7] <= btb_next[6];
         end
-    //     else if (handle_type == `DELETE_TARGET) begin
-    //         btb_pc[0] <= (handle_target > 0) ? btb_pc[0] : btb_pc[1];
-    //         btb_pc[1] <= (handle_target > 1) ? btb_pc[1] : btb_pc[2];
-    //         btb_pc[2] <= (handle_target > 2) ? btb_pc[2] : btb_pc[3];
-    //         btb_pc[3] <= (handle_target > 3) ? btb_pc[3] : btb_pc[4];
-    //         btb_pc[4] <= (handle_target > 4) ? btb_pc[4] : btb_pc[5];
-    //         btb_pc[5] <= (handle_target > 5) ? btb_pc[5] : btb_pc[6];
-    //         btb_pc[6] <= (handle_target > 6) ? btb_pc[6] : btb_pc[7];
-    //         btb_pc[7] <= INVALID;
-    //         btb_next[0] <= (handle_target > 0) ? btb_next[0] : btb_next[1];
-    //         btb_next[1] <= (handle_target > 1) ? btb_next[1] : btb_next[2];
-    //         btb_next[2] <= (handle_target > 2) ? btb_next[2] : btb_next[3];
-    //         btb_next[3] <= (handle_target > 3) ? btb_next[3] : btb_next[4];
-    //         btb_next[4] <= (handle_target > 4) ? btb_next[4] : btb_next[5];
-    //         btb_next[5] <= (handle_target > 5) ? btb_next[5] : btb_next[6];
-    //         btb_next[6] <= (handle_target > 6) ? btb_next[6] : btb_next[7];
-    //         btb_next[7] <= INVALID;
-    //     end
-    //     else if (handle_type == `CHANGE_TARGET) begin
-    //         btb_pc[0] <= r2_pc;
-    //         btb_pc[1] <= (handle_target < 1) ? btb_pc[1] : btb_pc[0];
-    //         btb_pc[2] <= (handle_target < 2) ? btb_pc[2] : btb_pc[1];
-    //         btb_pc[3] <= (handle_target < 3) ? btb_pc[3] : btb_pc[2];
-    //         btb_pc[4] <= (handle_target < 4) ? btb_pc[4] : btb_pc[3];
-    //         btb_pc[5] <= (handle_target < 5) ? btb_pc[5] : btb_pc[4];
-    //         btb_pc[6] <= (handle_target < 6) ? btb_pc[6] : btb_pc[5];
-    //         btb_pc[7] <= (handle_target < 7) ? btb_pc[7] : btb_pc[6];
-    //         btb_next[0] <= real_next_pc;
-    //         btb_next[1] <= (handle_target < 1) ? btb_next[1] : btb_next[0];
-    //         btb_next[2] <= (handle_target < 2) ? btb_next[2] : btb_next[1];
-    //         btb_next[3] <= (handle_target < 3) ? btb_next[3] : btb_next[2];
-    //         btb_next[4] <= (handle_target < 4) ? btb_next[4] : btb_next[3];
-    //         btb_next[5] <= (handle_target < 5) ? btb_next[5] : btb_next[4];
-    //         btb_next[6] <= (handle_target < 6) ? btb_next[6] : btb_next[5];
-    //         btb_next[7] <= (handle_target < 7) ? btb_next[7] : btb_next[6];
-    //     end
+        else if (handle_type == `DELETE_TARGET) begin
+            btb_pc[0] <= (handle_target > 0) ? btb_pc[0] : btb_pc[1];
+            btb_pc[1] <= (handle_target > 1) ? btb_pc[1] : btb_pc[2];
+            btb_pc[2] <= (handle_target > 2) ? btb_pc[2] : btb_pc[3];
+            btb_pc[3] <= (handle_target > 3) ? btb_pc[3] : btb_pc[4];
+            btb_pc[4] <= (handle_target > 4) ? btb_pc[4] : btb_pc[5];
+            btb_pc[5] <= (handle_target > 5) ? btb_pc[5] : btb_pc[6];
+            btb_pc[6] <= (handle_target > 6) ? btb_pc[6] : btb_pc[7];
+            btb_pc[7] <= INVALID;
+            btb_next[0] <= (handle_target > 0) ? btb_next[0] : btb_next[1];
+            btb_next[1] <= (handle_target > 1) ? btb_next[1] : btb_next[2];
+            btb_next[2] <= (handle_target > 2) ? btb_next[2] : btb_next[3];
+            btb_next[3] <= (handle_target > 3) ? btb_next[3] : btb_next[4];
+            btb_next[4] <= (handle_target > 4) ? btb_next[4] : btb_next[5];
+            btb_next[5] <= (handle_target > 5) ? btb_next[5] : btb_next[6];
+            btb_next[6] <= (handle_target > 6) ? btb_next[6] : btb_next[7];
+            btb_next[7] <= INVALID;
+        end
+        else if (handle_type == `CHANGE_TARGET) begin
+            btb_pc[0] <= r2_pc;
+            btb_pc[1] <= (handle_target < 1) ? btb_pc[1] : btb_pc[0];
+            btb_pc[2] <= (handle_target < 2) ? btb_pc[2] : btb_pc[1];
+            btb_pc[3] <= (handle_target < 3) ? btb_pc[3] : btb_pc[2];
+            btb_pc[4] <= (handle_target < 4) ? btb_pc[4] : btb_pc[3];
+            btb_pc[5] <= (handle_target < 5) ? btb_pc[5] : btb_pc[4];
+            btb_pc[6] <= (handle_target < 6) ? btb_pc[6] : btb_pc[5];
+            btb_pc[7] <= (handle_target < 7) ? btb_pc[7] : btb_pc[6];
+            btb_next[0] <= real_next_pc;
+            btb_next[1] <= (handle_target < 1) ? btb_next[1] : btb_next[0];
+            btb_next[2] <= (handle_target < 2) ? btb_next[2] : btb_next[1];
+            btb_next[3] <= (handle_target < 3) ? btb_next[3] : btb_next[2];
+            btb_next[4] <= (handle_target < 4) ? btb_next[4] : btb_next[3];
+            btb_next[5] <= (handle_target < 5) ? btb_next[5] : btb_next[4];
+            btb_next[6] <= (handle_target < 6) ? btb_next[6] : btb_next[5];
+            btb_next[7] <= (handle_target < 7) ? btb_next[7] : btb_next[6];
+        end
     end
 end
 
