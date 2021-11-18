@@ -175,6 +175,22 @@ reg r4_pc_sel;
 reg r4_reg_sel;
 reg[31:0] r4_alu_res;
 
+wire[31:0] predict_pc;
+wire error;
+PREDICT _PREDICT(
+    .clk(clk_25M),
+    .rst(reset_btn),
+    .origin_pc(r0_pc),
+
+    .predict_pc(predict_pc),
+
+    .is_jmp(is_jmp),
+    .r2_pc(r2_pc),
+    .real_next_pc(next_pc),
+
+    .error(error)
+);
+
 CONTROLLER _CONTROLLER(
     .instr(r1_instr),
 
@@ -246,7 +262,7 @@ IMMGEN _IMMGEN(
 );
 
 wire is_jmp;
-(* dont_touch = "true" *)wire[31:0] next_pc;
+wire[31:0] next_pc;
 BCOMP _BCOMP(
     .bq_sel(r2_bq_sel),
     .pc(r2_pc),
@@ -345,15 +361,15 @@ always @(posedge clk_25M or posedge reset_btn) begin
     end
     else begin
         if (!mem_stall) begin
-            r0_pc <= is_jmp ? next_pc : r0_pc+4;
+            r0_pc <= error ? next_pc : predict_pc;
             oe <= 1'b1;
             we <= 1'b0;
             be <= 1'b0;
-            address <= is_jmp ? next_pc : r0_pc+4;
-            r1_pc <= is_jmp ? 32'h0 : r0_pc;
-            if (read_from_saved) r1_instr <= is_jmp ? NOP : saved_r1_instr;
-            else r1_instr <= is_jmp ? NOP : data_out;
-            if (is_jmp) begin
+            address <= error ? next_pc : predict_pc;
+            r1_pc <= error ? 32'h0 : r0_pc;
+            if (read_from_saved) r1_instr <= error ? NOP : saved_r1_instr;
+            else r1_instr <= error ? NOP : data_out;
+            if (error) begin
                 r2_pc <= 32'h0;
                 r2_instr <= NOP;
                 r2_data_a <= 32'h0;
