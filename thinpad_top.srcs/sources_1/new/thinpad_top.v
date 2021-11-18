@@ -136,6 +136,7 @@ reg[31:0] r2_instr;
 reg[31:0] r2_data_a;
 reg[31:0] r2_data_b;
 reg[31:0] r2_imm;
+reg[31:0] r2_csr_res;
 // CONTROLLER SIGNAL
 reg r2_pc_sel;
 reg r2_data_a_sel;
@@ -177,6 +178,25 @@ reg[31:0] r4_wb_data;
 reg r4_pc_sel;
 reg r4_reg_sel;
 reg[31:0] r4_alu_res;
+
+wire[31:0] CSR_csr_res;
+wire[31:0] CSR_satp;
+wire CSR_status;
+
+CSR _CSR(
+    .clk(clk_25M),
+    .rst(reset_btn),
+    .r1_instr(r1_instr),
+    .r2_instr(r2_instr),
+    .r2_csr_res(r2_csr_res),
+    .forward_data_a(forward_data_a),
+    .pc(r2_pc),
+    .stall(mem_stall),
+    .csr_status(CSR_status),
+    .csr_res(CSR_csr_res),
+    .csr_satp(CSR_satp)
+);
+
 
 CONTROLLER _CONTROLLER(
     .instr(r1_instr),
@@ -285,6 +305,7 @@ ALU _ALU(
     .bsel(r2_data_b_sel),
     .pc(r2_pc),
     .imm(r2_imm),
+    .csr_res(r2_csr_res),
 
     .data_a(forward_data_a),
     .data_b(forward_data_b),
@@ -389,6 +410,8 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_reg_sel <= r1_reg_sel;
                 r2_wb_sel <= r1_wb_sel;  
                 mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
+
+                r2_csr_res <= CSR_csr_res;
             end
             
             r3_pc <= r2_pc;

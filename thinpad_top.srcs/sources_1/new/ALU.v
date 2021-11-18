@@ -8,6 +8,7 @@ module ALU(
     input wire[31:0] data_a,
     input wire[31:0] data_b,
     input wire[31:0] imm,
+    input wire[31:0] csr_res,
 
     output reg[31:0] res
 );
@@ -53,6 +54,12 @@ always @(*) begin
         end
         `MINU : begin
             res = a < b ? a : b;
+        end
+        `SLTU : begin
+            res = a < b ? 1 : 0;
+        end
+        `CSRRC, `CSRRW, `CSRRS: begin
+            res = csr_res;
         end
     endcase
 end

@@ -35,7 +35,7 @@ module SRAM(
     input wire uart_tsre
     );
 
-//controll sigals
+//controll signals
 wire read_base;
 wire write_base;
 wire read_ext;

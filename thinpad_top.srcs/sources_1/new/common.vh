@@ -8,6 +8,10 @@
 `define CTZ 4'h7
 `define MIN 4'h8
 `define MINU 4'h9
+`define SLTU 4'ha
+`define CSRRC 4'hb
+`define CSRRS 4'hc
+`define CSRRW 4'hd
 
 `define N_IMM 3'h0
 `define I_IMM 3'h1
@@ -30,11 +34,10 @@
 `define NE_BQ 2'b10
 `define JMP_BQ 2'b11
 
-`define CSRRC 3'b000
-`define CSRRS 3'b001
-`define CSRRW 3'b010
-`define EBREAK 3'b011
-`define ECALL 3'b100
-`define MRET 3'b101
-`define SLTU 3'b110
+`define CSR_CSRRC 3'b000
+`define CSR_CSRRS 3'b001
+`define CSR_CSRRW 3'b010
+`define CSR_EBREAK 3'b011
+`define CSR_ECALL 3'b100
+`define CSR_MRET 3'b101
 `define CSR_NOP 3'b111
