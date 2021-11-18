@@ -432,18 +432,63 @@ always @(posedge clk_25M or posedge reset_btn) begin
     end
 end
 
+wire bram_we_n;
+wire[3:0] bram_be_n;
+wire[18:0] bram_in_addr; // 2**19 = 524288 > 480000
+wire[31:0] bram_data_in; // 4*(3+3+2) = 32 (4 pixels is a group)
+wire bram_oe_n;
+wire[18:0] bram_out_addr;
+wire[31:0] bram_data_out;
 wire [11:0] hdata;
-assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
-assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
-assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
+wire [11:0] vdata;
+reg [7:0] vga_data_reg;
+
+always @(*) begin
+    case(bram_out_addr[1:0])
+        2'b00: vga_data_reg = bram_data_out[7:0];
+        2'b01: vga_data_reg = bram_data_out[15:8];
+        2'b10: vga_data_reg = bram_data_out[23:16];
+        2'b11: vga_data_reg = bram_data_out[31:24];
+    endcase 
+end
+
+assign video_red = vga_data_reg[7:5];
+assign video_green = vga_data_reg[4:2];
+assign video_blue = vga_data_reg[1:0];
 assign video_clk = clk_50M;
+
 vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
    .clk(clk_50M), 
    .hdata(hdata), //横坐标
-   .vdata(),      //纵坐标
+   .vdata(vdata),      //纵坐标
    .hsync(video_hsync),
    .vsync(video_vsync),
    .data_enable(video_de)
+);
+
+// assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
+// assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
+// assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
+// vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+//    .clk(clk_50M), 
+//    .hdata(hdata), //横坐标
+//    .vdata(),      //纵坐标
+//    .hsync(video_hsync),
+//    .vsync(video_vsync),
+//    .data_enable(video_de)
+// );
+
+blk_mem_gen_1 blk_mem_gen_1_
+(
+    .clka(clk_50M),
+    .ena(bram_we_n),
+    .wea(bram_be_n),
+    .addra(bram_in_addr),
+    .dina(bram_data_in),
+    .clkb(clk_50M),
+    .enb(bram_oe_n),
+    .addrb(bram_out_addr),
+    .doutb(bram_data_out)
 );
 
 endmodule

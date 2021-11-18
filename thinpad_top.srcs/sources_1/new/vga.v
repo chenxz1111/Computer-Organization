@@ -20,8 +20,12 @@ module vga
     output wire vsync,
     output reg [WIDTH - 1:0] hdata,
     output reg [WIDTH - 1:0] vdata,
-    output wire data_enable
+    output wire data_enable,
+    output wire [18:0] next_addr
 );
+
+reg [18:0] next_addr_reg;
+assign next_addr = next_addr_reg;
 
 // hdata
 always @ (posedge clk)
