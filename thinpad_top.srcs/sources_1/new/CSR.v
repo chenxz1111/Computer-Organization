@@ -18,12 +18,12 @@ module CSR(
 
 );
 
-reg[31:0] mtvec;
-reg[31:0] mscratch;
-reg[31:0] mepc;
-reg[31:0] mcause;
-reg[31:0] mstatus;
-reg[31:0] satp;
+(* dont_touch = "true" *)reg[31:0] mtvec;
+(* dont_touch = "true" *)reg[31:0] mscratch;
+(* dont_touch = "true" *)reg[31:0] mepc;
+(* dont_touch = "true" *)reg[31:0] mcause;
+(* dont_touch = "true" *)reg[31:0] mstatus;
+(* dont_touch = "true" *)reg[31:0] satp;
 
 localparam
     mtvec_code = 12'h305,
