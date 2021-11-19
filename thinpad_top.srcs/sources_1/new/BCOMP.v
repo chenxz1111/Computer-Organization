@@ -7,6 +7,7 @@ module BCOMP(
     input wire[31:0] data_b,
     input wire data_a_sel,
     input wire[31:0] imm,
+    input wire[31:0] csr_pc,
 
     output reg is_jmp,
     output reg[31:0] next_pc
@@ -49,6 +50,10 @@ always @(*) begin
                     next_pc = pc+imm;
                 end//JAL
             endcase
+        end
+        `CSR_BQ: begin
+            is_jmp = 1'b1;
+            next_pc = csr_pc;
         end
     endcase
 end

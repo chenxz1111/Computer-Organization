@@ -14,6 +14,7 @@ module CSR(
 
     output wire csr_status,
     output wire[31:0] csr_res,
+    output wire[31:0] csr_pc,
     output wire[31:0] csr_satp
 
 );
@@ -25,6 +26,7 @@ module CSR(
 (* dont_touch = "true" *)reg[31:0] mstatus;
 (* dont_touch = "true" *)reg[31:0] mie;
 (* dont_touch = "true" *)reg[31:0] mip;
+(* dont_touch = "true" *)reg[31:0] mtval;
 (* dont_touch = "true" *)reg[31:0] satp;
 
 localparam
@@ -33,9 +35,15 @@ localparam
     mepc_code = 12'h341,
     mcause_code = 12'h342,
     mstatus_code = 12'h300,
-    
+    mie_code = 12'h304,
+    mip_code = 12'h344,
+    mtval_code = 12'h343,
     satp_code = 12'h180,
     mcause_mepc_code = 12'h641;
+
+localparam
+    mstatus_mie = 3,
+    mstatus_mpie = 7;
 
 assign csr_satp = (r2_csr == satp_code) ? write_data : satp;
 
@@ -104,6 +112,15 @@ always @(*) begin
         mstatus_code: begin
             r1_csr_data = (r2_csr == mstatus_code || r2_csr == mcause_mepc_code) ? write_data : mstatus;
         end
+        mie_code: begin
+            r1_csr_data = (r2_csr == mie_code) ? write_data : mie;
+        end
+        mip_code: begin
+            r1_csr_data = (r2_csr == mip_code) ? write_data : mip;
+        end
+        mtval_code: begin
+            r1_csr_data = (r2_csr == mtval_code) ? write_data : mtval;
+        end
         satp_code: begin
             r1_csr_data = (r2_csr == satp_code) ? write_data : satp;
         end
@@ -137,6 +154,15 @@ always @(posedge clk or posedge rst) begin
                 mstatus_code: begin
                     mstatus <= write_data;
                 end
+                mie_code: begin
+                    mie <= write_data;
+                end
+                mip_code: begin
+                    mip <= write_data;
+                end
+                mtval_code: begin
+                    mtval <= write_data;
+                end
                 satp_code: begin
                     satp <= write_data;
                 end
@@ -146,10 +172,21 @@ always @(posedge clk or posedge rst) begin
                 end
             endcase
             if(r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK)begin
+                mepc <= pc;
+                csr_pc <= mtvec;
+                mcause <= write_data;
+                mtval <= pc; //???
+                mstatus[mstatus_mie] <= 1'b0;
+                mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
+                mstatus[12:11] <= {status, status};
                 status <= 1'b1;
             end
             else if(r2_opcode == `CSR_MRET)begin
+                csr_pc <= mepc;
                 status <= 1'b0;
+                mstatus[mstatus_mie] <= mstatus[mstatus_mpie];
+                mstatus[mstatus_mpie] <= 1'b1;
+                mstatus[12:11] <= 2'b00;
             end
         end
     end

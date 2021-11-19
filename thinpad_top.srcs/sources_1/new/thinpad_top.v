@@ -194,6 +194,7 @@ CSR _CSR(
     .stall(mem_stall),
     .csr_status(CSR_status),
     .csr_res(CSR_csr_res),
+    .csr_pc(csr_pc),
     .csr_satp(CSR_satp)
 );
 
@@ -270,6 +271,7 @@ IMMGEN _IMMGEN(
 
 wire is_jmp;
 wire[31:0] next_pc;
+wire[31:0] csr_pc;
 BCOMP _BCOMP(
     .bq_sel(r2_bq_sel),
     .pc(r2_pc),
@@ -277,6 +279,7 @@ BCOMP _BCOMP(
     .data_b(forward_data_b),
     .data_a_sel(r2_data_a_sel),
     .imm(r2_imm),
+    .csr_pc(csr_pc),
 
     .is_jmp(is_jmp),
     .next_pc(next_pc)
