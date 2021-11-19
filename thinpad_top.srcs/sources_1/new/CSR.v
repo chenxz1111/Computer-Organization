@@ -252,7 +252,7 @@ always @(posedge clk or posedge rst) begin
                     status <= 1'b1;
                 end
                 `CSR_MRET: begin
-                    CSR_csr_pc <= mepc + 4;
+                    CSR_csr_pc <= mepc; // 不加4?
                     status <= 1'b0;
                     mstatus <= write_data;
                 end
@@ -261,7 +261,16 @@ always @(posedge clk or posedge rst) begin
                 end
             endcase            
         end
-    end
+        if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+            mepc <= 32'h80000128;//?
+            pc <= mtvec;
+            mcause <= 32'h80000007;
+            mtval <= pc;
+            mstatus[mstatus_mie] <= 1'b0;
+            mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
+            mstatus[12:11] <= 2'b11;
+        end
+    end    
 end
 
 endmodule
