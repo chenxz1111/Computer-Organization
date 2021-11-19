@@ -255,7 +255,9 @@ always @(posedge clk or posedge rst) begin
                     status <= 1'b0;
                     mstatus <= write_data;
                 end
-                default: 
+                default: begin
+                    
+                end
             endcase            
         end
     end
