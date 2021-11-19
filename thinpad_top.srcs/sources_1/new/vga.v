@@ -27,6 +27,19 @@ module vga
 reg [18:0] next_addr_reg;
 assign next_addr = next_addr_reg;
 
+// update next_addr
+always @(clk) begin
+    if ((hdata < HSIZE) & (vdata < VSIZE)) begin
+        next_addr_reg <= next_addr_reg + 1;
+    end
+    if((hdata == HMAX - 1) && (vdata == VMAX - 2)) begin
+        next_addr_reg <= 0;
+    end
+    if((hdata == HMAX - 1) && (vdata == VMAX - 1)) begin
+        next_addr_reg <= 1;
+    end
+end
+
 // hdata
 always @ (posedge clk)
 begin

@@ -32,7 +32,11 @@ module SRAM(
     output wire uart_wrn,
     input wire uart_dataready,
     input wire uart_tbre,
-    input wire uart_tsre
+    input wire uart_tsre,
+
+    //bram
+    output wire bram_we_n,
+    output wire[3:0] bram_be
     );
 
 //controll sigals
@@ -43,6 +47,7 @@ wire write_ext;
 wire read_uart;
 wire write_uart;
 wire uart_status;
+wire vga_status;
 
 wire[3:0] base_ext_be_n;
 wire[31:0] write_data;
@@ -56,6 +61,7 @@ assign write_ext = we && (address >= 32'h80400000) && (address <= 32'h807fffff);
 assign read_uart = oe && (address == 32'h10000000);
 assign write_uart = we && (address == 32'h10000000);
 assign uart_status = oe && (address == 32'h10000005);
+assign vga_status = (address >= 32'h00000000) && (address <= 32'h00080000);
 
 assign base_ext_be_n = ~(4'b0001 << address[1:0]);
 assign write_data = be ? {data_in[7:0], data_in[7:0], data_in[7:0], data_in[7:0]} : data_in;
@@ -89,5 +95,7 @@ assign data_wire = (read_base || read_uart) ? base_ram_data_wire : read_ext ? ex
 assign read_data = (address[1:0] == 2'b00) ? {{24{data_wire[7]}}, data_wire[7:0]} : (address[1:0] == 2'b01) ? {{24{data_wire[15]}}, data_wire[15:8]} : (address[1:0] == 2'b10) ? {{24{data_wire[23]}}, data_wire[23:16]} : {{24{data_wire[31]}}, data_wire[31:24]};
 assign data_out = be ? read_data : data_wire;
 
+assign bram_we_n = we && vga_status;
+assign bram_be = (be && vga_status) ? ~base_ext_be_n : 4'b1111;
 
 endmodule
