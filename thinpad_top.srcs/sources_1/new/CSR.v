@@ -23,6 +23,8 @@ module CSR(
 (* dont_touch = "true" *)reg[31:0] mepc;
 (* dont_touch = "true" *)reg[31:0] mcause;
 (* dont_touch = "true" *)reg[31:0] mstatus;
+(* dont_touch = "true" *)reg[31:0] mie;
+(* dont_touch = "true" *)reg[31:0] mip;
 (* dont_touch = "true" *)reg[31:0] satp;
 
 localparam
@@ -31,6 +33,7 @@ localparam
     mepc_code = 12'h341,
     mcause_code = 12'h342,
     mstatus_code = 12'h300,
+    
     satp_code = 12'h180,
     mcause_mepc_code = 12'h641;
 
