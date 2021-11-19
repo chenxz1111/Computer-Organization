@@ -262,8 +262,8 @@ always @(posedge clk or posedge rst) begin
             endcase            
         end
         if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
-            mepc <= 32'h80000128;//?
-            pc <= mtvec;
+            mepc <= pc;//?
+            CSR_csr_pc <= mtvec;
             mcause <= 32'h80000007;
             mtval <= pc;
             mstatus[mstatus_mie] <= 1'b0;
