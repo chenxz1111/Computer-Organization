@@ -254,7 +254,7 @@ always @(posedge clk or posedge rst) begin
                     status <= 1'b1;
                 end
                 `CSR_MRET: begin
-                    CSR_csr_pc <= mepc; // 不加4?
+                    CSR_csr_pc <= mepc + 4; // 不加4?
                     status <= 1'b0;
                     mstatus <= write_data;
                 end
