@@ -136,7 +136,7 @@ reg[31:0] r2_instr;
 reg[31:0] r2_data_a;
 reg[31:0] r2_data_b;
 reg[31:0] r2_imm;
-reg[31:0] r2_csr_res;
+(* dont_touch = "true" *)reg[31:0] r2_csr_res;
 // CONTROLLER SIGNAL
 reg r2_pc_sel;
 reg r2_data_a_sel;

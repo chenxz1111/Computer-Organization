@@ -64,22 +64,22 @@ reg[31:0] write_data;
 always @(*) begin
     case(r2_opcode)
         `CSR_CSRRC: begin
-            write_data <= r2_csr_res & (~forward_data_a);
+            write_data = r2_csr_res & (~forward_data_a);
         end
         `CSR_CSRRS: begin
-            write_data <= r2_csr_res | forward_data_a;
+            write_data = r2_csr_res | forward_data_a;
         end
         `CSR_CSRRW: begin
-            write_data <= forward_data_a;
+            write_data = forward_data_a;
         end
         `CSR_ECALL: begin
-            write_data <= 32'h00000008;
+            write_data = 32'h00000008;
         end
         `CSR_EBREAK: begin
-            write_data <= 32'h00000003;
+            write_data = 32'h00000003;
         end
         default: begin
-            write_data <= 32'h00000000;
+            write_data = 32'h00000000;
         end
     endcase
 end
@@ -90,21 +90,21 @@ assign csr_res = r1_csr_data;
 always @(*) begin
     case (r1_csr)
         mtvec_code: begin
-            r1_csr_data <= (r2_csr == mtvec_code) ? write_data : mtvec;
+            r1_csr_data = (r2_csr == mtvec_code) ? write_data : mtvec;
         end
         mscratch_code: begin
-            r1_csr_data <= (r2_csr == mscratch_code) ? write_data : mscratch;
+            r1_csr_data = (r2_csr == mscratch_code) ? write_data : mscratch;
         end
         mepc_code: begin
-            r1_csr_data <= (r2_csr == mepc_code) ? write_data : (r2_csr == mcause_mepc_code) ? pc : mepc;
+            r1_csr_data = (r2_csr == mepc_code) ? write_data : (r2_csr == mcause_mepc_code) ? pc : mepc;
         end
         mstatus_code: begin
-            r1_csr_data <= (r2_csr == mstatus_code || r2_csr == mcause_mepc_code) ? write_data : mstatus;
+            r1_csr_data = (r2_csr == mstatus_code || r2_csr == mcause_mepc_code) ? write_data : mstatus;
         end
         satp_code: begin
-            r1_csr_data <= (r2_csr == satp_code) ? write_data : satp;
+            r1_csr_data = (r2_csr == satp_code) ? write_data : satp;
         end
-        default: r1_csr_data <= 32'h00000000; 
+        default: r1_csr_data = 32'h00000000; 
     endcase
 end
 
