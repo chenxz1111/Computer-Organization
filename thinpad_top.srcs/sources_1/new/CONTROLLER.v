@@ -203,26 +203,45 @@ always @(*) begin
                     wb_sel = `ALU_WB;
                 end
                 3'b000: begin // ebreak, ecall, mret
-                    pc_sel = 1'b1;
-                    imm_sel = `I_IMM;
-                    data_a_sel = 1'b0;
-                    data_b_sel = 1'b1;
-                    data_type = 1'b0;
                     case (instr[31:20])
                         12'h000: begin //ecall
+                            pc_sel = 1'b1;
+                            imm_sel = `I_IMM;
+                            data_a_sel = 1'b0;
+                            data_b_sel = 1'b1;
+                            data_type = 1'b0;
                             alu_sel = `CSRRW;
+                             bq_sel = `CSR_BQ;
+                            mem_sel = `NO_RAM;
+                            reg_sel = 1'b0;
+                            wb_sel = `NO_WB;
                         end 
                         12'h001: begin //ebreak
+                            pc_sel = 1'b1;
+                            imm_sel = `I_IMM;
+                            data_a_sel = 1'b0;
+                            data_b_sel = 1'b1;
+                            data_type = 1'b0;
                             alu_sel = `CSRRW;
+                            bq_sel = `CSR_BQ;
+                            mem_sel = `NO_RAM;
+                            reg_sel = 1'b0;
+                            wb_sel = `NO_WB;
                         end
                         12'h302: begin //mret
-                            alu_sel = `CSRRW;
+                            pc_sel = 1'b0;
+                            imm_sel = `N_IMM;
+                            data_a_sel = 1'b0;
+                            data_b_sel = 1'b0;
+                            data_type = 1'b0;
+                            alu_sel = `ADD;
+                            bq_sel = `NO_BQ;
+                            mem_sel = `NO_RAM;
+                            reg_sel = 1'b0;
+                            wb_sel = `NO_WB;
+                            //alu_sel = `CSRRW;
                         end
                     endcase
-                    bq_sel = `CSR_BQ;
-                    mem_sel = `NO_RAM;
-                    reg_sel = 1'b0;
-                    wb_sel = `NO_WB;
                 end
             endcase
         end
