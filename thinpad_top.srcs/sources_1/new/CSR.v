@@ -147,7 +147,7 @@ always @(posedge clk or posedge rst) begin
     else begin
         if(!stall) begin
             case (r2_opcode)
-                `CSRRC: begin
+                `CSR_CSRRC: begin
                     case (r2_csr)
                         mtvec_code: begin
                             mtvec <= write_data;
@@ -178,7 +178,7 @@ always @(posedge clk or posedge rst) begin
                         end
                     endcase
                 end
-                `CSRRS: begin
+                `CSR_CSRRS: begin
                     case (r2_csr)
                         mtvec_code: begin
                             mtvec <= write_data;
@@ -209,7 +209,7 @@ always @(posedge clk or posedge rst) begin
                         end
                     endcase
                 end 
-                `CSRRW: begin
+                `CSR_CSRRW: begin
                     case (r2_csr)
                         mtvec_code: begin
                             mtvec <= write_data;
