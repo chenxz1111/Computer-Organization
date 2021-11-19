@@ -13,8 +13,8 @@ module CSR(
     input wire stall,
 
     output wire csr_status,
-    output wire csr_res,
-    output wire csr_satp
+    output wire[31:0] csr_res,
+    output wire[31:0] csr_satp
 
 );
 
@@ -49,8 +49,8 @@ CSR_DECODER _CSR_DECODER_2(
     .op_code(r2_opcode)
 );
 
-wire[11:0] r1_csr;
-wire[11:0] r2_csr;
+(* dont_touch = "true" *)wire[11:0] r1_csr;
+(* dont_touch = "true" *)wire[11:0] r2_csr;
 
 assign r1_csr = (r1_opcode == `CSR_CSRRC || r1_opcode == `CSR_CSRRS || r1_opcode == `CSR_CSRRW) ? r1_instr[31:20]
               : (r1_opcode == `CSR_ECALL || r1_opcode == `CSR_EBREAK) ? mtvec_code
@@ -59,7 +59,7 @@ assign r1_csr = (r1_opcode == `CSR_CSRRC || r1_opcode == `CSR_CSRRS || r1_opcode
 assign r2_csr = (r2_opcode == `CSR_CSRRC || r2_opcode == `CSR_CSRRS || r2_opcode == `CSR_CSRRW) ? r2_instr[31:20]
               : (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? mcause_mepc_code : 12'h000;
 
-reg[31:0] write_data;
+(* dont_touch = "true" *)reg[31:0] write_data;
 
 always @(*) begin
     case(r2_opcode)

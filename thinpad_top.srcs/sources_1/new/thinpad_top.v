@@ -179,7 +179,7 @@ reg r4_pc_sel;
 reg r4_reg_sel;
 reg[31:0] r4_alu_res;
 
-wire[31:0] CSR_csr_res;
+(* dont_touch = "true" *)wire[31:0] CSR_csr_res;
 wire[31:0] CSR_satp;
 wire CSR_status;
 
@@ -269,7 +269,7 @@ IMMGEN _IMMGEN(
 );
 
 wire is_jmp;
-(* dont_touch = "true" *)wire[31:0] next_pc;
+wire[31:0] next_pc;
 BCOMP _BCOMP(
     .bq_sel(r2_bq_sel),
     .pc(r2_pc),

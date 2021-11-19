@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="17556414fs"></ZoomStartTime>
-      <ZoomEndTime time="19567636fs"></ZoomEndTime>
-      <Cursor1Time time="19232432fs"></Cursor1Time>
+      <ZoomStartTime time="20871166fs"></ZoomStartTime>
+      <ZoomEndTime time="21508667fs"></ZoomEndTime>
+      <Cursor1Time time="21040166fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="98"></ValueColumnWidth>
+      <ValueColumnWidth column_width="78"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="15" />
+   <WVObjectSize size="17" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -28,14 +28,6 @@
       <obj_property name="ElementShortName">clk_11M0592</obj_property>
       <obj_property name="ObjectShortName">clk_11M0592</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/clock_btn" type="logic">
-      <obj_property name="ElementShortName">clock_btn</obj_property>
-      <obj_property name="ObjectShortName">clock_btn</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/reset_btn" type="logic">
-      <obj_property name="ElementShortName">reset_btn</obj_property>
-      <obj_property name="ObjectShortName">reset_btn</obj_property>
-   </wvobject>
    <wvobject fp_name="/tb/dut/r1_pc" type="array">
       <obj_property name="ElementShortName">r1_pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">r1_pc[31:0]</obj_property>
@@ -43,6 +35,38 @@
    <wvobject fp_name="/tb/dut/_CSR/mtvec" type="array">
       <obj_property name="ElementShortName">mtvec[31:0]</obj_property>
       <obj_property name="ObjectShortName">mtvec[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/r1_instr" type="array">
+      <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r1_instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/r2_instr" type="array">
+      <obj_property name="ElementShortName">r2_instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r2_instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/forward_data_a" type="array">
+      <obj_property name="ElementShortName">forward_data_a[31:0]</obj_property>
+      <obj_property name="ObjectShortName">forward_data_a[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/_CSR/write_data" type="array">
+      <obj_property name="ElementShortName">write_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/r2_csr_res" type="array">
+      <obj_property name="ElementShortName">r2_csr_res[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r2_csr_res[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/CSR_csr_res" type="array">
+      <obj_property name="ElementShortName">CSR_csr_res[31:0]</obj_property>
+      <obj_property name="ObjectShortName">CSR_csr_res[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/_CSR/r1_csr" type="array">
+      <obj_property name="ElementShortName">r1_csr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">r1_csr[11:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/_CSR/r2_csr" type="array">
+      <obj_property name="ElementShortName">r2_csr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">r2_csr[11:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/_CSR/mscratch" type="array">
       <obj_property name="ElementShortName">mscratch[31:0]</obj_property>
@@ -63,21 +87,5 @@
    <wvobject fp_name="/tb/dut/_CSR/satp" type="array">
       <obj_property name="ElementShortName">satp[31:0]</obj_property>
       <obj_property name="ObjectShortName">satp[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/r1_instr" type="array">
-      <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r1_instr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/r2_instr" type="array">
-      <obj_property name="ElementShortName">r2_instr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r2_instr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/forward_data_a" type="array">
-      <obj_property name="ElementShortName">forward_data_a[31:0]</obj_property>
-      <obj_property name="ObjectShortName">forward_data_a[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/r2_csr_res" type="array">
-      <obj_property name="ElementShortName">r2_csr_res[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r2_csr_res[31:0]</obj_property>
    </wvobject>
 </wave_config>
