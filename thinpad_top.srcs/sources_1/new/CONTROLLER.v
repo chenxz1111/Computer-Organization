@@ -203,36 +203,26 @@ always @(*) begin
                     wb_sel = `ALU_WB;
                 end
                 3'b000: begin // ebreak, ecall, mret
-                    // pc_sel = 1'b1;
-                    // imm_sel = `I_IMM;
-                    // data_a_sel = 1'b0;
-                    // data_b_sel = 1'b1;
-                    // data_type = 1'b0;
-                    // case (instr[31:20])
-                    //     12'h000: begin //ecall
-                    //         alu_sel = `CSRRW;
-                    //     end 
-                    //     12'h001: begin //ebreak
-                    //         alu_sel = `CSRRW;
-                    //     end
-                    //     12'h302: begin //mret
-                    //         alu_sel = `CSRRW;
-                    //     end
-                    // endcase
-                    // bq_sel = `JMP_BQ;
-                    // mem_sel = `NO_RAM;
-                    // reg_sel = 1'b1;
-                    // wb_sel = `PC_WB;
-                    pc_sel = 1'b0;
-                    imm_sel = `N_IMM;
+                    pc_sel = 1'b1;
+                    imm_sel = `I_IMM;
                     data_a_sel = 1'b0;
-                    data_b_sel = 1'b0;
+                    data_b_sel = 1'b1;
                     data_type = 1'b0;
-                    alu_sel = `ADD;
-                    bq_sel = `NO_BQ;
+                    case (instr[31:20])
+                        12'h000: begin //ecall
+                            alu_sel = `CSRRW;
+                        end 
+                        12'h001: begin //ebreak
+                            alu_sel = `CSRRW;
+                        end
+                        12'h302: begin //mret
+                            alu_sel = `CSRRW;
+                        end
+                    endcase
+                    bq_sel = `JMP_BQ;
                     mem_sel = `NO_RAM;
-                    reg_sel = 1'b0;
-                    wb_sel = `NO_WB;
+                    reg_sel = 1'b1;
+                    wb_sel = `PC_WB;
                 end
             endcase
         end
