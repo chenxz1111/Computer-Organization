@@ -249,7 +249,7 @@ blk_mem_gen_1 blk_mem_gen_1_
     .clka(clk_50M),
     .ena(bram_we),
     .wea(bram_be),
-    .addra(bram_addr_in),
+    .addra(bram_addr_in[18:2]),
     .dina(bram_data_in),
     .clkb(clk_50M),
     .enb(bram_oe),

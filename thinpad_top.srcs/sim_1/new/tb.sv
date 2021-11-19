@@ -46,8 +46,8 @@ wire uart_tbre;          //发送数据标志
 wire uart_tsre;          //数据发送完毕标志
 
 //Windows需要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "F:\\rv\\asmcode\\test.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
-parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
+parameter BASE_RAM_INIT_FILE = "F:\\rv\\asmcode\\vga1.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
+parameter EXT_RAM_INIT_FILE = "F:\\rv\\asmcode\\picture.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 
 assign rxd = 1'b1; //idle state
@@ -58,6 +58,7 @@ initial begin
     reset_btn = 1;
     #100;
     reset_btn = 0;
+    #500;    
     // for (integer i = 0; i < 20; i = i+1) begin
     //     #100; //等待100ns
     //     clock_btn = 1; //按下手工时钟按钮
