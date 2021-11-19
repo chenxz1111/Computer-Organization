@@ -221,10 +221,10 @@ reg [7:0] vga_data_reg;
 
 always @(*) begin
     case(bram_addr_out[1:0])
-        2'b00: vga_data_reg = bram_data_out[7:0];
-        2'b01: vga_data_reg = bram_data_out[15:8];
-        2'b10: vga_data_reg = bram_data_out[23:16];
-        2'b11: vga_data_reg = bram_data_out[31:24];
+        2'b01: vga_data_reg = bram_data_out[7:0];
+        2'b10: vga_data_reg = bram_data_out[15:8];
+        2'b11: vga_data_reg = bram_data_out[23:16];
+        2'b00: vga_data_reg = bram_data_out[31:24];
         default: vga_data_reg = 8'hff;
     endcase
 end
