@@ -10,7 +10,7 @@ module CONTROLLER (
     output reg data_b_sel, // 0: Reg, 1:IMM
     output reg data_type, //0: Word, 1: Byte
     output reg[3:0] alu_sel,
-    output reg[1:0] bq_sel, 
+    output reg[2:0] bq_sel, 
     output reg[1:0] mem_sel, // 0: Read, 1:Write // TODO:*** NEED TO REDEFINE!
     output reg reg_sel, // 1: enable
     output reg[1:0] wb_sel
