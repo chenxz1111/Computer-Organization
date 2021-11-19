@@ -1,7 +1,7 @@
 `include "common.vh"
 
 module BCOMP(
-    input wire[1:0] bq_sel,
+    input wire[2:0] bq_sel,
     input wire[31:0] pc,
     input wire[31:0] data_a,
     input wire[31:0] data_b,
