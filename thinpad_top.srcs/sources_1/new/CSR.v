@@ -16,6 +16,7 @@ module CSR(
     output wire csr_status,
     output wire[31:0] csr_res,
     output wire[31:0] csr_pc,
+    output reg timeout,
     output wire[31:0] csr_satp
 
 );
@@ -144,6 +145,7 @@ assign csr_status = (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? 1'b1
 always @(posedge clk or posedge rst) begin
     if(rst) begin
         status <= 1'b1;
+        timeout <= 1'b0;
     end
     else begin
         if(!stall) begin
@@ -269,6 +271,11 @@ always @(posedge clk or posedge rst) begin
             mstatus[mstatus_mie] <= 1'b0;
             mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
             mstatus[12:11] <= 2'b11;
+
+            timeout <= 1'b1;
+        end
+        else begin
+            timeout <= 1'b0;
         end
     end    
 end
