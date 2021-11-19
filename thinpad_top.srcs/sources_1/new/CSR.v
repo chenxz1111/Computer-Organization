@@ -185,7 +185,7 @@ always @(posedge clk or posedge rst) begin
                 status <= 1'b1;
             end
             else if(r2_opcode == `CSR_MRET)begin
-                CSR_csr_pc <= mepc;
+                CSR_csr_pc <= mepc + 4;
                 status <= 1'b0;
                 mstatus[mstatus_mie] <= mstatus[mstatus_mpie];
                 mstatus[mstatus_mpie] <= 1'b1;

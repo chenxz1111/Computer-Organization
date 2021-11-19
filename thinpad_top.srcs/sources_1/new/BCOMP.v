@@ -53,7 +53,7 @@ always @(*) begin
         end
         `CSR_BQ: begin
             is_jmp = 1'b1;
-            next_pc = csr_pc + 4;
+            next_pc = csr_pc;
         end
     endcase
 end
