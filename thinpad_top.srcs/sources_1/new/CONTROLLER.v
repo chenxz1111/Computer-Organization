@@ -219,10 +219,10 @@ always @(*) begin
                             alu_sel = `CSRRW;
                         end
                     endcase
-                    bq_sel = `JMP_BQ;
+                    //bq_sel = `JMP_BQ;
                     mem_sel = `NO_RAM;
-                    reg_sel = 1'b1;
-                    wb_sel = `PC_WB;
+                    reg_sel = 1'b0;
+                    wb_sel = `NO_WB;
                 end
             endcase
         end
