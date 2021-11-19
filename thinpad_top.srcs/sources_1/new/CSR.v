@@ -19,6 +19,9 @@ module CSR(
 
 );
 
+reg[31:0] CSR_csr_pc;
+assign csr_pc = CSR_csr_pc;
+
 (* dont_touch = "true" *)reg[31:0] mtvec;
 (* dont_touch = "true" *)reg[31:0] mscratch;
 (* dont_touch = "true" *)reg[31:0] mepc;
@@ -173,7 +176,7 @@ always @(posedge clk or posedge rst) begin
             endcase
             if(r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK)begin
                 mepc <= pc;
-                csr_pc <= mtvec;
+                CSR_csr_pc <= mtvec;
                 mcause <= write_data;
                 mtval <= pc; //???
                 mstatus[mstatus_mie] <= 1'b0;
@@ -182,7 +185,7 @@ always @(posedge clk or posedge rst) begin
                 status <= 1'b1;
             end
             else if(r2_opcode == `CSR_MRET)begin
-                csr_pc <= mepc;
+                CSR_csr_pc <= mepc;
                 status <= 1'b0;
                 mstatus[mstatus_mie] <= mstatus[mstatus_mpie];
                 mstatus[mstatus_mpie] <= 1'b1;
