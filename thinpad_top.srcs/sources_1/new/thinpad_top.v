@@ -206,27 +206,27 @@ CONTROLLER _CONTROLLER(
     .wb_sel(r1_wb_sel)
 );
 
-wire bram_we_n;
+wire bram_we;
 wire[3:0] bram_be;
-wire[18:0] bram_in_addr; // 2**19 = 524288 > 480000
+wire[18:0] bram_addr_in; // 2**19 = 524288 > 480000
 wire[31:0] bram_data_in; // 4*(3+3+2) = 32 (4 pixels is a group)
-wire bram_oe_n;
-wire[18:0] bram_out_addr;
+wire bram_oe;
+wire[18:0] bram_addr_out;
 wire[31:0] bram_data_out;
 wire [11:0] hdata;
 wire [11:0] vdata;
 reg [7:0] vga_data_reg;
 
-assign bram_oe_n = 1'b1;
+// assign bram_oe = 1'b1;
 
 always @(*) begin
-    case(bram_out_addr[1:0])
+    case(bram_addr_out[1:0])
         2'b00: vga_data_reg = bram_data_out[7:0];
         2'b01: vga_data_reg = bram_data_out[15:8];
         2'b10: vga_data_reg = bram_data_out[23:16];
         2'b11: vga_data_reg = bram_data_out[31:24];
         default: vga_data_reg = 8'hff;
-    endcase 
+    endcase
 end
 
 assign video_red = vga_data_reg[7:5];
@@ -241,19 +241,19 @@ vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
    .hsync(video_hsync),
    .vsync(video_vsync),
    .data_enable(video_de),
-   .next_addr(bram_out_addr)
+   .next_addr(bram_addr_out)
 );
 
 blk_mem_gen_1 blk_mem_gen_1_
 (
     .clka(clk_50M),
-    .ena(bram_we_n),
+    .ena(bram_we),
     .wea(bram_be),
-    .addra(bram_in_addr),
+    .addra(bram_addr_in),
     .dina(bram_data_in),
     .clkb(clk_50M),
-    .enb(bram_oe_n),
-    .addrb(bram_out_addr[18:2]),
+    .enb(bram_oe),
+    .addrb(bram_addr_out[18:2]),
     .doutb(bram_data_out)
 );
 
@@ -292,7 +292,10 @@ SRAM _SRAM (
     .uart_tbre(uart_tbre),
     .uart_tsre(uart_tsre),
 
-    .bram_we_n(bram_we_n),
+    .bram_addr_in(bram_addr_in),
+    .bram_data(bram_data_in),
+    .bram_oe(bram_oe),
+    .bram_we(bram_we),
     .bram_be(bram_be)
 );
 
