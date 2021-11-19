@@ -192,6 +192,8 @@ CSR _CSR(
     .forward_data_a(forward_data_a),
     .pc(r2_pc),
     .stall(mem_stall),
+    .time_int(time_int),
+
     .csr_status(CSR_status),
     .csr_res(CSR_csr_res),
     .csr_pc(csr_pc),
@@ -220,14 +222,17 @@ reg be;
 reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
+wire time_int;
 SRAM _SRAM (
     .clk            (clk_25M),
+    .rst_btn        (reset_btn),
     .oe(oe),
     .we(we),
     .be(be),
     .address(address),
     .data_in(data_in),
     .data_out(data_out),
+    .time_int(time_int),
     
     .base_ram_data_wire(base_ram_data),
     .base_ram_addr(base_ram_addr),
