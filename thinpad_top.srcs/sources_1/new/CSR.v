@@ -71,7 +71,8 @@ assign r1_csr = (r1_opcode == `CSR_CSRRC || r1_opcode == `CSR_CSRRS || r1_opcode
               : (r1_opcode == `CSR_MRET) ? mepc_code : 12'h000;
 
 assign r2_csr = (r2_opcode == `CSR_CSRRC || r2_opcode == `CSR_CSRRS || r2_opcode == `CSR_CSRRW) ? r2_instr[31:20]
-              : (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? mcause_mepc_code : 12'h000; // TODO: MRET // write
+              : (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? mcause_mepc_code
+              : (r2_opcode == `CSR_MRET) ? mcause_code : 12'h000; // TODO: MRET // write
 
 (* dont_touch = "true" *)reg[31:0] write_data;
 
@@ -93,6 +94,9 @@ always @(*) begin
             write_data = 32'h00000003;
         end
         // TODO: MRET
+        `CSR_MRET: begin
+            write_data = {mstatus[31:13], 2'b00, mstatus[10:8], 1'b1, mstatus[6:4], mstatus[mstatus_mpie], mstatus[2:0]};
+        end
         default: begin
             write_data = 32'h00000000;
         end
@@ -142,56 +146,117 @@ always @(posedge clk or posedge rst) begin
     end
     else begin
         if(!stall) begin
-            case (r2_csr)
-                mtvec_code: begin
-                    mtvec <= write_data;
+            case (r2_opcode)
+                `CSRRC: begin
+                    case (r2_csr)
+                        mtvec_code: begin
+                            mtvec <= write_data;
+                        end 
+                        mscratch_code: begin
+                            mscratch <= write_data;
+                        end
+                        mepc_code: begin
+                            mepc <= write_data;
+                        end
+                        mcause_code: begin
+                            mcause <= write_data;
+                        end
+                        mstatus_code: begin
+                            mstatus <= write_data;
+                        end
+                        mie_code: begin
+                            mie <= write_data;
+                        end
+                        mip_code: begin
+                            mip <= write_data;
+                        end
+                        mtval_code: begin
+                            mtval <= write_data;
+                        end
+                        satp_code: begin
+                            satp <= write_data;
+                        end
+                    endcase
+                end
+                `CSRRS: begin
+                    case (r2_csr)
+                        mtvec_code: begin
+                            mtvec <= write_data;
+                        end 
+                        mscratch_code: begin
+                            mscratch <= write_data;
+                        end
+                        mepc_code: begin
+                            mepc <= write_data;
+                        end
+                        mcause_code: begin
+                            mcause <= write_data;
+                        end
+                        mstatus_code: begin
+                            mstatus <= write_data;
+                        end
+                        mie_code: begin
+                            mie <= write_data;
+                        end
+                        mip_code: begin
+                            mip <= write_data;
+                        end
+                        mtval_code: begin
+                            mtval <= write_data;
+                        end
+                        satp_code: begin
+                            satp <= write_data;
+                        end
+                    endcase
                 end 
-                mscratch_code: begin
-                    mscratch <= write_data;
+                `CSRRW: begin
+                    case (r2_csr)
+                        mtvec_code: begin
+                            mtvec <= write_data;
+                        end 
+                        mscratch_code: begin
+                            mscratch <= write_data;
+                        end
+                        mepc_code: begin
+                            mepc <= write_data;
+                        end
+                        mcause_code: begin
+                            mcause <= write_data;
+                        end
+                        mstatus_code: begin
+                            mstatus <= write_data;
+                        end
+                        mie_code: begin
+                            mie <= write_data;
+                        end
+                        mip_code: begin
+                            mip <= write_data;
+                        end
+                        mtval_code: begin
+                            mtval <= write_data;
+                        end
+                        satp_code: begin
+                            satp <= write_data;
+                        end
+                    endcase
                 end
-                mepc_code: begin
-                    mepc <= write_data;
-                end
-                mcause_code: begin
+                `CSR_ECALL, `CSR_EBREAK: begin
+                    mepc <= pc;
+                    CSR_csr_pc <= mtvec;
                     mcause <= write_data;
+                    mtval <= pc; //???
+                    mstatus[mstatus_mie] <= 1'b0;
+                    mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
+                    mstatus[12:11] <= 2'b11; //2'b11 TODO
+                    status <= 1'b1;
                 end
-                mstatus_code: begin
+                `CSR_MRET: begin
+                    CSR_csr_pc <= mepc + 4;
+                    status <= 1'b0;
                     mstatus <= write_data;
                 end
-                mie_code: begin
-                    mie <= write_data;
-                end
-                mip_code: begin
-                    mip <= write_data;
-                end
-                mtval_code: begin
-                    mtval <= write_data;
-                end
-                satp_code: begin
-                    satp <= write_data;
-                end
-                mcause_mepc_code: begin
-                    mcause <= write_data;
-                    mepc <= pc;
-                end
-            endcase
-            if(r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK)begin
-                mepc <= pc;
-                CSR_csr_pc <= mtvec;
-                mcause <= write_data;
-                mtval <= pc; //???
-                mstatus[mstatus_mie] <= 1'b0;
-                mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
-                mstatus[12:11] <= {status, status}; //2'b11 TODO
-                status <= 1'b1;
-            end
-            else if(r2_opcode == `CSR_MRET)begin
-                CSR_csr_pc <= mepc + 4;
-                status <= 1'b0;
-                mstatus[mstatus_mie] <= mstatus[mstatus_mpie];
-                mstatus[mstatus_mpie] <= 1'b1;
-                mstatus[12:11] <= 2'b00;
-            end
+                default: 
+            endcase            
         end
     end
 end
