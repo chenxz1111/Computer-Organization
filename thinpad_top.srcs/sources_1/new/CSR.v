@@ -71,7 +71,7 @@ assign r1_csr = (r1_opcode == `CSR_CSRRC || r1_opcode == `CSR_CSRRS || r1_opcode
               : (r1_opcode == `CSR_MRET) ? mepc_code : 12'h000;
 
 assign r2_csr = (r2_opcode == `CSR_CSRRC || r2_opcode == `CSR_CSRRS || r2_opcode == `CSR_CSRRW) ? r2_instr[31:20]
-              : (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? mcause_mepc_code : 12'h000;
+              : (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? mcause_mepc_code : 12'h000; // TODO: MRET // write
 
 (* dont_touch = "true" *)reg[31:0] write_data;
 
@@ -92,6 +92,7 @@ always @(*) begin
         `CSR_EBREAK: begin
             write_data = 32'h00000003;
         end
+        // TODO: MRET
         default: begin
             write_data = 32'h00000000;
         end
@@ -181,7 +182,7 @@ always @(posedge clk or posedge rst) begin
                 mtval <= pc; //???
                 mstatus[mstatus_mie] <= 1'b0;
                 mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
-                mstatus[12:11] <= {status, status};
+                mstatus[12:11] <= {status, status}; //2'b11 TODO
                 status <= 1'b1;
             end
             else if(r2_opcode == `CSR_MRET)begin
