@@ -120,7 +120,7 @@ wire r1_data_a_sel;
 wire r1_data_b_sel;
 wire r1_data_type;
 wire[3:0] r1_alu_sel;
-wire[1:0] r1_bq_sel;
+wire[2:0] r1_bq_sel;
 wire[1:0] r1_mem_sel;
 wire r1_reg_sel;
 wire[1:0] r1_wb_sel;
@@ -133,13 +133,14 @@ reg[31:0] r2_instr;
 reg[31:0] r2_data_a;
 reg[31:0] r2_data_b;
 reg[31:0] r2_imm;
+(* dont_touch = "true" *)reg[31:0] r2_csr_res;
 // CONTROLLER SIGNAL
 reg r2_pc_sel;
 reg r2_data_a_sel;
 reg r2_data_b_sel;
 reg r2_data_type;
 reg[3:0] r2_alu_sel;
-reg[1:0] r2_bq_sel;
+reg[2:0] r2_bq_sel;
 reg[1:0] r2_mem_sel;
 reg r2_reg_sel;
 reg[1:0] r2_wb_sel;
@@ -191,6 +192,29 @@ PREDICT _PREDICT(
     .error(error)
 );
 
+(* dont_touch = "true" *)wire[31:0] CSR_csr_res;
+wire[31:0] CSR_satp;
+wire CSR_status;
+
+CSR _CSR(
+    .clk(clk_25M),
+    .rst(reset_btn),
+    .r1_instr(r1_instr),
+    .r2_instr(r2_instr),
+    .r2_csr_res(r2_csr_res),
+    .forward_data_a(forward_data_a),
+    .pc(r2_pc),
+    .stall(mem_stall),
+    .time_int(time_int),
+
+    .csr_status(CSR_status),
+    .csr_res(CSR_csr_res),
+    .csr_pc(csr_pc),
+    .timeout(timeout),
+    .csr_satp(CSR_satp)
+);
+
+
 CONTROLLER _CONTROLLER(
     .instr(r1_instr),
 
@@ -212,14 +236,17 @@ reg be;
 reg[31:0] address;
 reg[31:0] data_in;
 wire[31:0] data_out;
+wire time_int;
 SRAM _SRAM (
     .clk            (clk_25M),
+    .rst_btn        (reset_btn),
     .oe(oe),
     .we(we),
     .be(be),
     .address(address),
     .data_in(data_in),
     .data_out(data_out),
+    .time_int(time_int),
     
     .base_ram_data_wire(base_ram_data),
     .base_ram_addr(base_ram_addr),
@@ -263,6 +290,8 @@ IMMGEN _IMMGEN(
 
 wire is_jmp;
 wire[31:0] next_pc;
+wire[31:0] csr_pc;
+wire timeout;
 BCOMP _BCOMP(
     .bq_sel(r2_bq_sel),
     .pc(r2_pc),
@@ -270,6 +299,8 @@ BCOMP _BCOMP(
     .data_b(forward_data_b),
     .data_a_sel(r2_data_a_sel),
     .imm(r2_imm),
+    .csr_pc(csr_pc),
+    .timeout(timeout),
 
     .is_jmp(is_jmp),
     .next_pc(next_pc)
@@ -298,6 +329,7 @@ ALU _ALU(
     .bsel(r2_data_b_sel),
     .pc(r2_pc),
     .imm(r2_imm),
+    .csr_res(r2_csr_res),
 
     .data_a(forward_data_a),
     .data_b(forward_data_b),
@@ -402,6 +434,8 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_reg_sel <= r1_reg_sel;
                 r2_wb_sel <= r1_wb_sel;  
                 mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
+
+                r2_csr_res <= CSR_csr_res;
             end
             
             r3_pc <= r2_pc;
