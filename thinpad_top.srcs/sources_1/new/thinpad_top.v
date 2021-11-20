@@ -236,7 +236,7 @@ assign video_blue = vga_data_reg[1:0];
 assign video_clk = clk_50M;
 
 vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
-   .clk(clk_25M), 
+   .clk(clk_50M), 
    .hdata(hdata), //横坐标
    .vdata(vdata),      //纵坐标
    .hsync(video_hsync),

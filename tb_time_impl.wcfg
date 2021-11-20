@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1773652fs"></ZoomStartTime>
-      <ZoomEndTime time="2008290fs"></ZoomEndTime>
-      <Cursor1Time time="984916fs"></Cursor1Time>
+      <ZoomStartTime time="2963481fs"></ZoomStartTime>
+      <ZoomEndTime time="3092282fs"></ZoomEndTime>
+      <Cursor1Time time="2975666fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="78"></ValueColumnWidth>
+      <ValueColumnWidth column_width="73"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="22" />
+   <WVObjectSize size="23" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -37,8 +37,8 @@
       <obj_property name="ObjectShortName">reset_btn</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/bram_data_in" type="array">
-      <obj_property name="ElementShortName">bram_data_in[31:0]</obj_property>
-      <obj_property name="ObjectShortName">bram_data_in[31:0]</obj_property>
+      <obj_property name="ElementShortName">bram_data_in[17:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_data_in[17:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/blk_mem_gen_1_/addra" type="array">
       <obj_property name="ElementShortName">addra[16:0]</obj_property>
@@ -56,9 +56,13 @@
       <obj_property name="ElementShortName">addrb[16:0]</obj_property>
       <obj_property name="ObjectShortName">addrb[16:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/tb/dut/bram_data_out" type="array">
+      <obj_property name="ElementShortName">bram_data_out[17:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_data_out[17:0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb/dut/blk_mem_gen_1_/dina" type="array">
-      <obj_property name="ElementShortName">dina[31:0]</obj_property>
-      <obj_property name="ObjectShortName">dina[31:0]</obj_property>
+      <obj_property name="ElementShortName">dina[17:0]</obj_property>
+      <obj_property name="ObjectShortName">dina[17:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/base_ram_data" type="array">
       <obj_property name="ElementShortName">base_ram_data[31:0]</obj_property>

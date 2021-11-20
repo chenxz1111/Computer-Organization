@@ -28,7 +28,7 @@ reg [18:0] next_addr_reg;
 assign next_addr = next_addr_reg;
 
 // update next_addr
-always @(clk) begin
+always @(posedge clk) begin
     if ((hdata < HSIZE) & (vdata < VSIZE)) begin
         next_addr_reg <= next_addr_reg + 1;
     end
