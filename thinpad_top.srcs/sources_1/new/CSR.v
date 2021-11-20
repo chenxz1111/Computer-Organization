@@ -36,6 +36,9 @@ always @(*) begin
             
         end
     endcase 
+    if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+        CSR_csr_pc = mtvec;
+    end
 end
 
 (* dont_touch = "true" *)reg[31:0] mtvec;
@@ -279,7 +282,7 @@ always @(posedge clk or posedge rst) begin
         end
         if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
             mepc <= pc;//?
-            CSR_csr_pc <= mtvec;
+            //CSR_csr_pc <= mtvec;
             mcause <= 32'h80000007;
             mtval <= pc;
             mstatus[mstatus_mie] <= 1'b0;
