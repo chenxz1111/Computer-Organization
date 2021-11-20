@@ -8,11 +8,13 @@ module PREDICT(
     output reg[31:0] predict_pc,
 
     input wire is_jmp,
-    input wire r2_pc,
+    input wire[31:0] r2_pc,
     input wire[31:0] real_next_pc,
 
     output reg error
 );
+
+localparam INVALID = 32'hffffffff;
 
 reg[31:0] btb_pc[7:0];
 reg[31:0] btb_next[7:0];
@@ -29,7 +31,6 @@ assign predict_shot[7] = (origin_pc == btb_pc[7]) ? 1'b1 : 1'b0;
 
 always @(*) begin
     case (predict_shot)
-        8'b00000000 : predict_pc = origin_pc+4;
         8'b00000001 : predict_pc = btb_next[0];
         8'b00000010 : predict_pc = btb_next[1];
         8'b00000100 : predict_pc = btb_next[2];
@@ -56,6 +57,7 @@ reg[2:0] handle_type;
 reg[2:0] handle_target;
 
 always @(*) begin
+
     if (real_shot == 8'b00000000) begin //未命中
         if (!is_jmp) begin //没跳转
             error = 1'b0;
@@ -79,50 +81,75 @@ always @(*) begin
                 8'b10000000 : handle_target = 3'h7;
                 default     : handle_target = 3'h7;
             endcase
-            error = 1'b1;
+            error = 1'b1;//////////////
             handle_type = `DELETE_TARGET;
         end
         else begin
             case (real_shot)
-                8'b00000001 : error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
-                8'b00000010 : error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
-                8'b00000100 : error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
-                8'b00001000 : error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
-                8'b00010000 : error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
-                8'b00100000 : error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
-                8'b01000000 : error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
-                8'b10000000 : error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
-                default     : error = 1'b1;
+                8'b00000001 : begin
+                    error = (real_next_pc == btb_next[0]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h0;
+                end
+                8'b00000010 : begin
+                    error = (real_next_pc == btb_next[1]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h1;
+                end
+                8'b00000100 : begin
+                    error = (real_next_pc == btb_next[2]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h2;
+                end
+                8'b00001000 : begin
+                    error = (real_next_pc == btb_next[3]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h3;
+                end
+                8'b00010000 : begin
+                    error = (real_next_pc == btb_next[4]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h4;
+                end
+                8'b00100000 : begin
+                    error = (real_next_pc == btb_next[5]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h5;
+                end
+                8'b01000000 : begin
+                    error = (real_next_pc == btb_next[6]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h6;
+                end
+                8'b10000000 : begin
+                    error = (real_next_pc == btb_next[7]) ? 1'b0 : 1'b1;
+                    handle_target = 3'h7;
+                end
+                default     : begin
+                    error = 1'b0;
+                    handle_target = 3'h7;
+                end
             endcase
             handle_type = `CHANGE_TARGET;
         end
     end
 end
 
-integer i;
-
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        btb_pc[0] <= 32'h0;
-        btb_pc[1] <= 32'h0;
-        btb_pc[2] <= 32'h0;
-        btb_pc[3] <= 32'h0;
-        btb_pc[4] <= 32'h0;
-        btb_pc[5] <= 32'h0;
-        btb_pc[6] <= 32'h0;
-        btb_pc[7] <= 32'h0;
+        btb_pc[0] <= INVALID;
+        btb_pc[1] <= INVALID;
+        btb_pc[2] <= INVALID;
+        btb_pc[3] <= INVALID;
+        btb_pc[4] <= INVALID;
+        btb_pc[5] <= INVALID;
+        btb_pc[6] <= INVALID;
+        btb_pc[7] <= INVALID;
 
-        btb_next[0] <= 32'h0;
-        btb_next[1] <= 32'h0;
-        btb_next[2] <= 32'h0;
-        btb_next[3] <= 32'h0;
-        btb_next[4] <= 32'h0;
-        btb_next[5] <= 32'h0;
-        btb_next[6] <= 32'h0;
-        btb_next[7] <= 32'h0;
+        btb_next[0] <= INVALID;
+        btb_next[1] <= INVALID;
+        btb_next[2] <= INVALID;
+        btb_next[3] <= INVALID;
+        btb_next[4] <= INVALID;
+        btb_next[5] <= INVALID;
+        btb_next[6] <= INVALID;
+        btb_next[7] <= INVALID;
 
-        handle_type <= 3'h0;
-        handle_target <= 3'h0;
+        // handle_type <= 3'h0;
+        // handle_target <= 3'h0;
     end
     else begin
         if (handle_type == `ADD_TARGET) begin //把表项移到最前面
@@ -144,24 +171,40 @@ always @(posedge clk or posedge rst) begin
             btb_next[7] <= btb_next[6];
         end
         else if (handle_type == `DELETE_TARGET) begin
-            if (handle_target < 3'h7) begin
-                for (i = handle_target; i < 7; i = i+1) begin
-                    btb_pc[i] <= btb_pc[i+1];
-                    btb_next[i] <= btb_next[i+1];
-                end
-            end
-            btb_pc[7] <= 32'h0;
-            btb_next[7] <= 32'h0;
+            btb_pc[0] <= (handle_target > 0) ? btb_pc[0] : btb_pc[1];
+            btb_pc[1] <= (handle_target > 1) ? btb_pc[1] : btb_pc[2];
+            btb_pc[2] <= (handle_target > 2) ? btb_pc[2] : btb_pc[3];
+            btb_pc[3] <= (handle_target > 3) ? btb_pc[3] : btb_pc[4];
+            btb_pc[4] <= (handle_target > 4) ? btb_pc[4] : btb_pc[5];
+            btb_pc[5] <= (handle_target > 5) ? btb_pc[5] : btb_pc[6];
+            btb_pc[6] <= (handle_target > 6) ? btb_pc[6] : btb_pc[7];
+            btb_pc[7] <= INVALID;
+            btb_next[0] <= (handle_target > 0) ? btb_next[0] : btb_next[1];
+            btb_next[1] <= (handle_target > 1) ? btb_next[1] : btb_next[2];
+            btb_next[2] <= (handle_target > 2) ? btb_next[2] : btb_next[3];
+            btb_next[3] <= (handle_target > 3) ? btb_next[3] : btb_next[4];
+            btb_next[4] <= (handle_target > 4) ? btb_next[4] : btb_next[5];
+            btb_next[5] <= (handle_target > 5) ? btb_next[5] : btb_next[6];
+            btb_next[6] <= (handle_target > 6) ? btb_next[6] : btb_next[7];
+            btb_next[7] <= INVALID;
         end
         else if (handle_type == `CHANGE_TARGET) begin
-            if (handle_target > 3'h0) begin
-                for (i = 1; i <= handle_target; i = i+1) begin
-                    btb_pc[i] <= btb_pc[i-1];
-                    btb_next[i] <= btb_next[i-1];
-                end
-            end
             btb_pc[0] <= r2_pc;
+            btb_pc[1] <= (handle_target < 1) ? btb_pc[1] : btb_pc[0];
+            btb_pc[2] <= (handle_target < 2) ? btb_pc[2] : btb_pc[1];
+            btb_pc[3] <= (handle_target < 3) ? btb_pc[3] : btb_pc[2];
+            btb_pc[4] <= (handle_target < 4) ? btb_pc[4] : btb_pc[3];
+            btb_pc[5] <= (handle_target < 5) ? btb_pc[5] : btb_pc[4];
+            btb_pc[6] <= (handle_target < 6) ? btb_pc[6] : btb_pc[5];
+            btb_pc[7] <= (handle_target < 7) ? btb_pc[7] : btb_pc[6];
             btb_next[0] <= real_next_pc;
+            btb_next[1] <= (handle_target < 1) ? btb_next[1] : btb_next[0];
+            btb_next[2] <= (handle_target < 2) ? btb_next[2] : btb_next[1];
+            btb_next[3] <= (handle_target < 3) ? btb_next[3] : btb_next[2];
+            btb_next[4] <= (handle_target < 4) ? btb_next[4] : btb_next[3];
+            btb_next[5] <= (handle_target < 5) ? btb_next[5] : btb_next[4];
+            btb_next[6] <= (handle_target < 6) ? btb_next[6] : btb_next[5];
+            btb_next[7] <= (handle_target < 7) ? btb_next[7] : btb_next[6];
         end
     end
 end

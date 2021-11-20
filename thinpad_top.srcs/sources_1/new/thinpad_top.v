@@ -185,6 +185,7 @@ PREDICT _PREDICT(
     .predict_pc(predict_pc),
 
     .is_jmp(is_jmp),
+    .r2_pc(r2_pc),
     .real_next_pc(next_pc),
 
     .error(error)
