@@ -260,10 +260,20 @@ always @(posedge clk or posedge rst) begin
                         end
                     endcase
                 end
-                `CSR_ECALL, `CSR_EBREAK: begin
+                `CSR_ECALL: begin
                     mepc <= pc;
                     //CSR_csr_pc <= mtvec;
-                    mcause <= write_data;
+                    mcause <= 32'h00000008;
+                    mtval <= pc; //???
+                    mstatus[mstatus_mie] <= 1'b0;
+                    mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
+                    mstatus[12:11] <= 2'b11; //2'b11 TODO
+                    status <= 1'b1;
+                end
+                `CSR_EBREAK: begin
+                    mepc <= pc;
+                    //CSR_csr_pc <= mtvec;
+                    mcause <= 32'h00000003;
                     mtval <= pc; //???
                     mstatus[mstatus_mie] <= 1'b0;
                     mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
