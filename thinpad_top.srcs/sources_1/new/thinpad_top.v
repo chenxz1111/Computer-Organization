@@ -207,11 +207,12 @@ CONTROLLER _CONTROLLER(
 );
 
 wire bram_we;
-wire[3:0] bram_be;
-wire[18:0] bram_addr_in; // 2**19 = 524288 > 480000
+// wire[3:0] bram_be;
+wire bram_be;
+(* dont_touch = "true" *) wire[18:0] bram_addr_in; // 2**19 = 524288 > 480000
 wire[31:0] bram_data_in; // 4*(3+3+2) = 32 (4 pixels is a group)
 wire bram_oe;
-wire[18:0] bram_addr_out;
+(* dont_touch = "true" *) wire[18:0] bram_addr_out;
 wire[31:0] bram_data_out;
 wire [11:0] hdata;
 wire [11:0] vdata;
@@ -221,10 +222,10 @@ reg [7:0] vga_data_reg;
 
 always @(*) begin
     case(bram_addr_out[1:0])
-        2'b01: vga_data_reg = bram_data_out[7:0];
-        2'b10: vga_data_reg = bram_data_out[15:8];
-        2'b11: vga_data_reg = bram_data_out[23:16];
-        2'b00: vga_data_reg = bram_data_out[31:24];
+        2'b00: vga_data_reg = bram_data_out[7:0];
+        2'b01: vga_data_reg = bram_data_out[15:8];
+        2'b10: vga_data_reg = bram_data_out[23:16];
+        2'b11: vga_data_reg = bram_data_out[31:24];
         default: vga_data_reg = 8'hff;
     endcase
 end
@@ -235,7 +236,7 @@ assign video_blue = vga_data_reg[1:0];
 assign video_clk = clk_50M;
 
 vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
-   .clk(clk_50M), 
+   .clk(clk_25M), 
    .hdata(hdata), //横坐标
    .vdata(vdata),      //纵坐标
    .hsync(video_hsync),
@@ -246,12 +247,12 @@ vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
 
 blk_mem_gen_1 blk_mem_gen_1_
 (
-    .clka(clk_50M),
+    .clka(clk_25M),
     .ena(bram_we),
     .wea(bram_be),
     .addra(bram_addr_in[18:2]),
     .dina(bram_data_in),
-    .clkb(clk_50M),
+    .clkb(clk_25M),
     .enb(bram_oe),
     .addrb(bram_addr_out[18:2]),
     .doutb(bram_data_out)

@@ -39,7 +39,8 @@ module SRAM(
     output wire[21:0] bram_addr_in,
     output wire bram_oe,
     output wire bram_we,
-    output wire[3:0] bram_be
+    // output wire[3:0] bram_be
+    output wire bram_be
     );
 
 //controll sigals
@@ -106,6 +107,7 @@ assign bram_data = write_vga ? write_data : 32'bz;
 assign bram_addr_in = address[21:0];
 assign bram_oe = 1'b1;
 assign bram_we = we && vga_status;
-assign bram_be = (be && vga_status) ? ~base_ext_be_n : 4'b1111;
+// assign bram_be = (be && vga_status) ? ~base_ext_be_n : 4'b1111;
+assign bram_be = 1'b1;
 
 endmodule
