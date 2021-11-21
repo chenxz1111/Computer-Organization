@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="16038038fs"></ZoomStartTime>
-      <ZoomEndTime time="16154639fs"></ZoomEndTime>
-      <Cursor1Time time="16065038fs"></Cursor1Time>
+      <ZoomStartTime time="11688048fs"></ZoomStartTime>
+      <ZoomEndTime time="11859882fs"></ZoomEndTime>
+      <Cursor1Time time="11759353fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="166"></NameColumnWidth>
+      <NameColumnWidth column_width="161"></NameColumnWidth>
       <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="15" />
+   <WVObjectSize size="16" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -35,6 +35,10 @@
    <wvobject fp_name="/tb/reset_btn" type="logic">
       <obj_property name="ElementShortName">reset_btn</obj_property>
       <obj_property name="ObjectShortName">reset_btn</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/vga_data_reg" type="array">
+      <obj_property name="ElementShortName">vga_data_reg[7:0]</obj_property>
+      <obj_property name="ObjectShortName">vga_data_reg[7:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/bram_data_in" type="array">
       <obj_property name="ElementShortName">bram_data_in[17:0]</obj_property>
