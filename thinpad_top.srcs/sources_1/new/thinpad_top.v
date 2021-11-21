@@ -216,7 +216,7 @@ wire bram_oe;
 wire[31:0] bram_data_out;
 wire [11:0] hdata;
 wire [11:0] vdata;
-reg [7:0] vga_data_reg;
+(* dont_touch = "true" *) reg [7:0] vga_data_reg;
 
 // assign bram_oe = 1'b1;
 

@@ -106,8 +106,9 @@ assign data_out = be ? read_data : data_wire;
 assign bram_data = write_vga ? write_data : 32'bz;
 assign bram_addr_in = address[21:0];
 assign bram_oe = 1'b1;
-assign bram_we = we && vga_status;
+// assign bram_we = we && vga_status;
+assign bram_we = 1'b1;
 // assign bram_be = (be && vga_status) ? ~base_ext_be_n : 4'b1111;
-assign bram_be = 1'b1;
+assign bram_be = we && vga_status;
 
 endmodule

@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2963481fs"></ZoomStartTime>
-      <ZoomEndTime time="3092282fs"></ZoomEndTime>
-      <Cursor1Time time="2975666fs"></Cursor1Time>
+      <ZoomStartTime time="16038038fs"></ZoomStartTime>
+      <ZoomEndTime time="16154639fs"></ZoomEndTime>
+      <Cursor1Time time="16065038fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="73"></ValueColumnWidth>
+      <NameColumnWidth column_width="166"></NameColumnWidth>
+      <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="23" />
+   <WVObjectSize size="15" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -56,6 +56,10 @@
       <obj_property name="ElementShortName">addrb[16:0]</obj_property>
       <obj_property name="ObjectShortName">addrb[16:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/tb/dut/bram_addr_out" type="array">
+      <obj_property name="ElementShortName">bram_addr_out[18:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_addr_out[18:0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb/dut/bram_data_out" type="array">
       <obj_property name="ElementShortName">bram_data_out[17:0]</obj_property>
       <obj_property name="ObjectShortName">bram_data_out[17:0]</obj_property>
@@ -72,44 +76,8 @@
       <obj_property name="ElementShortName">base_ram_addr[19:0]</obj_property>
       <obj_property name="ObjectShortName">base_ram_addr[19:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/base_ram_be_n" type="array">
-      <obj_property name="ElementShortName">base_ram_be_n[3:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_be_n[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/base_ram_ce_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_ce_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_ce_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/base_ram_oe_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_oe_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_oe_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/base_ram_we_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_we_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_we_n</obj_property>
-   </wvobject>
    <wvobject fp_name="/tb/ext_ram_data" type="array">
       <obj_property name="ElementShortName">ext_ram_data[31:0]</obj_property>
       <obj_property name="ObjectShortName">ext_ram_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/ext_ram_addr" type="array">
-      <obj_property name="ElementShortName">ext_ram_addr[19:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_addr[19:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/ext_ram_be_n" type="array">
-      <obj_property name="ElementShortName">ext_ram_be_n[3:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_be_n[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/ext_ram_ce_n" type="logic">
-      <obj_property name="ElementShortName">ext_ram_ce_n</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_ce_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/ext_ram_oe_n" type="logic">
-      <obj_property name="ElementShortName">ext_ram_oe_n</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_oe_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/ext_ram_we_n" type="logic">
-      <obj_property name="ElementShortName">ext_ram_we_n</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_we_n</obj_property>
    </wvobject>
 </wave_config>
