@@ -46,13 +46,11 @@ reg done;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
 wire[6:0] opcode;
-assign opcode = (state == check && ~wait_uart)? r2_instr[6:0]: r2_instr_reg[6:0];
+assign opcode = (state == check)? r2_instr[6:0]: r2_instr_reg[6:0];
 wire[2:0] funct3;
-assign funct3 = (state == check && ~wait_uart)? r2_instr[14:12]: r2_instr_reg[14:12];
+assign funct3 = (state == check)? r2_instr[14:12]: r2_instr_reg[14:12];
 
 reg[2:0] command;
-reg wait_uart;
-reg[2:0] wait_uart_count;
 always @(*) begin
     if(done) begin
         command = fetch;
@@ -88,7 +86,7 @@ wire[31:0] addr_src;
 assign addr_src = (command == fetch) ? (error ? next_pc : predict_pc) : r2_alu_res;
 reg[31:0] addr_src_reg;
 
-always@(*) begin
+always@* begin
     case(state)
         check: begin
             if(csr_status == 1'b0) begin
@@ -113,12 +111,7 @@ always@(*) begin
             else begin
                 r3_stall = (command != fetch);
                 r3_ram_enable = 1'b1;
-                if(wait_uart) begin
-                    r3_addr = addr_src_reg;
-                end
-                else begin
-                    r3_addr = addr_src;
-                end
+                r3_addr = addr_src;
             end
         end
         wait_VPN1: begin
@@ -149,7 +142,7 @@ always@(*) begin
     endcase
 end
 
-assign r3_data_in = (state == check && ~wait_uart)? forward_data_b: b_reg;
+assign r3_data_in = (state == check)? forward_data_b: b_reg;
 
 always @(*) begin
     case(command)
@@ -187,8 +180,6 @@ always@(posedge clk or posedge rst) begin
         VPN1_reg <= 10'h3ff;
         VPN2_reg <= 10'h3ff;
         state <= check;
-        wait_uart <= 1'b0;
-        wait_uart_count <= 0;
     end
     else begin
         case(state)
@@ -227,27 +218,7 @@ always@(posedge clk or posedge rst) begin
                         done <= 1'b0;
                     end
                     else if(conflict_reg) begin
-                        if(target == target_uart) begin
-                            if(wait_uart) begin
-                                if(wait_uart_count == 5) begin
-                                    wait_uart <= 1'b0;
-                                    done <= 1'b1;
-                                    wait_uart_count <= 0;
-                                end
-                                else begin
-                                    wait_uart_count <= wait_uart_count + 1;
-                                end
-                            end
-                            else begin
-                                addr_src_reg <= addr_src;
-                                r2_instr_reg <= r2_instr;
-                                b_reg <= forward_data_b;
-                                wait_uart <= 1'b1;
-                            end
-                        end 
-                        else begin
-                            done <= 1'b1;
-                        end
+                        done <= 1'b1;
                     end
                 end
             end
@@ -272,36 +243,6 @@ always@(posedge clk or posedge rst) begin
     end
 end
 
-reg[2:0] target;
-localparam
-    target_base = 3'b000,
-    target_ext = 3'b001,
-    target_uart = 3'b010,
-    target_ureg = 3'b011,
-    target_vga = 3'b100,
-    target_nop = 3'b111;
 
-always@* begin
-    casez(r3_addr)
-        32'b1000000000??????????????????????: begin
-            target <= target_base;
-        end
-        32'b1000000001??????????????????????: begin
-            target <= target_ext;
-        end
-        32'b000100000000000000000000000000??: begin
-            target <= target_uart;
-        end
-        32'b000100000000000000000000000001??: begin
-            target <= target_ureg;
-        end
-        32'b0000000000000???????????????????:begin
-            target <= target_vga;
-        end
-        default: begin
-            target <= target_nop;
-        end
-    endcase
-end
 
 endmodule
