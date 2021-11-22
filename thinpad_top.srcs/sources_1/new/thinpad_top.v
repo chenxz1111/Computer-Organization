@@ -184,7 +184,7 @@ wire[31:0] CSR_satp;
 wire CSR_status;
 
 CSR _CSR(
-    .clk(clk_25M),
+    .clk(clk_50M),
     .rst(reset_btn),
     .r1_instr(r1_instr),
     .r2_instr(r2_instr),
@@ -225,7 +225,7 @@ reg[31:0] data_in;
 wire[31:0] data_out;
 wire time_int;
 SRAM _SRAM (
-    .clk            (clk_25M),
+    .clk            (clk_50M),
     .rst_btn        (reset_btn),
     .oe(oe),
     .we(we),
@@ -257,7 +257,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_25M),
+    .clk            (clk_50M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -334,7 +334,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_25M or posedge reset_btn) begin
+always @(posedge clk_50M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
