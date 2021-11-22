@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="772810fs"></ZoomStartTime>
-      <ZoomEndTime time="1061811fs"></ZoomEndTime>
-      <Cursor1Time time="4415557fs"></Cursor1Time>
+      <ZoomStartTime time="795848fs"></ZoomStartTime>
+      <ZoomEndTime time="1092349fs"></ZoomEndTime>
+      <Cursor1Time time="1012848fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="171"></NameColumnWidth>
+      <NameColumnWidth column_width="156"></NameColumnWidth>
       <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="9" />
+   <WVObjectSize size="13" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -35,6 +35,10 @@
    <wvobject fp_name="/tb/dut/r0_pc" type="array">
       <obj_property name="ElementShortName">r0_pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">r0_pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/r1_pc" type="array">
+      <obj_property name="ElementShortName">r1_pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r1_pc[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/r1_instr" type="array">
       <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
@@ -55,5 +59,17 @@
    <wvobject fp_name="/tb/dut/_CSR/write_data" type="array">
       <obj_property name="ElementShortName">write_data[31:0]</obj_property>
       <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/data_in" type="array">
+      <obj_property name="ElementShortName">data_in[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/data_out" type="array">
+      <obj_property name="ElementShortName">data_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/address" type="array">
+      <obj_property name="ElementShortName">address[31:0]</obj_property>
+      <obj_property name="ObjectShortName">address[31:0]</obj_property>
    </wvobject>
 </wave_config>

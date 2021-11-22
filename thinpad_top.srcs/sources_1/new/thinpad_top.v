@@ -261,9 +261,9 @@ CONTROLLER _CONTROLLER(
 reg oe;
 reg we;
 reg be;
-reg[31:0] address;
-reg[31:0] data_in;
-wire[31:0] data_out;
+(* dont_touch = "true" *)reg[31:0] address;
+(* dont_touch = "true" *)reg[31:0] data_in;
+(* dont_touch = "true" *)wire[31:0] data_out;
 wire time_int;
 SRAM _SRAM (
     .clk            (clk_25M),
