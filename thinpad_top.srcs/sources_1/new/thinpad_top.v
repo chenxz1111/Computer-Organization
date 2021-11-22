@@ -202,6 +202,7 @@ CSR _CSR(
     .r1_instr(r1_instr),
     .r2_instr(r2_instr),
     .r2_csr_res(r2_csr_res),
+    .r2_alu_res(r2_alu_res),
     .forward_data_a(forward_data_a),
     .pc(r2_pc),
     .stall(mem_stall),
@@ -212,6 +213,33 @@ CSR _CSR(
     .csr_pc(csr_pc),
     .timeout(timeout),
     .csr_satp(CSR_satp)
+);
+
+wire r3_stall;
+wire r3_ram_enable;
+wire[31:0] r3_data_in;
+wire[31:0] r3_addr;
+wire r3_oe;
+wire r3_be;
+wire r3_we;
+reg[31:0] sram_data_out;
+TLB _TLB(
+    .clk(clk_25M),
+    .rst(reset_btn),
+    .csr_satp(CSR_satp),
+    .csr_status(CSR_status),
+    .r2_instr(r2_instr),
+    .forward_data_b(forward_data_b),
+    .r0_pc(r0_pc),
+    .sram_data_out(sram_data_out),
+
+    .r3_stall(r3_stall),
+    .r3_ram_enable(r3_ram_enable),
+    .r3_addr(r3_addr),
+    .r3_data_in(r3_data_in),
+    .r3_oe(r3_oe),
+    .r3_we(r3_we),
+    .r3_be(r3_be)
 );
 
 
@@ -247,7 +275,7 @@ SRAM _SRAM (
     .data_in(data_in),
     .data_out(data_out),
     .time_int(time_int),
-    
+
     .base_ram_data_wire(base_ram_data),
     .base_ram_addr(base_ram_addr),
     .base_ram_be_n(base_ram_be_n),
@@ -383,6 +411,7 @@ always @(posedge clk_25M or posedge reset_btn) begin
 
         mem_stall <= 1'b0;
         read_from_saved <= 1'b0;
+        sram_data_out <=32'h0;
         saved_r1_instr <= NOP;
 
         r4_instr <= NOP;
@@ -394,13 +423,12 @@ always @(posedge clk_25M or posedge reset_btn) begin
     else begin
         if (!mem_stall) begin
             r0_pc <= error ? next_pc : predict_pc;
-            oe <= 1'b1;
-            we <= 1'b0;
-            be <= 1'b0;
-            address <= error ? next_pc : predict_pc;
+            // oe <= 1'b1;
+            // we <= 1'b0;
+            // be <= 1'b0;
+            // address <= error ? next_pc : predict_pc;
             r1_pc <= error ? 32'h0 : r0_pc;
-            if (read_from_saved) r1_instr <= error ? NOP : saved_r1_instr;
-            else r1_instr <= error ? NOP : data_out;
+            r1_instr <= error ? NOP : data_out;
             if (error) begin
                 r2_pc <= 32'h0;
                 r2_instr <= NOP;
@@ -416,7 +444,6 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_mem_sel <= `NO_RAM;
                 r2_reg_sel <= 1'b1;
                 r2_wb_sel <= `ALU_WB;
-                mem_stall <= 1'b0;
             end 
             else begin
                 r2_pc <= r1_pc;
@@ -433,24 +460,16 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_mem_sel <= r1_mem_sel;
                 r2_reg_sel <= r1_reg_sel;
                 r2_wb_sel <= r1_wb_sel;  
-                mem_stall <= (r1_mem_sel != `NO_RAM) ? 1'b1 : 1'b0;
-
                 r2_csr_res <= CSR_csr_res;
             end
-            
+    
             r3_pc <= r2_pc;
             r3_instr <= r2_instr;
             r3_alu_res <= r2_alu_res;
-            if (read_from_saved) begin 
-                r3_ram_data <= data_out;
-            end
-            else r3_ram_data <= 32'h0;
             r3_pc_sel <= r2_new_pc_sel; 
             r3_mem_sel <= r2_mem_sel;
             r3_reg_sel <= r2_reg_sel;
             r3_wb_sel <= r2_wb_sel;
-            
-            read_from_saved <= 1'b0;
 
             r4_instr <= r3_instr;
             r4_wb_data <= r3_wb_data;
@@ -459,26 +478,15 @@ always @(posedge clk_25M or posedge reset_btn) begin
             r4_alu_res <= r3_alu_res;
         end
         else begin
-            if (r2_mem_sel == `READ_RAM) begin
-                saved_r1_instr <= data_out;
-                oe <= 1'b1;
-                we <= 1'b0;
-                be <= r2_data_type;
-                address <= r2_alu_res;
-                mem_stall <= 1'b0;
-                read_from_saved <= 1'b1;
-            end
-            else if (r2_mem_sel == `WRITE_RAM) begin
-                saved_r1_instr <= data_out;
-                oe <= 1'b0;
-                we <= 1'b1;
-                be <= r2_data_type;
-                address <= r2_alu_res;
-                data_in <= forward_data_b;
-                mem_stall <= 1'b0;
-                read_from_saved <= 1'b1;
-            end
+            if (r3_ram_enable) r3_ram_data <= data_out;
+            sram_data_out <= data_out;
         end
+        address <= r3_addr;
+        oe <= r3_oe;
+        we <= r3_we;
+        be <= r3_be;
+        data_in <= r3_data_in;
+        mem_stall <= r3_stall;
     end
 end
 
