@@ -81,7 +81,7 @@ reg[9:0] VPN2_reg;
 reg[31:0] PTE2_reg;
 reg[2:0] state;
 wire[31:0] addr_src;
-assign addr_src = (command == fetch)? r0_pc: ALU_ans;
+assign addr_src = (command == fetch)? r0_pc: r2_alu_res;
 reg[31:0] addr_src_reg;
 
 always@* begin
