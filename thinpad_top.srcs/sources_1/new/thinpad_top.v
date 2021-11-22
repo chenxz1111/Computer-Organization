@@ -204,7 +204,7 @@ CSR _CSR(
     .r2_csr_res(r2_csr_res),
     .forward_data_a(forward_data_a),
     .pc(r2_pc),
-    .stall(mem_stall),
+    .stall(r3_stall),
     .time_int(time_int),
 
     .csr_status(CSR_status),
@@ -423,7 +423,7 @@ always @(posedge clk_25M or posedge reset_btn) begin
         r4_alu_res <= 32'h0;
     end
     else begin
-        if (!mem_stall) begin
+        if (!r3_stall) begin
             r0_pc <= error ? next_pc : predict_pc;
             // oe <= 1'b1;
             // we <= 1'b0;
@@ -488,7 +488,6 @@ always @(posedge clk_25M or posedge reset_btn) begin
         we <= r3_we;
         be <= r3_be;
         data_in <= r3_data_in;
-        mem_stall <= r3_stall;
     end
 end
 
