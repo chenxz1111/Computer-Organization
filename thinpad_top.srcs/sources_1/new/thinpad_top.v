@@ -108,7 +108,7 @@ assign leds = debug_leds;
     IF_ID
 */
 // DATA
-reg[31:0] r1_pc;
+(* dont_touch = "true" *)reg[31:0] r1_pc;
 reg[31:0] r1_instr;
 wire[31:0] r1_data_a;
 wire[31:0] r1_data_b;
