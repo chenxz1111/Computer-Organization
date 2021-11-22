@@ -213,10 +213,6 @@ always@(posedge clk or posedge rst) begin
                     end
                 end
                 else begin
-                    state <= check;//直接计算
-                    if(done) begin
-                        done <= 1'b0;
-                    end
                     else if(conflict_reg) begin
                         done <= 1'b1;
                     end
