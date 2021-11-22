@@ -229,6 +229,7 @@ TLB _TLB(
     .csr_satp(CSR_satp),
     .csr_status(CSR_status),
     .r2_instr(r2_instr),
+    .r2_alu_res(r2_alu_res),
     .forward_data_b(forward_data_b),
     .r0_pc(r0_pc),
     .sram_data_out(sram_data_out),
