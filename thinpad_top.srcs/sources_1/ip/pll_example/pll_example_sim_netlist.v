@@ -4,7 +4,7 @@
 // Date        : Fri Nov 19 16:01:08 2021
 // Host        : LAPTOP-09H9TAOV running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
-//               C:/cod21-grp30/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_sim_netlist.v
+//               F:/SystemVerilog/cod21-grp30/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_sim_netlist.v
 // Design      : pll_example
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.

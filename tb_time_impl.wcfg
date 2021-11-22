@@ -28,13 +28,13 @@
       <obj_property name="ElementShortName">clk_25M</obj_property>
       <obj_property name="ObjectShortName">clk_25M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/clock_btn" type="logic">
-      <obj_property name="ElementShortName">clock_btn</obj_property>
-      <obj_property name="ObjectShortName">clock_btn</obj_property>
+   <wvobject fp_name="/tb/dut/_CSR/mtvec" type="array">
+      <obj_property name="ElementShortName">mtvec[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mtvec[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/reset_btn" type="logic">
-      <obj_property name="ElementShortName">reset_btn</obj_property>
-      <obj_property name="ObjectShortName">reset_btn</obj_property>
+   <wvobject fp_name="/tb/dut/r1_instr" type="array">
+      <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r1_instr[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/vga_data_reg" type="array">
       <obj_property name="ElementShortName">vga_data_reg[7:0]</obj_property>
@@ -72,13 +72,13 @@
       <obj_property name="ElementShortName">dina[17:0]</obj_property>
       <obj_property name="ObjectShortName">dina[17:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/base_ram_data" type="array">
-      <obj_property name="ElementShortName">base_ram_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_data[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/_CSR/mscratch" type="array">
+      <obj_property name="ElementShortName">mscratch[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mscratch[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/base_ram_addr" type="array">
-      <obj_property name="ElementShortName">base_ram_addr[19:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_addr[19:0]</obj_property>
+   <wvobject fp_name="/tb/dut/_CSR/mepc" type="array">
+      <obj_property name="ElementShortName">mepc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mepc[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/ext_ram_data" type="array">
       <obj_property name="ElementShortName">ext_ram_data[31:0]</obj_property>
