@@ -422,77 +422,73 @@ always @(posedge clk_25M or posedge reset_btn) begin
         r4_alu_res <= 32'h0;
     end
     else begin
-        if (init > 2'b10) begin
-            if (!mem_stall) begin
-                r0_pc <= error ? next_pc : predict_pc;
-                // oe <= 1'b1;
-                // we <= 1'b0;
-                // be <= 1'b0;
-                // address <= error ? next_pc : predict_pc;
-                r1_pc <= error ? 32'h0 : r0_pc;
-                r1_instr <= error ? NOP : data_out;
-                if (error) begin
-                    r2_pc <= 32'h0;
-                    r2_instr <= NOP;
-                    r2_data_a <= 32'h0;
-                    r2_data_b <= 32'h0;
-                    r2_imm <= 32'h0;
-                    r2_pc_sel <= 1'b0;
-                    r2_data_a_sel <= 1'b0;
-                    r2_data_b_sel <= 1'b0;
-                    r2_data_type <= 1'b0;
-                    r2_alu_sel <= `ADD;
-                    r2_bq_sel <= `NO_BQ;
-                    r2_mem_sel <= `NO_RAM;
-                    r2_reg_sel <= 1'b1;
-                    r2_wb_sel <= `ALU_WB;
-                end 
-                else begin
-                    r2_pc <= r1_pc;
-                    r2_instr <= r1_instr;
-                    r2_data_a <= r1_data_a;
-                    r2_data_b <= r1_data_b;
-                    r2_imm <= r1_imm;
-                    r2_pc_sel <= r1_pc_sel;
-                    r2_data_a_sel <= r1_data_a_sel;
-                    r2_data_b_sel <= r1_data_b_sel;
-                    r2_data_type <= r1_data_type;
-                    r2_alu_sel <= r1_alu_sel;
-                    r2_bq_sel <= r1_bq_sel;
-                    r2_mem_sel <= r1_mem_sel;
-                    r2_reg_sel <= r1_reg_sel;
-                    r2_wb_sel <= r1_wb_sel;  
-                    r2_csr_res <= CSR_csr_res;
-                end
-        
-                r3_pc <= r2_pc;
-                r3_instr <= r2_instr;
-                r3_alu_res <= r2_alu_res;
-                r3_pc_sel <= r2_new_pc_sel; 
-                r3_mem_sel <= r2_mem_sel;
-                r3_reg_sel <= r2_reg_sel;
-                r3_wb_sel <= r2_wb_sel;
-
-                r4_instr <= r3_instr;
-                r4_wb_data <= r3_wb_data;
-                r4_pc_sel <= r3_pc_sel;
-                r4_reg_sel <= r3_reg_sel;
-                r4_alu_res <= r3_alu_res;
-            end
+        if (!mem_stall) begin
+            if (init <= 2'b10) init <= init + 1;
+            r0_pc <= (init > 2'b10) ? r0_pc : error ? next_pc : predict_pc;
+            // oe <= 1'b1;
+            // we <= 1'b0;
+            // be <= 1'b0;
+            // address <= error ? next_pc : predict_pc;
+            r1_pc <= error ? 32'h0 : r0_pc;
+            r1_instr <= error ? NOP : data_out;
+            if (error) begin
+                r2_pc <= 32'h0;
+                r2_instr <= NOP;
+                r2_data_a <= 32'h0;
+                r2_data_b <= 32'h0;
+                r2_imm <= 32'h0;
+                r2_pc_sel <= 1'b0;
+                r2_data_a_sel <= 1'b0;
+                r2_data_b_sel <= 1'b0;
+                r2_data_type <= 1'b0;
+                r2_alu_sel <= `ADD;
+                r2_bq_sel <= `NO_BQ;
+                r2_mem_sel <= `NO_RAM;
+                r2_reg_sel <= 1'b1;
+                r2_wb_sel <= `ALU_WB;
+            end 
             else begin
-                if (r3_ram_enable) r3_ram_data <= data_out;
-                sram_data_out <= data_out;
+                r2_pc <= r1_pc;
+                r2_instr <= r1_instr;
+                r2_data_a <= r1_data_a;
+                r2_data_b <= r1_data_b;
+                r2_imm <= r1_imm;
+                r2_pc_sel <= r1_pc_sel;
+                r2_data_a_sel <= r1_data_a_sel;
+                r2_data_b_sel <= r1_data_b_sel;
+                r2_data_type <= r1_data_type;
+                r2_alu_sel <= r1_alu_sel;
+                r2_bq_sel <= r1_bq_sel;
+                r2_mem_sel <= r1_mem_sel;
+                r2_reg_sel <= r1_reg_sel;
+                r2_wb_sel <= r1_wb_sel;  
+                r2_csr_res <= CSR_csr_res;
             end
-            address <= r3_addr;
-            oe <= r3_oe;
-            we <= r3_we;
-            be <= r3_be;
-            data_in <= r3_data_in;
-            mem_stall <= r3_stall;
+    
+            r3_pc <= r2_pc;
+            r3_instr <= r2_instr;
+            r3_alu_res <= r2_alu_res;
+            r3_pc_sel <= r2_new_pc_sel; 
+            r3_mem_sel <= r2_mem_sel;
+            r3_reg_sel <= r2_reg_sel;
+            r3_wb_sel <= r2_wb_sel;
+
+            r4_instr <= r3_instr;
+            r4_wb_data <= r3_wb_data;
+            r4_pc_sel <= r3_pc_sel;
+            r4_reg_sel <= r3_reg_sel;
+            r4_alu_res <= r3_alu_res;
         end
         else begin
-            init <= init + 1;
+            if (r3_ram_enable) r3_ram_data <= data_out;
+            sram_data_out <= data_out;
         end
+        address <= r3_addr;
+        oe <= r3_oe;
+        we <= r3_we;
+        be <= r3_be;
+        data_in <= r3_data_in;
+        mem_stall <= r3_stall;
     end
 end
 
