@@ -202,7 +202,6 @@ CSR _CSR(
     .r1_instr(r1_instr),
     .r2_instr(r2_instr),
     .r2_csr_res(r2_csr_res),
-    .r2_alu_res(r2_alu_res),
     .forward_data_a(forward_data_a),
     .pc(r2_pc),
     .stall(mem_stall),
