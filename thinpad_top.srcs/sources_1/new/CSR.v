@@ -136,9 +136,6 @@ always @(*) begin
         mepc_code: begin
             r1_csr_data = (r2_csr == mepc_code) ? write_data : (r2_csr == mcause_mepc_code) ? pc : mepc;
         end
-        mcause_code: begin
-            r1_csr_data = (r2_csr == mcause_code) ? write_data : mcause;
-        end
         mstatus_code: begin
             r1_csr_data = (r2_csr == mstatus_code || r2_csr == mcause_mepc_code) ? write_data : mstatus;
         end
