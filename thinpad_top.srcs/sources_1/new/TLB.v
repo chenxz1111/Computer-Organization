@@ -164,6 +164,11 @@ always @(*) begin
             r3_we = 1'b0;
             r3_be = 1'b0;
         end
+        default: begin
+            r3_oe = 1'b1;
+            r3_we = 1'b0;
+            r3_be = 1'b0;
+        end
     endcase
 end
 
