@@ -230,7 +230,9 @@ TLB _TLB(
     .r2_instr(r2_instr),
     .r2_alu_res(r2_alu_res),
     .forward_data_b(forward_data_b),
-    .r0_pc(r0_pc),
+    .error(error),
+    .next_pc(next_pc),
+    .predict_pc(predict_pc),
     .sram_data_out(sram_data_out),
 
     .r3_stall(r3_stall),
@@ -374,7 +376,7 @@ WBSEL _WBSEL(
     
     .wb_data(r3_wb_data)
 );
-reg[1:0] init;
+
 always @(posedge clk_25M or posedge reset_btn) begin
     if (reset_btn) begin
         init <= 2'b00;
@@ -423,8 +425,7 @@ always @(posedge clk_25M or posedge reset_btn) begin
     end
     else begin
         if (!mem_stall) begin
-            if (init <= 2'b10) init <= init + 1;
-            r0_pc <= (init <= 2'b10) ? r0_pc : error ? next_pc : predict_pc;
+            r0_pc <= error ? next_pc : predict_pc;
             // oe <= 1'b1;
             // we <= 1'b0;
             // be <= 1'b0;
@@ -491,5 +492,6 @@ always @(posedge clk_25M or posedge reset_btn) begin
         mem_stall <= r3_stall;
     end
 end
+
 
 endmodule
