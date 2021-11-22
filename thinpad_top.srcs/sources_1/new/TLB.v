@@ -103,7 +103,7 @@ always@* begin
                 else begin
                     r3_stall = 1'b1;
                     r3_ram_enable = 1'b0;
-                    r3_addr = {satp[19:0], addr_src[31:22], 2'b00};
+                    r3_addr = {csr_satp[19:0], addr_src[31:22], 2'b00};
                 end
             end
             else begin
