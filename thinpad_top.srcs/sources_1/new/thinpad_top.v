@@ -103,7 +103,7 @@ assign leds = debug_leds;
     WB_IF
 */
 //DATA 
-reg[31:0] r0_pc;
+(* dont_touch = "true" *)reg[31:0] r0_pc;
 /*
     IF_ID
 */
