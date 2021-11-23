@@ -231,7 +231,6 @@ TLB _TLB(
     .r2_mem_sel(r2_mem_sel),
     .r2_data_type(r2_data_type),
     .r2_alu_res(r2_alu_res),
-    .r2_instr(r2_instr),
     .forward_data_b(forward_data_b),
     .error(error),
     .next_pc(next_pc),
