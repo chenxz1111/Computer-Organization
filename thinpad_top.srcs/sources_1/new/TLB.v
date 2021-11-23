@@ -19,18 +19,11 @@ module TLB(
     output reg r3_ram_enable,
     output reg[31:0] r3_addr,
     output wire[31:0] r3_data_in,
-    output reg r3_oe,
-    output reg r3_we,
-    output reg r3_be
+    output wire r3_oe,
+    output wire r3_we,
+    output wire r3_be
 );
-localparam
-    load_code = 7'b0000011,
-    store_code = 7'b0100011;
-localparam
-    funct_LB = 3'b000,
-    funct_LW = 3'b010,
-    funct_SB = 3'b000,
-    funct_SW = 3'b010;
+
 localparam
     fetch = 0,
     lb = 1,
@@ -46,13 +39,13 @@ reg saved_r2_data_type;
 reg[31:0] b_reg;
 reg sram_finish;
 wire conflict_reg;
-assign conflict_reg = (command != fetch);
+//assign conflict_reg = (command != fetch);
+assign conflict_reg = sram_finish ? 1'b0 : opcode != `NO_RAM ? 1'b1 : 1'b0;
 wire[1:0] opcode;
 // assign opcode = all_tgt ? r2_instr[6:0] : saved_r2_instr[6:0];
 assign opcode = all_tgt ? r2_mem_sel : saved_r2_mem_sel;
 wire funct3;
 assign funct3 = all_tgt ? r2_data_type: saved_r2_data_type;
-reg[2:0] command;
 reg[9:0] tgt1_va;
 reg[31:0] tgt1_pa;
 reg[9:0] tgt2_va;
@@ -62,64 +55,9 @@ wire[31:0] target_addr;
 assign target_addr = !conflict_reg ? (mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
 reg[31:0] saved_target_addr;
 assign r3_data_in = all_tgt ? forward_data_b: b_reg;
-
-always @(*) begin
-    case(command)
-        sb: begin
-            r3_oe = 1'b0;
-            r3_we = 1'b1;
-            r3_be = 1'b1;
-        end
-        sw: begin
-            r3_oe = 1'b0;
-            r3_we = 1'b1;
-            r3_be = 1'b0;
-        end
-        lb: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b1;
-        end
-        lw: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b0;
-        end
-        default: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b0;
-        end
-    endcase
-end
-
-always @(*) begin
-    if(sram_finish) begin
-        command = fetch;
-    end
-    else begin
-        case(opcode)
-            `READ_RAM: begin
-                case(funct3)
-                    1'b1: command = lb;
-                    1'b0: command = lw;
-                    default: command = fetch;
-                endcase
-            end
-            `WRITE_RAM: begin
-                case(funct3)
-                    1'b1: command = sb;
-                    1'b0: command = sw;
-                    default: command = fetch;
-                endcase
-            end
-            default: begin
-                command = fetch;
-            end
-        endcase
-    end
-end
-
+assign r3_oe = sram_finish ? 1'b1 : opcode != `WRITE_RAM ? 1'b1 : 1'b0;
+assign r3_we = sram_finish ? 1'b0 : opcode == `WRITE_RAM ? 1'b1 : 1'b0;
+assign r3_be = sram_finish ? 1'b0 : funct3;
 
 always @(*) begin
     case(epoch)
