@@ -18,9 +18,9 @@ module TLB(
     output reg r3_ram_enable,
     output reg[31:0] r3_addr,
     output wire[31:0] r3_data_in,
-    output reg r3_oe,
-    output reg r3_we,
-    output reg r3_be
+    output wire r3_oe,
+    output wire r3_we,
+    output wire r3_be
 );
 
 localparam
@@ -37,41 +37,41 @@ reg[31:0] saved_forward_data_b;
 reg done;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
-wire[6:0] opcode;
-assign opcode = (state == `ALL_TARGET)? r2_mem_sel: saved_r2_mem_sel;
-wire[2:0] funct3;
-assign funct3 = (state == `ALL_TARGET)? r2_data_type : saved_r2_data_type;
+wire[1:0] mem_sel;
+assign mem_sel = (state == `ALL_TARGET)? r2_mem_sel: saved_r2_mem_sel;
+wire data_type;
+assign data_type = (state == `ALL_TARGET)? r2_data_type : saved_r2_data_type;
 reg[2:0] command;
 wire sram_conflict;
 assign sram_conflict = done ? 1'b0 : 
                         (state == `ALL_TARGET) ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) 
-                        : (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) 
-always @(*) begin
-    if(done) begin
-        command = fetch;
-    end
-    else begin
-        case(opcode)
-            `READ_RAM: begin
-                case(funct3)
-                    funct_LB: command = lb;
-                    funct_LW: command = lw;
-                    default: command = fetch;
-                endcase
-            end
-            `WRITE_RAM: begin
-                case(funct3)
-                    funct_SB: command = sb;
-                    funct_SW: command = sw;
-                    default: command = fetch;
-                endcase
-            end
-            default: begin
-                command = fetch;
-            end
-        endcase
-    end
-end
+                        : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) ;
+// always @(*) begin
+//     if(done) begin
+//         command = fetch;
+//     end
+//     else begin
+//         case(opcode)
+//             `READ_RAM: begin
+//                 case(funct3)
+//                     funct_LB: command = lb;
+//                     funct_LW: command = lw;
+//                     default: command = fetch;
+//                 endcase
+//             end
+//             `WRITE_RAM: begin
+//                 case(funct3)
+//                     funct_SB: command = sb;
+//                     funct_SW: command = sw;
+//                     default: command = fetch;
+//                 endcase
+//             end
+//             default: begin
+//                 command = fetch;
+//             end
+//         endcase
+//     end
+// end
 
 reg[9:0] VPN1_reg;
 reg[31:0] PTE1_reg;
@@ -79,7 +79,7 @@ reg[9:0] VPN2_reg;
 reg[31:0] PTE2_reg;
 reg[2:0] state;
 wire[31:0] addr_src;
-assign addr_src = (command == fetch) ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
+assign addr_src = !sram_conflict ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
 reg[31:0] addr_src_reg;
 
 always@* begin
@@ -88,7 +88,7 @@ always@* begin
             if(csr_status == 1'b0) begin
                 if(addr_src[31:22] == VPN1_reg) begin
                     if(addr_src[21:12] == VPN2_reg) begin//直接计算
-                        r3_stall = (command != fetch);
+                        r3_stall = sram_conflict;
                         r3_ram_enable = 1'b1;
                         r3_addr = {PTE2_reg[29:10], addr_src[11:0]};
                     end
@@ -105,7 +105,7 @@ always@* begin
                 end
             end
             else begin
-                r3_stall = (command != fetch);
+                r3_stall = sram_conflict;
                 r3_ram_enable = 1'b1;
                 r3_addr = addr_src;
             end
@@ -126,7 +126,7 @@ always@* begin
             r3_addr = addr_src_reg;
         end
         `SECOND_TARGET: begin
-            r3_stall = (command != fetch);
+            r3_stall = sram_conflict;
             r3_ram_enable = 1'b1;
             r3_addr = {sram_data_out[29:10], addr_src_reg[11:0]};
         end
@@ -139,36 +139,38 @@ always@* begin
 end
 
 assign r3_data_in = (state == `ALL_TARGET)? forward_data_b: saved_forward_data_b;
-
-always @(*) begin
-    case(command)
-        sb: begin
-            r3_oe = 1'b0;
-            r3_we = 1'b1;
-            r3_be = 1'b1;
-        end
-        sw: begin
-            r3_oe = 1'b0;
-            r3_we = 1'b1;
-            r3_be = 1'b0;
-        end
-        lb: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b1;
-        end
-        lw: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b0;
-        end
-        default: begin
-            r3_oe = 1'b1;
-            r3_we = 1'b0;
-            r3_be = 1'b0;
-        end
-    endcase
-end
+assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
+assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
+assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
+// always @(*) begin
+//     case(command)
+//         sb: begin
+//             r3_oe = 1'b0;
+//             r3_we = 1'b1;
+//             r3_be = 1'b1;
+//         end
+//         sw: begin
+//             r3_oe = 1'b0;
+//             r3_we = 1'b1;
+//             r3_be = 1'b0;
+//         end
+//         lb: begin
+//             r3_oe = 1'b1;
+//             r3_we = 1'b0;
+//             r3_be = 1'b1;
+//         end
+//         lw: begin
+//             r3_oe = 1'b1;
+//             r3_we = 1'b0;
+//             r3_be = 1'b0;
+//         end
+//         default: begin
+//             r3_oe = 1'b1;
+//             r3_we = 1'b0;
+//             r3_be = 1'b0;
+//         end
+//     endcase
+// end
 
 always@(posedge clk or posedge rst) begin
     if(rst) begin
