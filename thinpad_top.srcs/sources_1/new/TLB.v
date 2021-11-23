@@ -5,6 +5,8 @@ module TLB(
     input wire csr_status,
     input wire[31:0] r2_instr,
     input wire[31:0] r2_alu_res,
+    input wire[1:0] r2_mem_sel,
+    input wire r2_data_type,
     input wire error,
     input wire[31:0] next_pc,
     input wire[31:0] predict_pc,
@@ -39,12 +41,14 @@ localparam
 wire all_tgt;
 assign all_tgt = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
 reg[31:0] saved_r2_instr;
+reg[1:0] saved_r2_mem_sel;
+reg saved_r2_data_type;
 reg[31:0] b_reg;
 reg sram_finish;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
 wire[6:0] opcode;
-assign opcode = all_tgt ? r2_instr[6:0]: saved_r2_instr[6:0];
+assign opcode = all_tgt ? r2_instr[6:0] : saved_r2_instr[6:0];
 wire[2:0] funct3;
 assign funct3 = all_tgt ? r2_instr[14:12]: saved_r2_instr[14:12];
 reg[2:0] command;
@@ -198,6 +202,8 @@ always@(posedge clk or posedge rst) begin
                             epoch <= `GET_SECOND;
                             saved_target_addr <= target_addr;
                             saved_r2_instr <= r2_instr;
+                            saved_r2_mem_sel <= r2_mem_sel;
+                            saved_r2_data_type <= r2_data_type;
                             b_reg <= forward_data_b;
                         end
                     end
@@ -207,6 +213,8 @@ always@(posedge clk or posedge rst) begin
                         epoch <= `GET_FIRST;
                         saved_target_addr <= target_addr;
                         saved_r2_instr <= r2_instr;
+                        saved_r2_mem_sel <= r2_mem_sel;
+                        saved_r2_data_type <= r2_data_type;
                         b_reg <= forward_data_b;
                     end
                 end
