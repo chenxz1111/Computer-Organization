@@ -10,6 +10,8 @@ module TLB(
     input wire[31:0] predict_pc,
     input wire[31:0] sram_data_out,
     input wire[31:0] forward_data_b,
+    input wire mem_stall,
+    input wire[31:0] r0_pc,
     
     output reg r3_stall,
     output reg r3_ram_enable,
@@ -83,7 +85,7 @@ reg[9:0] VPN2_reg;
 reg[31:0] PTE2_reg;
 reg[2:0] state;
 wire[31:0] addr_src;
-assign addr_src = (command == fetch) ? (error ? next_pc : predict_pc) : r2_alu_res;
+assign addr_src = (command == fetch) ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
 reg[31:0] addr_src_reg;
 
 always@* begin

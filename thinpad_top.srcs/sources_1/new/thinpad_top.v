@@ -182,6 +182,7 @@ PREDICT _PREDICT(
     .clk(clk_25M),
     .rst(reset_btn),
     .origin_pc(r0_pc),
+    .mem_stall(mem_stall),
 
     .predict_pc(predict_pc),
 
@@ -234,6 +235,8 @@ TLB _TLB(
     .next_pc(next_pc),
     .predict_pc(predict_pc),
     .sram_data_out(sram_data_out),
+    .mem_stall(mem_stall),
+    .r0_pc(r0_pc),
 
     .r3_stall(r3_stall),
     .r3_ram_enable(r3_ram_enable),
@@ -423,9 +426,8 @@ always @(posedge clk_25M or posedge reset_btn) begin
         r4_alu_res <= 32'h0;
     end
     else begin
-        if (!r3_stall)
-            r0_pc <= error ? next_pc : predict_pc;
         if (!mem_stall) begin
+            r0_pc <= error ? next_pc : predict_pc;
             // oe <= 1'b1;
             // we <= 1'b0;
             // be <= 1'b0;
@@ -447,6 +449,7 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_mem_sel <= `NO_RAM;
                 r2_reg_sel <= 1'b1;
                 r2_wb_sel <= `ALU_WB;
+                r2_csr_res <= 32'h0;
             end 
             else begin
                 r2_pc <= r1_pc;
