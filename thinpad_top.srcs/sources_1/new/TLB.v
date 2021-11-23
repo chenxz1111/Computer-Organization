@@ -47,10 +47,11 @@ reg[31:0] b_reg;
 reg sram_finish;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
-wire[6:0] opcode;
-assign opcode = all_tgt ? r2_instr[6:0] : saved_r2_instr[6:0];
-wire[2:0] funct3;
-assign funct3 = all_tgt ? r2_instr[14:12]: saved_r2_instr[14:12];
+wire[1:0] opcode;
+// assign opcode = all_tgt ? r2_instr[6:0] : saved_r2_instr[6:0];
+assign opcode = all_tgt ? r2_mem_sel : saved_r2_mem_sel;
+wire funct3;
+assign funct3 = all_tgt ? r2_data_type: saved_r2_data_type;
 reg[2:0] command;
 reg[9:0] tgt1_va;
 reg[31:0] tgt1_pa;
@@ -98,17 +99,17 @@ always @(*) begin
     end
     else begin
         case(opcode)
-            load_code: begin
+            `READ_RAM: begin
                 case(funct3)
-                    funct_LB: command = lb;
-                    funct_LW: command = lw;
+                    1'b1: command = lb;
+                    1'b0: command = lw;
                     default: command = fetch;
                 endcase
             end
-            store_code: begin
+            `WRITE_RAM: begin
                 case(funct3)
-                    funct_SB: command = sb;
-                    funct_SW: command = sw;
+                    1'b1: command = sb;
+                    1'b0: command = sw;
                     default: command = fetch;
                 endcase
             end
