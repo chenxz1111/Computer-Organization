@@ -3,8 +3,9 @@ module TLB(
     input wire rst,
     input wire[31:0] csr_satp,
     input wire csr_status,
-    input wire[31:0] r2_instr,
     input wire[31:0] r2_alu_res,
+    input wire[1:0] r2_mem_sel,
+    input wire r2_data_type,
     input wire error,
     input wire[31:0] next_pc,
     input wire[31:0] predict_pc,
@@ -21,14 +22,7 @@ module TLB(
     output reg r3_we,
     output reg r3_be
 );
-localparam
-    load_code = 7'b0000011,
-    store_code = 7'b0100011;
-localparam
-    funct_LB = 3'b000,
-    funct_LW = 3'b010,
-    funct_SB = 3'b000,
-    funct_SW = 3'b010;
+
 localparam
     fetch = 0,
     lb = 1,
@@ -42,16 +36,17 @@ localparam
     wait_VPN2 = 3'b011,
     check_VPN2 = 3'b100;
 
-reg[31:0] r2_instr_reg;
-reg[31:0] b_reg;
+reg[1:0] saved_r2_mem_sel;
+reg saved_r2_data_type;
+//reg[31:0] r2_instr_reg;
+reg[31:0] saved_forward_data_b;
 reg done;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
 wire[6:0] opcode;
-assign opcode = (state == check)? r2_instr[6:0]: r2_instr_reg[6:0];
+assign opcode = (state == check)? r2_mem_sel: saved_r2_mem_sel;
 wire[2:0] funct3;
-assign funct3 = (state == check)? r2_instr[14:12]: r2_instr_reg[14:12];
-
+assign funct3 = (state == check)? r2_data_type : saved_r2_data_type;
 reg[2:0] command;
 always @(*) begin
     if(done) begin
@@ -59,14 +54,14 @@ always @(*) begin
     end
     else begin
         case(opcode)
-            load_code: begin
+            `READ_RAM: begin
                 case(funct3)
                     funct_LB: command = lb;
                     funct_LW: command = lw;
                     default: command = fetch;
                 endcase
             end
-            store_code: begin
+            `WRITE_RAM: begin
                 case(funct3)
                     funct_SB: command = sb;
                     funct_SW: command = sw;
@@ -79,6 +74,7 @@ always @(*) begin
         endcase
     end
 end
+
 reg[9:0] VPN1_reg;
 reg[31:0] PTE1_reg;
 reg[9:0] VPN2_reg;
@@ -201,21 +197,23 @@ always@(posedge clk or posedge rst) begin
                             VPN2_reg <= addr_src[21:12];
                             state <= wait_VPN2;//已匹配VPN1
                             addr_src_reg <= addr_src;
-                            r2_instr_reg <= r2_instr;
-                            b_reg <= forward_data_b;
+                            saved_forward_data_b <= forward_data_b;
+                            saved_r2_data_type <= r2_data_type;
+                            saved_r2_mem_sel <= r2_mem_sel;
                         end
                     end
                     else begin
                         VPN1_reg <= addr_src[31:22];
                         VPN2_reg <= addr_src[21:12];
                         state <= wait_VPN1;
-                        addr_src_reg <= addr_src;
-                        r2_instr_reg <= r2_instr;
-                        b_reg <= forward_data_b;
+                        addr_src_reg <= addr_src;                            
+                        saved_forward_data_b <= forward_data_b;
+                        saved_r2_data_type <= r2_data_type;
+                        saved_r2_mem_sel <= r2_mem_sel;
                     end
                 end
                 else begin
-                    state <= check;//直接计算
+                    state <= check;
                     if(done) begin
                         done <= 1'b0;
                     end
@@ -231,7 +229,7 @@ always@(posedge clk or posedge rst) begin
             end
             wait_VPN2: state <= check_VPN2;
             check_VPN2: begin
-                PTE2_reg <= sram_data_out; //把sram的输出作为实地址？？？？
+                PTE2_reg <= sram_data_out;
                 state <= check;
                 if(done) begin
                     done <= 1'b0;

@@ -230,6 +230,8 @@ TLB _TLB(
     .csr_status(CSR_status),
     .r2_instr(r2_instr),
     .r2_alu_res(r2_alu_res),
+    .r2_mem_sel(r2_mem_sel),
+    .r2_data_type(r2_data_type),
     .forward_data_b(forward_data_b),
     .error(error),
     .next_pc(next_pc),
