@@ -99,7 +99,7 @@ wire[31:0] uart_status_reg;
 wire uart_free;
 
 //maybe need to modify
-assign uart_free = (uart_status == wait_tsre) && uart_tsre;
+assign uart_free = uart_tbre && uart_tsre;
 
 assign uart_status_reg = {16'h0000, 2'b00, uart_free, 4'b0000, uart_dataready, 8'h00};
 
@@ -107,16 +107,9 @@ assign data_wire = (read_base || read_uart) ? base_ram_data_wire : read_ext ? ex
 assign read_data = (address[1:0] == 2'b00) ? {{24{data_wire[7]}}, data_wire[7:0]} : (address[1:0] == 2'b01) ? {{24{data_wire[15]}}, data_wire[15:8]} : (address[1:0] == 2'b10) ? {{24{data_wire[23]}}, data_wire[23:16]} : {{24{data_wire[31]}}, data_wire[31:24]};
 assign data_out = be ? read_data : data_wire;
 
-reg uart_state;
-localparam
-    wait_tbre = 0,
-    wait_tsre = 1;
-
 always @(posedge clk or posedge rst_btn) begin
     if (rst_btn) begin
         mtime <= 0;
-
-        uart_state <= wait_tsre;
     end
     else begin
         mtime <= mtime + 1;
@@ -126,19 +119,6 @@ always @(posedge clk or posedge rst_btn) begin
         if(write_mtimecmp_high) begin
             mtimecmp[63:32] <= data_in;
         end
-
-        case (uart_state)
-            wait_tbre: begin
-                if(uart_tbre) begin
-                    uart_state <= wait_tsre;
-                end
-            end
-            wait_tsre: begin
-                if(write_uart) begin
-                    uart_state <= wait_tbre;
-                end
-            end
-        endcase
     end
 end
 
