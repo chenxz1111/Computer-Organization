@@ -228,8 +228,9 @@ TLB _TLB(
     .rst(reset_btn),
     .csr_satp(CSR_satp),
     .csr_status(CSR_status),
-    .r2_instr(r2_instr),
     .r2_alu_res(r2_alu_res),
+    .r2_mem_sel(r2_mem_sel),
+    .r2_data_type(r2_data_type),
     .forward_data_b(forward_data_b),
     .error(error),
     .next_pc(next_pc),
@@ -428,10 +429,6 @@ always @(posedge clk_50M or posedge reset_btn) begin
     else begin
         if (!mem_stall) begin
             r0_pc <= error ? next_pc : predict_pc;
-            // oe <= 1'b1;
-            // we <= 1'b0;
-            // be <= 1'b0;
-            // address <= error ? next_pc : predict_pc;
             r1_pc <= error ? 32'h0 : r0_pc;
             r1_instr <= error ? NOP : data_out;
             if (error) begin
