@@ -82,13 +82,13 @@ module thinpad_top(
 );
 
 // Clks
-wire locked, clk_10M, clk_25M;
+wire locked, clk_10M, clk_40M;
 pll_example clock_gen 
 (
  .clk_in1(clk_50M),  
 
  .clk_out1(clk_10M), 
- .clk_out2(clk_25M), 
+ .clk_out2(clk_40M), 
  .reset(reset_btn), 
  .locked(locked)                   
 );
@@ -179,7 +179,7 @@ reg[31:0] r4_alu_res;
 wire[31:0] predict_pc;
 wire error;
 PREDICT _PREDICT(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .origin_pc(r0_pc),
     .mem_stall(mem_stall),
@@ -198,7 +198,7 @@ wire[31:0] CSR_satp;
 wire CSR_status;
 
 CSR _CSR(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .r1_instr(r1_instr),
     .r2_instr(r2_instr),
@@ -224,7 +224,7 @@ wire r3_be;
 wire r3_we;
 reg[31:0] sram_data_out;
 TLB _TLB(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .csr_satp(CSR_satp),
     .csr_status(CSR_status),
@@ -305,12 +305,12 @@ vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
 
 blk_mem_gen_1 blk_mem_gen_1_
 (
-    .clka(clk_25M),
+    .clka(clk_40M),
     .ena(bram_we),
     .wea(bram_be),
     .addra(bram_addr_in[18:2]),
     .dina(bram_data_in),
-    .clkb(clk_25M),
+    .clkb(clk_40M),
     .enb(bram_oe),
     .addrb(bram_addr_out[18:2]),
     .doutb(bram_data_out)
@@ -324,7 +324,7 @@ reg be;
 (* dont_touch = "true" *)wire[31:0] data_out;
 wire time_int;
 SRAM _SRAM (
-    .clk            (clk_25M),
+    .clk            (clk_40M),
     .rst_btn        (reset_btn),
     .oe(oe),
     .we(we),
@@ -362,7 +362,7 @@ SRAM _SRAM (
 );
 
 REG _REG(
-    .clk            (clk_25M),
+    .clk            (clk_40M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -439,7 +439,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_25M or posedge reset_btn) begin
+always @(posedge clk_40M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
