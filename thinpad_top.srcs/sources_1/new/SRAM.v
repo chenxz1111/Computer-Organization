@@ -135,7 +135,7 @@ always @(posedge clk or posedge rst_btn) begin
             end
             wait_tsre: begin
                 if(write_uart) begin
-                    uart_status <= wait_tbre;
+                    uart_state <= wait_tbre;
                 end
             end
         endcase
