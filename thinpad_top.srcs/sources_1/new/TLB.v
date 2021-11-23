@@ -29,12 +29,6 @@ localparam
     lw = 2,
     sb = 3,
     sw = 4;
-localparam
-    check = 3'b000,
-    wait_VPN1 = 3'b001,
-    check_VPN1 = 3'b010,
-    wait_VPN2 = 3'b011,
-    check_VPN2 = 3'b100;
 
 reg[1:0] saved_r2_mem_sel;
 reg saved_r2_data_type;
@@ -44,10 +38,14 @@ reg done;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
 wire[6:0] opcode;
-assign opcode = (state == check)? r2_mem_sel: saved_r2_mem_sel;
+assign opcode = (state == `ALL_TARGET)? r2_mem_sel: saved_r2_mem_sel;
 wire[2:0] funct3;
-assign funct3 = (state == check)? r2_data_type : saved_r2_data_type;
+assign funct3 = (state == `ALL_TARGET)? r2_data_type : saved_r2_data_type;
 reg[2:0] command;
+wire sram_conflict;
+assign sram_conflict = done ? 1'b0 : 
+                        (state == `ALL_TARGET) ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) 
+                        : (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) 
 always @(*) begin
     if(done) begin
         command = fetch;
@@ -86,7 +84,7 @@ reg[31:0] addr_src_reg;
 
 always@* begin
     case(state)
-        check: begin
+        `ALL_TARGET: begin
             if(csr_status == 1'b0) begin
                 if(addr_src[31:22] == VPN1_reg) begin
                     if(addr_src[21:12] == VPN2_reg) begin//直接计算
@@ -112,22 +110,22 @@ always@* begin
                 r3_addr = addr_src;
             end
         end
-        wait_VPN1: begin
+        `GET_FIRST: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
             r3_addr = addr_src_reg;
         end
-        check_VPN1: begin
+        `FIRST_TARGET: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
             r3_addr = {sram_data_out[29:10], addr_src_reg[21:12], 2'b00};
         end
-        wait_VPN2: begin
+        `GET_SECOND: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
             r3_addr = addr_src_reg;
         end
-        check_VPN2: begin
+        `SECOND_TARGET: begin
             r3_stall = (command != fetch);
             r3_ram_enable = 1'b1;
             r3_addr = {sram_data_out[29:10], addr_src_reg[11:0]};
@@ -140,7 +138,7 @@ always@* begin
     endcase
 end
 
-assign r3_data_in = (state == check)? forward_data_b: saved_forward_data_b;
+assign r3_data_in = (state == `ALL_TARGET)? forward_data_b: saved_forward_data_b;
 
 always @(*) begin
     case(command)
@@ -177,15 +175,15 @@ always@(posedge clk or posedge rst) begin
         done <= 1'b0;
         VPN1_reg <= 10'h3ff;
         VPN2_reg <= 10'h3ff;
-        state <= check;
+        state <= `ALL_TARGET;
     end
     else begin
         case(state)
-            check: begin
+            `ALL_TARGET: begin
                 if(csr_status == 1'b0) begin
                     if(addr_src[31:22] == VPN1_reg) begin
                         if(addr_src[21:12] == VPN2_reg) begin
-                            state <= check;//直接计算
+                            state <= `ALL_TARGET;//直接计算
                             if(done) begin
                                 done <= 1'b0;
                             end
@@ -195,7 +193,7 @@ always@(posedge clk or posedge rst) begin
                         end
                         else begin
                             VPN2_reg <= addr_src[21:12];
-                            state <= wait_VPN2;//已匹配VPN1
+                            state <= `GET_SECOND;//已匹配VPN1
                             addr_src_reg <= addr_src;
                             saved_forward_data_b <= forward_data_b;
                             saved_r2_data_type <= r2_data_type;
@@ -205,7 +203,7 @@ always@(posedge clk or posedge rst) begin
                     else begin
                         VPN1_reg <= addr_src[31:22];
                         VPN2_reg <= addr_src[21:12];
-                        state <= wait_VPN1;
+                        state <= `GET_FIRST;
                         addr_src_reg <= addr_src;                            
                         saved_forward_data_b <= forward_data_b;
                         saved_r2_data_type <= r2_data_type;
@@ -213,7 +211,7 @@ always@(posedge clk or posedge rst) begin
                     end
                 end
                 else begin
-                    state <= check;
+                    state <= `ALL_TARGET;
                     if(done) begin
                         done <= 1'b0;
                     end
@@ -222,15 +220,15 @@ always@(posedge clk or posedge rst) begin
                     end
                 end
             end
-            wait_VPN1: state <= check_VPN1;
-            check_VPN1: begin
+            `GET_FIRST: state <= `FIRST_TARGET;
+            `FIRST_TARGET: begin
                 PTE1_reg <= sram_data_out;
-                state <= wait_VPN2;
+                state <= `GET_SECOND;
             end
-            wait_VPN2: state <= check_VPN2;
-            check_VPN2: begin
+            `GET_SECOND: state <= `SECOND_TARGET;
+            `SECOND_TARGET: begin
                 PTE2_reg <= sram_data_out;
-                state <= check;
+                state <= `ALL_TARGET;
                 if(done) begin
                     done <= 1'b0;
                 end
@@ -238,11 +236,9 @@ always@(posedge clk or posedge rst) begin
                     done <= 1'b1;
                 end
             end
-            default: state <= check;
+            default: state <= `ALL_TARGET;
         endcase
     end
 end
-
-
 
 endmodule
