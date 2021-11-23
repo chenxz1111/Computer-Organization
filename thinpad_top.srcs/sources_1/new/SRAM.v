@@ -116,7 +116,7 @@ always @(posedge clk or posedge rst_btn) begin
     if (rst_btn) begin
         mtime <= 0;
 
-        uart_status <= wait_tsre;
+        uart_state <= wait_tsre;
     end
     else begin
         mtime <= mtime + 1;
@@ -127,7 +127,7 @@ always @(posedge clk or posedge rst_btn) begin
             mtimecmp[63:32] <= data_in;
         end
 
-        case (uart_status)
+        case (uart_state)
             wait_tbre: begin
                 if(uart_tbre) begin
                     urat_state <= wait_tsre;
