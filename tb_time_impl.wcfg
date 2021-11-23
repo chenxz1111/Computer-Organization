@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="795848fs"></ZoomStartTime>
-      <ZoomEndTime time="1092349fs"></ZoomEndTime>
-      <Cursor1Time time="1012848fs"></Cursor1Time>
+      <ZoomStartTime time="16491882fs"></ZoomStartTime>
+      <ZoomEndTime time="17144383fs"></ZoomEndTime>
+      <Cursor1Time time="20492666fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="156"></NameColumnWidth>
+      <NameColumnWidth column_width="151"></NameColumnWidth>
       <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="13" />
+   <WVObjectSize size="15" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -71,5 +71,13 @@
    <wvobject fp_name="/tb/dut/address" type="array">
       <obj_property name="ElementShortName">address[31:0]</obj_property>
       <obj_property name="ObjectShortName">address[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/_REG/\registers[5]__0 " type="array">
+      <obj_property name="ElementShortName">\registers[5]__0 [31:0]</obj_property>
+      <obj_property name="ObjectShortName">\registers[5]__0 [31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/r4_wb_data" type="array">
+      <obj_property name="ElementShortName">r4_wb_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r4_wb_data[31:0]</obj_property>
    </wvobject>
 </wave_config>

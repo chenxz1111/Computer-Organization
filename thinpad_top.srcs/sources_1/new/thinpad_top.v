@@ -169,7 +169,7 @@ reg[31:0] saved_r1_instr;
     MEM_WB
 */
 // DATA
-reg[31:0] r4_instr;
+(* dont_touch = "true" *)reg[31:0] r4_instr;
 reg[31:0] r4_wb_data;
 // CONTROLLER SIGNAL
 reg r4_pc_sel;
