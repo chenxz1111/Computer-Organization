@@ -448,6 +448,7 @@ always @(posedge clk_25M or posedge reset_btn) begin
                 r2_mem_sel <= `NO_RAM;
                 r2_reg_sel <= 1'b1;
                 r2_wb_sel <= `ALU_WB;
+                r2_csr_res <= 32'h0;
             end 
             else begin
                 r2_pc <= r1_pc;
