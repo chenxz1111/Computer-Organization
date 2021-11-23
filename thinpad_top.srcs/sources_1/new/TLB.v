@@ -28,7 +28,7 @@ reg[31:0] target1_res;
 reg[9:0] target2_index;
 reg[31:0] target2_res;
 reg[2:0] epoch;
-reg done;
+reg sram_;
 wire[31:0] target_address;
 reg[31:0] saved_address;
 
@@ -43,7 +43,7 @@ wire all_target;
 assign all_target = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
 assign mem_sel = all_target ? r2_mem_sel: saved_r2_mem_sel;
 assign data_type = all_target ? r2_data_type : saved_r2_data_type;
-assign sram_conflict = done ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
+assign sram_conflict = sram_finish ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
 assign target_address = sram_conflict ? r2_alu_res : (mem_stall ? r0_pc : error ? next_pc : predict_pc);
 
 assign r3_data_in = all_target ? forward_data_b: saved_forward_data_b;
@@ -107,11 +107,9 @@ always@* begin
     endcase
 end
 
-
-
 always@(posedge clk or posedge rst) begin
     if(rst) begin
-        done <= 1'b0;
+        sram_finish <= 1'b0;
         target1_index <= 10'h3ff;
         target2_index <= 10'h3ff;
         epoch <= `ALL_TARGET;
@@ -122,17 +120,17 @@ always@(posedge clk or posedge rst) begin
                 if(csr_status == 1'b0) begin
                     if(target_address[31:22] == target1_index) begin
                         if(target_address[21:12] == target2_index) begin
-                            epoch <= `ALL_TARGET;//直接计算
-                            if(done) begin
-                                done <= 1'b0;
+                            epoch <= `ALL_TARGET;
+                            if(sram_finish) begin
+                                sram_finish <= 1'b0;
                             end
                             else if(sram_conflict) begin
-                                done <= 1'b1;
+                                sram_finish <= 1'b1;
                             end
                         end
                         else begin
                             target2_index <= target_address[21:12];
-                            epoch <= `GET_SECOND;//已匹配VPN1
+                            epoch <= `GET_SECOND;
                             saved_address <= target_address;
                             saved_forward_data_b <= forward_data_b;
                             saved_r2_data_type <= r2_data_type;
@@ -151,28 +149,30 @@ always@(posedge clk or posedge rst) begin
                 end
                 else begin
                     epoch <= `ALL_TARGET;
-                    if(done) begin
-                        done <= 1'b0;
+                    if(sram_finish) begin
+                        sram_finish <= 1'b0;
                     end
                     else if(sram_conflict) begin
-                        done <= 1'b1;
+                        sram_finish <= 1'b1;
                     end
                 end
             end
-            `GET_FIRST: epoch <= `FIRST_TARGET;
+            `GET_FIRST: 
+                epoch <= `FIRST_TARGET;
             `FIRST_TARGET: begin
                 target1_res <= sram_data_out;
                 epoch <= `GET_SECOND;
             end
-            `GET_SECOND: epoch <= `SECOND_TARGET;
+            `GET_SECOND: 
+                epoch <= `SECOND_TARGET;
             `SECOND_TARGET: begin
                 target2_res <= sram_data_out;
                 epoch <= `ALL_TARGET;
-                if(done) begin
-                    done <= 1'b0;
+                if(sram_finish) begin
+                    sram_finish <= 1'b0;
                 end
                 else if(sram_conflict) begin
-                    done <= 1'b1;
+                    sram_finish <= 1'b1;
                 end
             end
             default: epoch <= `ALL_TARGET;
