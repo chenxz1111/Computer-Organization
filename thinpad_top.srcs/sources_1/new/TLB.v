@@ -3,9 +3,8 @@ module TLB(
     input wire rst,
     input wire[31:0] csr_satp,
     input wire csr_status,
+    input wire[31:0] r2_instr,
     input wire[31:0] r2_alu_res,
-    input wire[1:0] r2_mem_sel,
-    input wire r2_data_type,
     input wire error,
     input wire[31:0] next_pc,
     input wire[31:0] predict_pc,
@@ -18,196 +17,234 @@ module TLB(
     output reg r3_ram_enable,
     output reg[31:0] r3_addr,
     output wire[31:0] r3_data_in,
-    output wire r3_oe,
-    output wire r3_we,
-    output wire r3_be
+    output reg r3_oe,
+    output reg r3_we,
+    output reg r3_be
 );
+localparam
+    load_code = 7'b0000011,
+    store_code = 7'b0100011;
+localparam
+    funct_LB = 3'b000,
+    funct_LW = 3'b010,
+    funct_SB = 3'b000,
+    funct_SW = 3'b010;
+localparam
+    fetch = 0,
+    lb = 1,
+    lw = 2,
+    sb = 3,
+    sw = 4;
+localparam
+    check = 3'b000,
+    wait_VPN1 = 3'b001,
+    check_VPN1 = 3'b010,
+    wait_VPN2 = 3'b011,
+    check_VPN2 = 3'b100;
 
-reg[9:0] target1_index;
-reg[31:0] target1_res;
-reg[9:0] target2_index;
-reg[31:0] target2_res;
-reg[2:0] epoch;
-reg sram_finish;
-wire[31:0] target_address;
-reg[31:0] saved_address;
+reg[31:0] r2_instr_reg;
+reg[31:0] b_reg;
+reg done;
+wire conflict_reg;
+assign conflict_reg = (command != fetch);
+wire[6:0] opcode;
+assign opcode = (state == check)? r2_instr[6:0]: r2_instr_reg[6:0];
+wire[2:0] funct3;
+assign funct3 = (state == check)? r2_instr[14:12]: r2_instr_reg[14:12];
 
-reg[1:0] saved_r2_mem_sel;
-reg saved_r2_data_type;
-reg[31:0] saved_forward_data_b;
-wire[1:0] mem_sel;
-wire data_type;
-wire sram_conflict;
-wire all_target;
-//UART
-reg wait_uart;
-reg[2:0] wait_uart_count;
-wire uart;
-
-assign uart = (r3_addr == 32'h10000000) ? 1'b1 : 1'b0;
-assign all_target = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
-assign mem_sel = (all_target && ~wait_uart) ? r2_mem_sel: saved_r2_mem_sel;
-assign data_type = (all_target && ~wait_uart) ? r2_data_type : saved_r2_data_type;
-assign sram_conflict = sram_finish ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
-assign target_address = sram_conflict ? r2_alu_res : (mem_stall ? r0_pc : error ? next_pc : predict_pc);
-
-assign r3_data_in = (all_target && ~wait_uart) ? forward_data_b: saved_forward_data_b;
-assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
-assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
-assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
-
+reg[2:0] command;
 always @(*) begin
-    case(epoch)
-        `ALL_TARGET: begin
+    if(done) begin
+        command = fetch;
+    end
+    else begin
+        case(opcode)
+            load_code: begin
+                case(funct3)
+                    funct_LB: command = lb;
+                    funct_LW: command = lw;
+                    default: command = fetch;
+                endcase
+            end
+            store_code: begin
+                case(funct3)
+                    funct_SB: command = sb;
+                    funct_SW: command = sw;
+                    default: command = fetch;
+                endcase
+            end
+            default: begin
+                command = fetch;
+            end
+        endcase
+    end
+end
+reg[9:0] VPN1_reg;
+reg[31:0] PTE1_reg;
+reg[9:0] VPN2_reg;
+reg[31:0] PTE2_reg;
+reg[2:0] state;
+wire[31:0] addr_src;
+assign addr_src = (command == fetch) ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
+reg[31:0] addr_src_reg;
+
+always@* begin
+    case(state)
+        check: begin
             if(csr_status == 1'b0) begin
-                if(target_address[31:22] == target1_index) begin
-                    if(target_address[21:12] == target2_index) begin
-                        r3_stall = sram_conflict;
+                if(addr_src[31:22] == VPN1_reg) begin
+                    if(addr_src[21:12] == VPN2_reg) begin//直接计算
+                        r3_stall = (command != fetch);
                         r3_ram_enable = 1'b1;
-                        r3_addr = {target2_res[29:10], target_address[11:0]};
+                        r3_addr = {PTE2_reg[29:10], addr_src[11:0]};
                     end
-                    else begin
+                    else begin//已匹配VPN1
                         r3_stall = 1'b1;
                         r3_ram_enable = 1'b0;
-                        r3_addr = {target1_res[29:10], target_address[21:12], 2'b00};
+                        r3_addr = {PTE1_reg[29:10], addr_src[21:12], 2'b00};
                     end
                 end
                 else begin
                     r3_stall = 1'b1;
                     r3_ram_enable = 1'b0;
-                    r3_addr = {csr_satp[19:0], target_address[31:22], 2'b00};
+                    r3_addr = {csr_satp[19:0], addr_src[31:22], 2'b00};
                 end
             end
             else begin
-                r3_stall = sram_conflict;
+                r3_stall = (command != fetch);
                 r3_ram_enable = 1'b1;
-                if (wait_uart) 
-                    r3_addr = saved_address;
-                else 
-                    r3_addr = target_address;
+                r3_addr = addr_src;
             end
         end
-        `GET_FIRST: begin
+        wait_VPN1: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = saved_address;
+            r3_addr = addr_src_reg;
         end
-        `FIRST_TARGET: begin
+        check_VPN1: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = {sram_data_out[29:10], saved_address[21:12], 2'b00};
+            r3_addr = {sram_data_out[29:10], addr_src_reg[21:12], 2'b00};
         end
-        `GET_SECOND: begin
+        wait_VPN2: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = saved_address;
+            r3_addr = addr_src_reg;
         end
-        `SECOND_TARGET: begin
-            r3_stall = sram_conflict;
+        check_VPN2: begin
+            r3_stall = (command != fetch);
             r3_ram_enable = 1'b1;
-            r3_addr = {sram_data_out[29:10], saved_address[11:0]};
+            r3_addr = {sram_data_out[29:10], addr_src_reg[11:0]};
         end
         default: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = target_address;
+            r3_addr = addr_src;
         end
     endcase
 end
 
-always @(posedge clk or posedge rst) begin
+assign r3_data_in = (state == check)? forward_data_b: b_reg;
+
+always @(*) begin
+    case(command)
+        sb: begin
+            r3_oe = 1'b0;
+            r3_we = 1'b1;
+            r3_be = 1'b1;
+        end
+        sw: begin
+            r3_oe = 1'b0;
+            r3_we = 1'b1;
+            r3_be = 1'b0;
+        end
+        lb: begin
+            r3_oe = 1'b1;
+            r3_we = 1'b0;
+            r3_be = 1'b1;
+        end
+        lw: begin
+            r3_oe = 1'b1;
+            r3_we = 1'b0;
+            r3_be = 1'b0;
+        end
+        default: begin
+            r3_oe = 1'b1;
+            r3_we = 1'b0;
+            r3_be = 1'b0;
+        end
+    endcase
+end
+
+always@(posedge clk or posedge rst) begin
     if(rst) begin
-        sram_finish <= 1'b0;
-        target1_index <= 10'h3ff;
-        target2_index <= 10'h3ff;
-        epoch <= `ALL_TARGET;
-        //UART
-        wait_uart <= 1'b0;
-        wait_uart_count <= 0;
+        done <= 1'b0;
+        VPN1_reg <= 10'h3ff;
+        VPN2_reg <= 10'h3ff;
+        state <= check;
     end
     else begin
-        case(epoch)
-            `ALL_TARGET: begin
+        case(state)
+            check: begin
                 if(csr_status == 1'b0) begin
-                    if(target_address[31:22] == target1_index) begin
-                        if(target_address[21:12] == target2_index) begin
-                            epoch <= `ALL_TARGET;
-                            if(sram_finish) begin
-                                sram_finish <= 1'b0;
+                    if(addr_src[31:22] == VPN1_reg) begin
+                        if(addr_src[21:12] == VPN2_reg) begin
+                            state <= check;//直接计算
+                            if(done) begin
+                                done <= 1'b0;
                             end
-                            else if(sram_conflict) begin
-                                sram_finish <= 1'b1;
+                            else if(conflict_reg) begin
+                                done <= 1'b1;
                             end
                         end
                         else begin
-                            target2_index <= target_address[21:12];
-                            epoch <= `GET_SECOND;
-                            saved_address <= target_address;
-                            saved_forward_data_b <= forward_data_b;
-                            saved_r2_data_type <= r2_data_type;
-                            saved_r2_mem_sel <= r2_mem_sel;
+                            VPN2_reg <= addr_src[21:12];
+                            state <= wait_VPN2;//已匹配VPN1
+                            addr_src_reg <= addr_src;
+                            r2_instr_reg <= r2_instr;
+                            b_reg <= forward_data_b;
                         end
                     end
                     else begin
-                        target1_index <= target_address[31:22];
-                        target2_index <= target_address[21:12];
-                        epoch <= `GET_FIRST;
-                        saved_address <= target_address;                            
-                        saved_forward_data_b <= forward_data_b;
-                        saved_r2_data_type <= r2_data_type;
-                        saved_r2_mem_sel <= r2_mem_sel;
+                        VPN1_reg <= addr_src[31:22];
+                        VPN2_reg <= addr_src[21:12];
+                        state <= wait_VPN1;
+                        addr_src_reg <= addr_src;
+                        r2_instr_reg <= r2_instr;
+                        b_reg <= forward_data_b;
                     end
                 end
                 else begin
-                    epoch <= `ALL_TARGET;
-                    if(sram_finish) begin
-                        sram_finish <= 1'b0;
+                    state <= check;//直接计算
+                    if(done) begin
+                        done <= 1'b0;
                     end
-                    else if(sram_conflict) begin
-                        if (uart) begin
-                            if (wait_uart) begin
-                                if (wait_uart_count == 5) begin
-                                    wait_uart <= 1'b0;
-                                    sram_finish <= 1'b1;
-                                    wait_uart_count <= 0;
-                                end
-                                else begin
-                                    wait_uart_count <= wait_uart_count + 1;
-                                end
-                            end
-                            else begin
-                                wait_uart <= 1'b1;
-                                saved_address <= target_address;
-                                saved_forward_data_b <= forward_data_b;
-                                saved_r2_data_type <= r2_data_type;
-                                saved_r2_mem_sel <= r2_mem_sel;
-                            end
-                        end
-                        else sram_finish <= 1'b1;
+                    else if(conflict_reg) begin
+                        done <= 1'b1;
                     end
                 end
             end
-            `GET_FIRST: 
-                epoch <= `FIRST_TARGET;
-            `FIRST_TARGET: begin
-                target1_res <= sram_data_out;
-                epoch <= `GET_SECOND;
+            wait_VPN1: state <= check_VPN1;
+            check_VPN1: begin
+                PTE1_reg <= sram_data_out;
+                state <= wait_VPN2;
             end
-            `GET_SECOND: 
-                epoch <= `SECOND_TARGET;
-            `SECOND_TARGET: begin
-                target2_res <= sram_data_out;
-                epoch <= `ALL_TARGET;
-                if(sram_finish) begin
-                    sram_finish <= 1'b0;
+            wait_VPN2: state <= check_VPN2;
+            check_VPN2: begin
+                PTE2_reg <= sram_data_out; //把sram的输出作为实地址？？？？
+                state <= check;
+                if(done) begin
+                    done <= 1'b0;
                 end
-                else if(sram_conflict) begin
-                    sram_finish <= 1'b1;
+                else if(conflict_reg) begin
+                    done <= 1'b1;
                 end
             end
-            default: epoch <= `ALL_TARGET;
+            default: state <= check;
         endcase
     end
 end
+
+
 
 endmodule
