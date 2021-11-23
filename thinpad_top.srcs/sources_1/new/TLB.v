@@ -35,8 +35,6 @@ reg saved_r2_data_type;
 //reg[31:0] r2_instr_reg;
 reg[31:0] saved_forward_data_b;
 reg done;
-wire conflict_reg;
-assign conflict_reg = (command != fetch);
 wire[1:0] mem_sel;
 assign mem_sel = (state == `ALL_TARGET)? r2_mem_sel: saved_r2_mem_sel;
 wire data_type;
@@ -189,7 +187,7 @@ always@(posedge clk or posedge rst) begin
                             if(done) begin
                                 done <= 1'b0;
                             end
-                            else if(conflict_reg) begin
+                            else if(sram_conflict) begin
                                 done <= 1'b1;
                             end
                         end
@@ -217,7 +215,7 @@ always@(posedge clk or posedge rst) begin
                     if(done) begin
                         done <= 1'b0;
                     end
-                    else if(conflict_reg) begin
+                    else if(sram_conflict) begin
                         done <= 1'b1;
                     end
                 end
@@ -234,7 +232,7 @@ always@(posedge clk or posedge rst) begin
                 if(done) begin
                     done <= 1'b0;
                 end
-                else if(conflict_reg) begin
+                else if(sram_conflict) begin
                     done <= 1'b1;
                 end
             end
