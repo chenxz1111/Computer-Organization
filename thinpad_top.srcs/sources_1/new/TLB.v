@@ -140,7 +140,7 @@ always@* begin
     endcase
 end
 
-assign r3_data_in = (state == check)? forward_data_b: b_reg;
+assign r3_data_in = (state == check)? forward_data_b: saved_forward_data_b;
 
 always @(*) begin
     case(command)

@@ -46,3 +46,9 @@
 `define CSR_ECALL 3'b100
 `define CSR_MRET 3'b101
 `define CSR_NOP 3'b111
+
+`define ALL_TARGET 3'h0
+`define GET_FIRST 3'h1
+`define FIRST_TARGET 3'h2
+`define GET_SECOND 3'h3
+`define SECOND_TARGET 3'h4

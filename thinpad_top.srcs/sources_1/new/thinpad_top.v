@@ -228,7 +228,6 @@ TLB _TLB(
     .rst(reset_btn),
     .csr_satp(CSR_satp),
     .csr_status(CSR_status),
-    .r2_instr(r2_instr),
     .r2_alu_res(r2_alu_res),
     .r2_mem_sel(r2_mem_sel),
     .r2_data_type(r2_data_type),
