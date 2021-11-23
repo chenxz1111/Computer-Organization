@@ -99,7 +99,7 @@ wire[31:0] uart_status_reg;
 wire uart_free;
 
 //maybe need to modify
-assign uart_free = (uart_status == wait_tsre) && uart_tsre;
+assign uart_free = (uart_state == wait_tsre) && uart_tsre;
 
 assign uart_status_reg = {16'h0000, 2'b00, uart_free, 4'b0000, uart_dataready, 8'h00};
 
