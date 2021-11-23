@@ -39,14 +39,19 @@ wire[1:0] mem_sel;
 wire data_type;
 wire sram_conflict;
 wire all_target;
+//UART
+reg wait_uart;
+reg[2:0] wait_uart_count;
+wire uart;
 
+assign uart = (r3_addr == 32'h10000000) ? 1'b1 : 1'b0;
 assign all_target = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
-assign mem_sel = all_target ? r2_mem_sel: saved_r2_mem_sel;
-assign data_type = all_target ? r2_data_type : saved_r2_data_type;
+assign mem_sel = (all_target && ~wait_uart) ? r2_mem_sel: saved_r2_mem_sel;
+assign data_type = (all_target && ~wait_uart) ? r2_data_type : saved_r2_data_type;
 assign sram_conflict = sram_finish ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
 assign target_address = sram_conflict ? r2_alu_res : (mem_stall ? r0_pc : error ? next_pc : predict_pc);
 
-assign r3_data_in = all_target ? forward_data_b: saved_forward_data_b;
+assign r3_data_in = (all_target && ~wait_uart) ? forward_data_b: saved_forward_data_b;
 assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
 assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
 assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
@@ -76,7 +81,10 @@ always @(*) begin
             else begin
                 r3_stall = sram_conflict;
                 r3_ram_enable = 1'b1;
-                r3_addr = target_address;
+                if (wait_uart) 
+                    r3_addr = saved_address;
+                else 
+                    r3_addr = target_address;
             end
         end
         `GET_FIRST: begin
@@ -113,6 +121,9 @@ always @(posedge clk or posedge rst) begin
         target1_index <= 10'h3ff;
         target2_index <= 10'h3ff;
         epoch <= `ALL_TARGET;
+        //UART
+        wait_uart <= 1'b0;
+        wait_uart_count <= 0;
     end
     else begin
         case(epoch)
@@ -153,7 +164,26 @@ always @(posedge clk or posedge rst) begin
                         sram_finish <= 1'b0;
                     end
                     else if(sram_conflict) begin
-                        sram_finish <= 1'b1;
+                        if (uart) begin
+                            if (wait_uart) begin
+                                if (wait_uart_count == 5) begin
+                                    wait_uart <= 1'b0;
+                                    sram_finish <= 1'b1;
+                                    wait_uart_count <= 0;
+                                end
+                                else begin
+                                    wait_uart_count <= wait_uart_count + 1;
+                                end
+                            end
+                            else begin
+                                wait_uart <= 1'b1;
+                                saved_address <= target_address;
+                                saved_forward_data_b <= forward_data_b;
+                                saved_r2_data_type <= r2_data_type;
+                                saved_r2_mem_sel <= r2_mem_sel;
+                            end
+                        end
+                        else sram_finish <= 1'b1;
                     end
                 end
             end
