@@ -429,10 +429,6 @@ always @(posedge clk_25M or posedge reset_btn) begin
     else begin
         if (!mem_stall) begin
             r0_pc <= error ? next_pc : predict_pc;
-            // oe <= 1'b1;
-            // we <= 1'b0;
-            // be <= 1'b0;
-            // address <= error ? next_pc : predict_pc;
             r1_pc <= error ? 32'h0 : r0_pc;
             r1_instr <= error ? NOP : data_out;
             if (error) begin

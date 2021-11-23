@@ -51,7 +51,7 @@ assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
 assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
 assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
 
-always@* begin
+always @(*) begin
     case(epoch)
         `ALL_TARGET: begin
             if(csr_status == 1'b0) begin
@@ -107,7 +107,7 @@ always@* begin
     endcase
 end
 
-always@(posedge clk or posedge rst) begin
+always @(posedge clk or posedge rst) begin
     if(rst) begin
         sram_finish <= 1'b0;
         target1_index <= 10'h3ff;
