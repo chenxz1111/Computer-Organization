@@ -139,7 +139,7 @@ always@* begin
             r3_ram_enable = 1'b0;
             r3_addr = addr_src;
         end
-    endcase
+    endcas
 end
 
 assign r3_data_in = (state == check)? forward_data_b: b_reg;
@@ -213,6 +213,10 @@ always@(posedge clk or posedge rst) begin
                     end
                 end
                 else begin
+                    state <= check;//直接计算
+                    if(done) begin
+                        done <= 1'b0;
+                    end
                     else if(conflict_reg) begin
                         done <= 1'b1;
                     end
