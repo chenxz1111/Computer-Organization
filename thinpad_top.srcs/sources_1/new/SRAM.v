@@ -107,7 +107,7 @@ assign data_wire = (read_base || read_uart) ? base_ram_data_wire : read_ext ? ex
 assign read_data = (address[1:0] == 2'b00) ? {{24{data_wire[7]}}, data_wire[7:0]} : (address[1:0] == 2'b01) ? {{24{data_wire[15]}}, data_wire[15:8]} : (address[1:0] == 2'b10) ? {{24{data_wire[23]}}, data_wire[23:16]} : {{24{data_wire[31]}}, data_wire[31:24]};
 assign data_out = be ? read_data : data_wire;
 
-reg urat_state;
+reg uart_state;
 localparam
     wait_tbre = 0,
     wait_tsre = 1;
