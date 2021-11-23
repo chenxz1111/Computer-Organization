@@ -28,7 +28,7 @@ reg[31:0] target1_res;
 reg[9:0] target2_index;
 reg[31:0] target2_res;
 reg[2:0] epoch;
-reg sram_;
+reg sram_finish;
 wire[31:0] target_address;
 reg[31:0] saved_address;
 
