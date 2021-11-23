@@ -23,167 +23,106 @@ module TLB(
     output wire r3_be
 );
 
-localparam
-    fetch = 0,
-    lb = 1,
-    lw = 2,
-    sb = 3,
-    sw = 4;
+reg[9:0] target1_index;
+reg[31:0] target1_res;
+reg[9:0] target2_index;
+reg[31:0] target2_res;
+reg[2:0] epoch;
+reg done;
+wire[31:0] target_address;
+reg[31:0] saved_address;
 
 reg[1:0] saved_r2_mem_sel;
 reg saved_r2_data_type;
-//reg[31:0] r2_instr_reg;
 reg[31:0] saved_forward_data_b;
-reg done;
 wire[1:0] mem_sel;
-assign mem_sel = (state == `ALL_TARGET)? r2_mem_sel: saved_r2_mem_sel;
 wire data_type;
-assign data_type = (state == `ALL_TARGET)? r2_data_type : saved_r2_data_type;
-reg[2:0] command;
 wire sram_conflict;
-assign sram_conflict = done ? 1'b0 : 
-                        (state == `ALL_TARGET) ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) 
-                        : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) ;
-// always @(*) begin
-//     if(done) begin
-//         command = fetch;
-//     end
-//     else begin
-//         case(opcode)
-//             `READ_RAM: begin
-//                 case(funct3)
-//                     funct_LB: command = lb;
-//                     funct_LW: command = lw;
-//                     default: command = fetch;
-//                 endcase
-//             end
-//             `WRITE_RAM: begin
-//                 case(funct3)
-//                     funct_SB: command = sb;
-//                     funct_SW: command = sw;
-//                     default: command = fetch;
-//                 endcase
-//             end
-//             default: begin
-//                 command = fetch;
-//             end
-//         endcase
-//     end
-// end
+wire all_target;
 
-reg[9:0] VPN1_reg;
-reg[31:0] PTE1_reg;
-reg[9:0] VPN2_reg;
-reg[31:0] PTE2_reg;
-reg[2:0] state;
-wire[31:0] addr_src;
-assign addr_src = !sram_conflict ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
-reg[31:0] addr_src_reg;
+assign all_target = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
+assign mem_sel =  ? r2_mem_sel: saved_r2_mem_sel;
+assign data_type = all_target ? r2_data_type : saved_r2_data_type;
+assign sram_conflict = done ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
+assign target_address = sram_conflict ? r2_alu_res : (mem_stall ? r0_pc : error ? next_pc : predict_pc);
+
+assign r3_data_in = all_target ? forward_data_b: saved_forward_data_b;
+assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
+assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
+assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
 
 always@* begin
-    case(state)
+    case(epoch)
         `ALL_TARGET: begin
             if(csr_status == 1'b0) begin
-                if(addr_src[31:22] == VPN1_reg) begin
-                    if(addr_src[21:12] == VPN2_reg) begin//直接计算
+                if(target_address[31:22] == target1_index) begin
+                    if(target_address[21:12] == target2_index) begin
                         r3_stall = sram_conflict;
                         r3_ram_enable = 1'b1;
-                        r3_addr = {PTE2_reg[29:10], addr_src[11:0]};
+                        r3_addr = {target2_res[29:10], target_address[11:0]};
                     end
-                    else begin//已匹配VPN1
+                    else begin
                         r3_stall = 1'b1;
                         r3_ram_enable = 1'b0;
-                        r3_addr = {PTE1_reg[29:10], addr_src[21:12], 2'b00};
+                        r3_addr = {target1_res[29:10], target_address[21:12], 2'b00};
                     end
                 end
                 else begin
                     r3_stall = 1'b1;
                     r3_ram_enable = 1'b0;
-                    r3_addr = {csr_satp[19:0], addr_src[31:22], 2'b00};
+                    r3_addr = {csr_satp[19:0], target_address[31:22], 2'b00};
                 end
             end
             else begin
                 r3_stall = sram_conflict;
                 r3_ram_enable = 1'b1;
-                r3_addr = addr_src;
+                r3_addr = target_address;
             end
         end
         `GET_FIRST: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = addr_src_reg;
+            r3_addr = saved_address;
         end
         `FIRST_TARGET: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = {sram_data_out[29:10], addr_src_reg[21:12], 2'b00};
+            r3_addr = {sram_data_out[29:10], saved_address[21:12], 2'b00};
         end
         `GET_SECOND: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = addr_src_reg;
+            r3_addr = saved_address;
         end
         `SECOND_TARGET: begin
             r3_stall = sram_conflict;
             r3_ram_enable = 1'b1;
-            r3_addr = {sram_data_out[29:10], addr_src_reg[11:0]};
+            r3_addr = {sram_data_out[29:10], saved_address[11:0]};
         end
         default: begin
             r3_stall = 1'b1;
             r3_ram_enable = 1'b0;
-            r3_addr = addr_src;
+            r3_addr = target_address;
         end
     endcase
 end
 
-assign r3_data_in = (state == `ALL_TARGET)? forward_data_b: saved_forward_data_b;
-assign r3_oe = (mem_sel == `WRITE_RAM) ? 1'b0 : 1'b1;
-assign r3_we = (mem_sel == `WRITE_RAM) ? 1'b1 : 1'b0;
-assign r3_be = (mem_sel != `NO_RAM) ? data_type : 1'b0;
-// always @(*) begin
-//     case(command)
-//         sb: begin
-//             r3_oe = 1'b0;
-//             r3_we = 1'b1;
-//             r3_be = 1'b1;
-//         end
-//         sw: begin
-//             r3_oe = 1'b0;
-//             r3_we = 1'b1;
-//             r3_be = 1'b0;
-//         end
-//         lb: begin
-//             r3_oe = 1'b1;
-//             r3_we = 1'b0;
-//             r3_be = 1'b1;
-//         end
-//         lw: begin
-//             r3_oe = 1'b1;
-//             r3_we = 1'b0;
-//             r3_be = 1'b0;
-//         end
-//         default: begin
-//             r3_oe = 1'b1;
-//             r3_we = 1'b0;
-//             r3_be = 1'b0;
-//         end
-//     endcase
-// end
+
 
 always@(posedge clk or posedge rst) begin
     if(rst) begin
         done <= 1'b0;
-        VPN1_reg <= 10'h3ff;
-        VPN2_reg <= 10'h3ff;
-        state <= `ALL_TARGET;
+        target1_index <= 10'h3ff;
+        target2_index <= 10'h3ff;
+        epoch <= `ALL_TARGET;
     end
     else begin
-        case(state)
+        case(epoch)
             `ALL_TARGET: begin
                 if(csr_status == 1'b0) begin
-                    if(addr_src[31:22] == VPN1_reg) begin
-                        if(addr_src[21:12] == VPN2_reg) begin
-                            state <= `ALL_TARGET;//直接计算
+                    if(target_address[31:22] == target1_index) begin
+                        if(target_address[21:12] == target2_index) begin
+                            epoch <= `ALL_TARGET;//直接计算
                             if(done) begin
                                 done <= 1'b0;
                             end
@@ -192,26 +131,26 @@ always@(posedge clk or posedge rst) begin
                             end
                         end
                         else begin
-                            VPN2_reg <= addr_src[21:12];
-                            state <= `GET_SECOND;//已匹配VPN1
-                            addr_src_reg <= addr_src;
+                            target2_index <= target_address[21:12];
+                            epoch <= `GET_SECOND;//已匹配VPN1
+                            saved_address <= target_address;
                             saved_forward_data_b <= forward_data_b;
                             saved_r2_data_type <= r2_data_type;
                             saved_r2_mem_sel <= r2_mem_sel;
                         end
                     end
                     else begin
-                        VPN1_reg <= addr_src[31:22];
-                        VPN2_reg <= addr_src[21:12];
-                        state <= `GET_FIRST;
-                        addr_src_reg <= addr_src;                            
+                        target1_index <= target_address[31:22];
+                        target2_index <= target_address[21:12];
+                        epoch <= `GET_FIRST;
+                        saved_address <= target_address;                            
                         saved_forward_data_b <= forward_data_b;
                         saved_r2_data_type <= r2_data_type;
                         saved_r2_mem_sel <= r2_mem_sel;
                     end
                 end
                 else begin
-                    state <= `ALL_TARGET;
+                    epoch <= `ALL_TARGET;
                     if(done) begin
                         done <= 1'b0;
                     end
@@ -220,15 +159,15 @@ always@(posedge clk or posedge rst) begin
                     end
                 end
             end
-            `GET_FIRST: state <= `FIRST_TARGET;
+            `GET_FIRST: epoch <= `FIRST_TARGET;
             `FIRST_TARGET: begin
-                PTE1_reg <= sram_data_out;
-                state <= `GET_SECOND;
+                target1_res <= sram_data_out;
+                epoch <= `GET_SECOND;
             end
-            `GET_SECOND: state <= `SECOND_TARGET;
+            `GET_SECOND: epoch <= `SECOND_TARGET;
             `SECOND_TARGET: begin
-                PTE2_reg <= sram_data_out;
-                state <= `ALL_TARGET;
+                target2_res <= sram_data_out;
+                epoch <= `ALL_TARGET;
                 if(done) begin
                     done <= 1'b0;
                 end
@@ -236,7 +175,7 @@ always@(posedge clk or posedge rst) begin
                     done <= 1'b1;
                 end
             end
-            default: state <= `ALL_TARGET;
+            default: epoch <= `ALL_TARGET;
         endcase
     end
 end
