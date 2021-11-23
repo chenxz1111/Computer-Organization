@@ -40,7 +40,7 @@ wire all_tgt;
 assign all_tgt = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
 reg[31:0] saved_r2_instr;
 reg[31:0] b_reg;
-reg done;
+reg sram_finish;
 wire conflict_reg;
 assign conflict_reg = (command != fetch);
 wire[6:0] opcode;
@@ -48,13 +48,13 @@ assign opcode = all_tgt ? r2_instr[6:0]: saved_r2_instr[6:0];
 wire[2:0] funct3;
 assign funct3 = all_tgt ? r2_instr[14:12]: saved_r2_instr[14:12];
 reg[2:0] command;
-reg[9:0] VPN1_reg;
-reg[31:0] PTE1_reg;
-reg[9:0] VPN2_reg;
-reg[31:0] PTE2_reg;
+reg[9:0] tgt1_va;
+reg[31:0] tgt1_pa;
+reg[9:0] tgt2_va;
+reg[31:0] tgt2_pa;
 reg[2:0] epoch;
 wire[31:0] target_addr;
-assign target_addr = !conflict_reg ? ( mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
+assign target_addr = !conflict_reg ? (mem_stall ? r0_pc : error ? next_pc : predict_pc) : r2_alu_res;
 reg[31:0] saved_target_addr;
 assign r3_data_in = all_tgt ? forward_data_b: b_reg;
 
@@ -87,8 +87,9 @@ always @(*) begin
         end
     endcase
 end
+
 always @(*) begin
-    if(done) begin
+    if(sram_finish) begin
         command = fetch;
     end
     else begin
@@ -115,20 +116,20 @@ always @(*) begin
 end
 
 
-always@* begin
+always @(*) begin
     case(epoch)
         `ALL_TARGET: begin
             if(csr_status == 1'b0) begin
-                if(target_addr[31:22] == VPN1_reg) begin
-                    if(target_addr[21:12] == VPN2_reg) begin
+                if(target_addr[31:22] == tgt1_va) begin
+                    if(target_addr[21:12] == tgt2_va) begin
                         r3_stall = conflict_reg;
                         r3_ram_enable = 1'b1;
-                        r3_addr = {PTE2_reg[29:10], target_addr[11:0]};
+                        r3_addr = {tgt2_pa[29:10], target_addr[11:0]};
                     end
                     else begin
                         r3_stall = 1'b1;
                         r3_ram_enable = 1'b0;
-                        r3_addr = {PTE1_reg[29:10], target_addr[21:12], 2'b00};
+                        r3_addr = {tgt1_pa[29:10], target_addr[21:12], 2'b00};
                     end
                 end
                 else begin
@@ -173,27 +174,27 @@ end
 
 always@(posedge clk or posedge rst) begin
     if(rst) begin
-        done <= 1'b0;
-        VPN1_reg <= 10'h3ff;
-        VPN2_reg <= 10'h3ff;
+        sram_finish <= 1'b0;
+        tgt1_va <= 10'h3ff;
+        tgt2_va <= 10'h3ff;
         epoch <= `ALL_TARGET;
     end
     else begin
         case(epoch)
             `ALL_TARGET: begin
                 if(csr_status == 1'b0) begin
-                    if(target_addr[31:22] == VPN1_reg) begin
-                        if(target_addr[21:12] == VPN2_reg) begin
+                    if(target_addr[31:22] == tgt1_va) begin
+                        if(target_addr[21:12] == tgt2_va) begin
                             epoch <= `ALL_TARGET;
-                            if(done) begin
-                                done <= 1'b0;
+                            if(sram_finish) begin
+                                sram_finish <= 1'b0;
                             end
                             else if(conflict_reg) begin
-                                done <= 1'b1;
+                                sram_finish <= 1'b1;
                             end
                         end
                         else begin
-                            VPN2_reg <= target_addr[21:12];
+                            tgt2_va <= target_addr[21:12];
                             epoch <= `GET_SECOND;
                             saved_target_addr <= target_addr;
                             saved_r2_instr <= r2_instr;
@@ -201,8 +202,8 @@ always@(posedge clk or posedge rst) begin
                         end
                     end
                     else begin
-                        VPN1_reg <= target_addr[31:22];
-                        VPN2_reg <= target_addr[21:12];
+                        tgt1_va <= target_addr[31:22];
+                        tgt2_va <= target_addr[21:12];
                         epoch <= `GET_FIRST;
                         saved_target_addr <= target_addr;
                         saved_r2_instr <= r2_instr;
@@ -211,28 +212,28 @@ always@(posedge clk or posedge rst) begin
                 end
                 else begin
                     epoch <= `ALL_TARGET;
-                    if(done) begin
-                        done <= 1'b0;
+                    if(sram_finish) begin
+                        sram_finish <= 1'b0;
                     end
                     else if(conflict_reg) begin
-                        done <= 1'b1;
+                        sram_finish <= 1'b1;
                     end
                 end
             end
             `GET_FIRST: epoch <= `FIRST_TARGET;
             `FIRST_TARGET: begin
-                PTE1_reg <= sram_data_out;
+                tgt1_pa <= sram_data_out;
                 epoch <= `GET_SECOND;
             end
             `GET_SECOND: epoch <= `SECOND_TARGET;
             `SECOND_TARGET: begin
-                PTE2_reg <= sram_data_out;
+                tgt2_pa <= sram_data_out;
                 epoch <= `ALL_TARGET;
-                if(done) begin
-                    done <= 1'b0;
+                if(sram_finish) begin
+                    sram_finish <= 1'b0;
                 end
                 else if(conflict_reg) begin
-                    done <= 1'b1;
+                    sram_finish <= 1'b1;
                 end
             end
             default: epoch <= `ALL_TARGET;
