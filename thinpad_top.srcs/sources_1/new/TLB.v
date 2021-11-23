@@ -41,7 +41,7 @@ wire sram_conflict;
 wire all_target;
 
 assign all_target = (epoch == `ALL_TARGET) ? 1'b1 : 1'b0;
-assign mem_sel =  ? r2_mem_sel: saved_r2_mem_sel;
+assign mem_sel = all_target ? r2_mem_sel: saved_r2_mem_sel;
 assign data_type = all_target ? r2_data_type : saved_r2_data_type;
 assign sram_conflict = done ? 1'b0 : all_target ? (r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1) : (saved_r2_mem_sel == `NO_RAM ? 1'b0 : 1'b1);
 assign target_address = sram_conflict ? r2_alu_res : (mem_stall ? r0_pc : error ? next_pc : predict_pc);
