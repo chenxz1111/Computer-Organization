@@ -182,6 +182,7 @@ PREDICT _PREDICT(
     .clk(clk_25M),
     .rst(reset_btn),
     .origin_pc(r0_pc),
+    .mem_stall(mem_stall),
 
     .predict_pc(predict_pc),
 
