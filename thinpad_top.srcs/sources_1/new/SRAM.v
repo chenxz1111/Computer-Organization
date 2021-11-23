@@ -130,7 +130,7 @@ always @(posedge clk or posedge rst_btn) begin
         case (uart_state)
             wait_tbre: begin
                 if(uart_tbre) begin
-                    urat_state <= wait_tsre;
+                    uart_state <= wait_tsre;
                 end
             end
             wait_tsre: begin
