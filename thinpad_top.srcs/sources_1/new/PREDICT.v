@@ -4,7 +4,7 @@ module PREDICT(
     input wire clk,
     input wire rst,
     input wire[31:0] origin_pc,
-
+    input wire mem_stall,
     output reg[31:0] predict_pc,
 
     input wire is_jmp,
