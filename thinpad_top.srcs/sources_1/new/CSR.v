@@ -277,7 +277,7 @@ always @(posedge clk or posedge rst) begin
                 `CSR_EBREAK: begin
                     mepc <= pc;
                     //CSR_csr_pc <= mtvec;
-                    mcause <= 32'h00000003;
+                    mcause <= 32'h00000000;//test
                     mtval <= pc; //???
                     mstatus[mstatus_mie] <= 1'b0;
                     mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
@@ -297,7 +297,7 @@ always @(posedge clk or posedge rst) begin
         if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
             mepc <= pc;//?
             //CSR_csr_pc <= mtvec;
-            mcause <= 32'h80000007;
+            mcause <= 32'hffffffff;//test
             mtval <= pc;
             mstatus[mstatus_mie] <= 1'b0;
             mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
