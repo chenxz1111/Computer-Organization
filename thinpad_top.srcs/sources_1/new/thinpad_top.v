@@ -82,13 +82,13 @@ module thinpad_top(
 );
 
 // Clks
-wire locked, clk_10M, clk_25M;
+wire locked, clk_10M, clk_40M;
 pll_example clock_gen 
 (
  .clk_in1(clk_50M),  
 
  .clk_out1(clk_10M), 
- .clk_out2(clk_25M), 
+ .clk_out2(clk_40M), 
  .reset(reset_btn), 
  .locked(locked)                   
 );
@@ -179,7 +179,7 @@ reg[31:0] r4_alu_res;
 wire[31:0] predict_pc;
 wire error;
 PREDICT _PREDICT(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .origin_pc(r0_pc),
     .mem_stall(mem_stall),
@@ -198,7 +198,7 @@ wire[31:0] CSR_satp;
 wire CSR_status;
 
 CSR _CSR(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .r1_instr(r1_instr),
     .r2_instr(r2_instr),
@@ -224,12 +224,13 @@ wire r3_be;
 wire r3_we;
 reg[31:0] sram_data_out;
 TLB _TLB(
-    .clk(clk_25M),
+    .clk(clk_40M),
     .rst(reset_btn),
     .csr_satp(CSR_satp),
     .csr_status(CSR_status),
+    .r2_mem_sel(r2_mem_sel),
+    .r2_data_type(r2_data_type),
     .r2_alu_res(r2_alu_res),
-    .r2_instr(r2_instr),
     .forward_data_b(forward_data_b),
     .error(error),
     .next_pc(next_pc),
@@ -263,6 +264,58 @@ CONTROLLER _CONTROLLER(
     .wb_sel(r1_wb_sel)
 );
 
+wire bram_we;
+// wire[3:0] bram_be;
+wire bram_be;
+(* dont_touch = "true" *) wire[18:0] bram_addr_in; // 2**19 = 524288 > 480000
+wire[31:0] bram_data_in; // 4*(3+3+2) = 32 (4 pixels is a group)
+wire bram_oe;
+(* dont_touch = "true" *) wire[18:0] bram_addr_out;
+wire[31:0] bram_data_out;
+wire [11:0] hdata;
+wire [11:0] vdata;
+(* dont_touch = "true" *) reg [7:0] vga_data_reg;
+
+// assign bram_oe = 1'b1;
+
+always @(*) begin
+    case(bram_addr_out[1:0])
+        2'b01: vga_data_reg = bram_data_out[7:0];
+        2'b10: vga_data_reg = bram_data_out[15:8];
+        2'b11: vga_data_reg = bram_data_out[23:16];
+        2'b00: vga_data_reg = bram_data_out[31:24];
+        default: vga_data_reg = 8'hff;
+    endcase
+end
+
+assign video_red = vga_data_reg[7:5];
+assign video_green = vga_data_reg[4:2];
+assign video_blue = vga_data_reg[1:0];
+assign video_clk = clk_50M;
+
+vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+   .clk(clk_50M), 
+   .hdata(hdata), //横坐标
+   .vdata(vdata),      //纵坐标
+   .hsync(video_hsync),
+   .vsync(video_vsync),
+   .data_enable(video_de),
+   .next_addr(bram_addr_out)
+);
+
+blk_mem_gen_1 blk_mem_gen_1_
+(
+    .clka(clk_40M),
+    .ena(bram_we),
+    .wea(bram_be),
+    .addra(bram_addr_in[18:2]),
+    .dina(bram_data_in),
+    .clkb(clk_40M),
+    .enb(bram_oe),
+    .addrb(bram_addr_out[18:2]),
+    .doutb(bram_data_out)
+);
+
 reg oe;
 reg we;
 reg be;
@@ -271,7 +324,7 @@ reg be;
 (* dont_touch = "true" *)wire[31:0] data_out;
 wire time_int;
 SRAM _SRAM (
-    .clk            (clk_25M),
+    .clk            (clk_40M),
     .rst_btn        (reset_btn),
     .oe(oe),
     .we(we),
@@ -299,11 +352,17 @@ SRAM _SRAM (
     .uart_wrn(uart_wrn),
     .uart_dataready(uart_dataready),
     .uart_tbre(uart_tbre),
-    .uart_tsre(uart_tsre)
+    .uart_tsre(uart_tsre),
+
+    .bram_addr_in(bram_addr_in),
+    .bram_data(bram_data_in),
+    .bram_oe(bram_oe),
+    .bram_we(bram_we),
+    .bram_be(bram_be)
 );
 
 REG _REG(
-    .clk            (clk_25M),
+    .clk            (clk_40M),
     .rst            (reset_btn),
     .we(r4_reg_sel),
     .waddr(r4_instr[11:7]),
@@ -380,7 +439,7 @@ WBSEL _WBSEL(
     .wb_data(r3_wb_data)
 );
 
-always @(posedge clk_25M or posedge reset_btn) begin
+always @(posedge clk_40M or posedge reset_btn) begin
     if (reset_btn) begin
         debug_leds <= 16'hffff; // JUST FOR DEBUG_____#0xffff_____
         r0_pc <= 32'h80000000;
@@ -491,6 +550,19 @@ always @(posedge clk_25M or posedge reset_btn) begin
         mem_stall <= r3_stall;
     end
 end
+
+
+// assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
+// assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
+// assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
+// vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+//    .clk(clk_50M), 
+//    .hdata(hdata), //横坐标
+//    .vdata(),      //纵坐标
+//    .hsync(video_hsync),
+//    .vsync(video_vsync),
+//    .data_enable(video_de)
+// );
 
 
 endmodule

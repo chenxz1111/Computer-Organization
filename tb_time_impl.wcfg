@@ -11,73 +11,77 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="16491882fs"></ZoomStartTime>
-      <ZoomEndTime time="17144383fs"></ZoomEndTime>
-      <Cursor1Time time="20492666fs"></Cursor1Time>
+      <ZoomStartTime time="5292283fs"></ZoomStartTime>
+      <ZoomEndTime time="5544505fs"></ZoomEndTime>
+      <Cursor1Time time="5409249fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="151"></NameColumnWidth>
+      <NameColumnWidth column_width="156"></NameColumnWidth>
       <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="15" />
+   <WVObjectSize size="16" />
    <wvobject fp_name="/tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/clk_11M0592" type="logic">
-      <obj_property name="ElementShortName">clk_11M0592</obj_property>
-      <obj_property name="ObjectShortName">clk_11M0592</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/clk_25M" type="logic">
       <obj_property name="ElementShortName">clk_25M</obj_property>
       <obj_property name="ObjectShortName">clk_25M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/r0_pc" type="array">
-      <obj_property name="ElementShortName">r0_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r0_pc[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/r1_instr" type="array">
+      <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">r1_instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/vga_data_reg" type="array">
+      <obj_property name="ElementShortName">vga_data_reg[7:0]</obj_property>
+      <obj_property name="ObjectShortName">vga_data_reg[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/bram_data_in" type="array">
+      <obj_property name="ElementShortName">bram_data_in[17:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_data_in[17:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/blk_mem_gen_1_/addra" type="array">
+      <obj_property name="ElementShortName">addra[16:0]</obj_property>
+      <obj_property name="ObjectShortName">addra[16:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/bram_addr_in" type="array">
+      <obj_property name="ElementShortName">bram_addr_in[18:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_addr_in[18:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/r1_pc" type="array">
       <obj_property name="ElementShortName">r1_pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">r1_pc[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/r1_instr" type="array">
-      <obj_property name="ElementShortName">r1_instr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r1_instr[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/blk_mem_gen_1_/addrb" type="array">
+      <obj_property name="ElementShortName">addrb[16:0]</obj_property>
+      <obj_property name="ObjectShortName">addrb[16:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/r2_instr" type="array">
-      <obj_property name="ElementShortName">r2_instr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r2_instr[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/bram_addr_in" type="array">
+      <obj_property name="ElementShortName">bram_addr_in[18:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_addr_in[18:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/r3_addr" type="array">
-      <obj_property name="ElementShortName">r3_addr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r3_addr[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/bram_addr_out" type="array">
+      <obj_property name="ElementShortName">bram_addr_out[18:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_addr_out[18:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/forward_data_a" type="array">
-      <obj_property name="ElementShortName">forward_data_a[31:0]</obj_property>
-      <obj_property name="ObjectShortName">forward_data_a[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/bram_data_out" type="array">
+      <obj_property name="ElementShortName">bram_data_out[17:0]</obj_property>
+      <obj_property name="ObjectShortName">bram_data_out[17:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/_CSR/write_data" type="array">
-      <obj_property name="ElementShortName">write_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/blk_mem_gen_1_/dina" type="array">
+      <obj_property name="ElementShortName">dina[17:0]</obj_property>
+      <obj_property name="ObjectShortName">dina[17:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/data_in" type="array">
-      <obj_property name="ElementShortName">data_in[31:0]</obj_property>
-      <obj_property name="ObjectShortName">data_in[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/_CSR/mscratch" type="array">
+      <obj_property name="ElementShortName">mscratch[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mscratch[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/data_out" type="array">
       <obj_property name="ElementShortName">data_out[31:0]</obj_property>
       <obj_property name="ObjectShortName">data_out[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/address" type="array">
-      <obj_property name="ElementShortName">address[31:0]</obj_property>
-      <obj_property name="ObjectShortName">address[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/_REG/\registers[5]__0 " type="array">
-      <obj_property name="ElementShortName">\registers[5]__0 [31:0]</obj_property>
-      <obj_property name="ObjectShortName">\registers[5]__0 [31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/r4_wb_data" type="array">
-      <obj_property name="ElementShortName">r4_wb_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">r4_wb_data[31:0]</obj_property>
+   <wvobject fp_name="/tb/ext_ram_data" type="array">
+      <obj_property name="ElementShortName">ext_ram_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ext_ram_data[31:0]</obj_property>
    </wvobject>
 </wave_config>

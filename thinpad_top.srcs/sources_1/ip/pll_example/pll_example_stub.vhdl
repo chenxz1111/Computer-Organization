@@ -1,7 +1,11 @@
 -- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
+<<<<<<< HEAD
 -- Date        : Tue Nov 23 21:40:42 2021
+=======
+-- Date        : Tue Nov 23 22:13:34 2021
+>>>>>>> stable
 -- Host        : DESKTOP-5U87GMR running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
 --               F:/SystemVerilog/cod21-grp30/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_stub.vhdl
