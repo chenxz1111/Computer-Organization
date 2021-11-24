@@ -52,3 +52,6 @@
 `define FIRST_TARGET 3'h2
 `define GET_SECOND 3'h3
 `define SECOND_TARGET 3'h4
+
+`define USER_MODE 1'b0
+`define MACHINE_MODE 1'b1

@@ -36,7 +36,7 @@ always @(*) begin
             
         end
     endcase 
-    if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+    if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int && ) begin
         CSR_csr_pc = mtvec;
     end
 end
@@ -164,75 +164,13 @@ assign csr_status = (r2_opcode == `CSR_ECALL || r2_opcode == `CSR_EBREAK) ? 1'b1
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin
-        status <= 1'b1;
+        status <= `MACHINE_MODE;
         timeout <= 1'b0;
     end
     else begin
         if(!stall) begin
             case (r2_opcode)
-                `CSR_CSRRC: begin
-                    case (r2_csr)
-                        mtvec_code: begin
-                            mtvec <= write_data;
-                        end 
-                        mscratch_code: begin
-                            mscratch <= write_data;
-                        end
-                        mepc_code: begin
-                            mepc <= write_data;
-                        end
-                        mcause_code: begin
-                            mcause <= write_data;
-                        end
-                        mstatus_code: begin
-                            mstatus <= write_data;
-                        end
-                        mie_code: begin
-                            mie <= write_data;
-                        end
-                        mip_code: begin
-                            mip <= write_data;
-                        end
-                        mtval_code: begin
-                            mtval <= write_data;
-                        end
-                        satp_code: begin
-                            satp <= write_data;
-                        end
-                    endcase
-                end
-                `CSR_CSRRS: begin
-                    case (r2_csr)
-                        mtvec_code: begin
-                            mtvec <= write_data;
-                        end 
-                        mscratch_code: begin
-                            mscratch <= write_data;
-                        end
-                        mepc_code: begin
-                            mepc <= write_data;
-                        end
-                        mcause_code: begin
-                            mcause <= write_data;
-                        end
-                        mstatus_code: begin
-                            mstatus <= write_data;
-                        end
-                        mie_code: begin
-                            mie <= write_data;
-                        end
-                        mip_code: begin
-                            mip <= write_data;
-                        end
-                        mtval_code: begin
-                            mtval <= write_data;
-                        end
-                        satp_code: begin
-                            satp <= write_data;
-                        end
-                    endcase
-                end 
-                `CSR_CSRRW: begin
+                `CSR_CSRRC, `CSR_CSRRS, `CSR_CSRRW: begin
                     case (r2_csr)
                         mtvec_code: begin
                             mtvec <= write_data;
@@ -271,7 +209,7 @@ always @(posedge clk or posedge rst) begin
                     mstatus[mstatus_mie] <= 1'b0;
                     mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
                     mstatus[12:11] <= 2'b11; //2'b11 TODO
-                    status <= 1'b1;
+                    status <= `MACHINE_MODE;
                 end
                 `CSR_EBREAK: begin
                     mepc <= pc;
@@ -281,31 +219,31 @@ always @(posedge clk or posedge rst) begin
                     mstatus[mstatus_mie] <= 1'b0;
                     mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
                     mstatus[12:11] <= 2'b11; //2'b11 TODO
-                    status <= 1'b1;
+                    status <= `MACHINE_MODE;
                 end
                 `CSR_MRET: begin
                     //CSR_csr_pc <= mepc + 4; // 不加4?
-                    status <= 1'b0;
+                    status <= `USER_MODE;
                     mstatus <= write_data;
                 end
                 default: begin
                     
                 end
-            endcase            
-        end
-        if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
-            mepc <= pc;//?
-            //CSR_csr_pc <= mtvec;
-            mcause <= 32'h80000007;
-            mtval <= pc;
-            mstatus[mstatus_mie] <= 1'b0;
-            mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
-            mstatus[12:11] <= 2'b11;
+            endcase
+            if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+                mepc <= pc + 4;//?
+                //CSR_csr_pc <= mtvec;
+                mcause <= 32'h80000007;
+                mtval <= pc;
+                mstatus[mstatus_mie] <= 1'b0;
+                mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
+                mstatus[12:11] <= 2'b11;
 
-            timeout <= 1'b1;
-        end
-        else begin
-            timeout <= 1'b0;
+                timeout <= 1'b1;
+            end
+            else begin
+                timeout <= 1'b0;
+            end
         end
     end    
 end
