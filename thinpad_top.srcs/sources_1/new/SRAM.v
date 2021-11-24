@@ -87,7 +87,7 @@ assign read_mtime_high = oe && (address == CLINT_MTIME + 4);
 assign write_mtimecmp_low = we && (address == CLINT_MTIMECMP);
 assign write_mtimecmp_high = we && (address == CLINT_MTIMECMP + 4);
 
-assign time_int = (mtime > mtimecmp);
+assign time_int = 0;
 
 assign base_ext_be_n = ~(4'b0001 << address[1:0]);
 assign write_data = be ? {data_in[7:0], data_in[7:0], data_in[7:0], data_in[7:0]} : data_in;
