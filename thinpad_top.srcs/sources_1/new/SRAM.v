@@ -113,7 +113,11 @@ wire[31:0] uart_status_reg;
 wire uart_free;
 
 //maybe need to modify
-assign uart_free = uart_tbre && uart_tsre;
+reg state_uart;
+localparam 
+    wait_tbre = 0,
+    wait_tsre = 1;
+assign uart_free = (state_uart == wait_tsre) && uart_tsre;
 
 assign uart_status_reg = {16'h0000, 2'b00, uart_free, 4'b0000, uart_dataready, 8'h00};
 
@@ -131,6 +135,7 @@ assign bram_be = we && vga_status;
 always @(posedge clk or posedge rst_btn) begin
     if (rst_btn) begin
         mtime <= 0;
+        state_uart <= wait_tsre;
     end
     else begin
         mtime <= mtime + 1;
@@ -140,6 +145,18 @@ always @(posedge clk or posedge rst_btn) begin
         if(write_mtimecmp_high) begin
             mtimecmp[63:32] <= data_in;
         end
+        case (state_uart)
+            wait_tbre: begin
+                if(uart_tbre) begin
+                    state_uart <= wait_tsre;
+                end
+            end 
+            wait_tsre: begin
+                if(write_uart) begin
+                    state_uart <= wait_tbre;
+                end
+            end
+        endcase
     end
 end
 
