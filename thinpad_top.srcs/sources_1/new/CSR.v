@@ -277,7 +277,7 @@ always @(posedge clk or posedge rst) begin
                 `CSR_EBREAK: begin
                     mepc <= pc;
                     //CSR_csr_pc <= mtvec;
-                    mcause <= 32'h00000000;//test
+                    mcause <= 32'h00000003;//test
                     mtval <= pc; //???
                     mstatus[mstatus_mie] <= 1'b0;
                     mstatus[mstatus_mpie] <= mstatus[mstatus_mie];
