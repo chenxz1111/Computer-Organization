@@ -38,6 +38,7 @@ always @(*) begin
     endcase 
     if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
         CSR_csr_pc = mtvec;
+        timeout = 1'b1;
     end
 end
 
@@ -302,10 +303,10 @@ always @(posedge clk or posedge rst) begin
             mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
             mstatus[12:11] <= 2'b11;
             status <= 1'b1;
-            timeout <= 1'b1;
+            // timeout <= 1'b1;
         end
         else begin
-            timeout <= 1'b0;
+            // timeout <= 1'b0;
         end
     end    
 end
