@@ -36,7 +36,7 @@ always @(*) begin
             
         end
     endcase 
-    if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+    if(mstatus[mstatus_mie] && mip[7] && time_int) begin
         CSR_csr_pc = mtvec;
     end
 end
@@ -293,7 +293,7 @@ always @(posedge clk or posedge rst) begin
                 end
             endcase            
         end
-        if(mstatus[mstatus_mie] && mie[7] && mip[7] && time_int) begin
+        if(mstatus[mstatus_mie] && mip[7] && time_int) begin
             mepc <= pc + 4;//?
             //CSR_csr_pc <= mtvec;
             mcause <= 32'h80000007;
@@ -303,6 +303,7 @@ always @(posedge clk or posedge rst) begin
             mstatus[12:11] <= 2'b11;
             status <= 1'b1;
             timeout <= 1'b1;
+            mie[7] <= 1'b1;
         end
         else begin
             timeout <= 1'b0;
