@@ -333,6 +333,7 @@ SRAM _SRAM (
     .data_in(data_in),
     .data_out(data_out),
     .time_int(time_int),
+    .CSR_status(CSR_status),
 
     .base_ram_data_wire(base_ram_data),
     .base_ram_addr(base_ram_addr),

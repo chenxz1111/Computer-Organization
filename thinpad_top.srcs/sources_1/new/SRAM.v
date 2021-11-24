@@ -11,6 +11,7 @@ module SRAM(
     input wire[31:0] data_in,
     output wire[31:0] data_out,
     output wire time_int,
+    input wire CSR_status,
 
     //base_ram
     inout wire[31:0] base_ram_data_wire,
@@ -133,7 +134,9 @@ always @(posedge clk or posedge rst_btn) begin
         mtime <= 0;
     end
     else begin
-        mtime <= mtime + 1;
+        if (~CSR_status) begin
+             mtime <= mtime + 1;
+        end
         if(write_mtimecmp_low) begin
             mtimecmp[31:0] <= data_in;
         end

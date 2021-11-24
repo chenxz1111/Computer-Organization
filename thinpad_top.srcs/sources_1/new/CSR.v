@@ -301,7 +301,7 @@ always @(posedge clk or posedge rst) begin
             mstatus[mstatus_mie] <= 1'b0;
             mstatus[mstatus_mpie] <=  mstatus[mstatus_mie];
             mstatus[12:11] <= 2'b11;
-
+            status <= 1'b1;
             timeout <= 1'b1;
         end
         else begin
