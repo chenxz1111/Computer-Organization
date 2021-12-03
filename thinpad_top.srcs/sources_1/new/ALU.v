@@ -55,8 +55,8 @@ always @(*) begin
             res = a < b ? a : b;
         end
         `ADD16: begin
-            res[15:0]  = ($signed(a[15:0])  + $signed(b[15:0]))[15:0];
-            res[31:16] = ($signed(a[31:16]) + $signed(b[31:16]))[15:0];
+            res[15:0]  = ($signed(a[15:0])  + $signed(b[15:0]));
+            res[31:16] = ($signed(a[31:16]) + $signed(b[31:16]));
         end
     endcase
 end
