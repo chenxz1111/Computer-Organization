@@ -8,6 +8,7 @@
 `define CTZ 4'h7
 `define MIN 4'h8
 `define MINU 4'h9
+`define ADD16 4'ha
 
 `define N_IMM 3'h0
 `define I_IMM 3'h1

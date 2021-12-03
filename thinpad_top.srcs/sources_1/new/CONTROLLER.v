@@ -163,6 +163,18 @@ always @(*) begin
             reg_sel = 1'b0;
             wb_sel = `NO_WB;
         end
+        7'b1110111: begin
+             pc_sel = 1'b0;
+            imm_sel = `N_IMM;
+            data_a_sel = 1'b0;
+            data_b_sel = 1'b0;
+            data_type = 1'b0;
+            alu_sel = `ADD16;
+            bq_sel = `NO_BQ;
+            mem_sel = `NO_RAM;
+            reg_sel = 1'b1;
+            wb_sel = `ALU_WB;
+        end
         default: begin
             pc_sel = 1'b0;
             imm_sel = `N_IMM;
