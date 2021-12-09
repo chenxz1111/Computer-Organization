@@ -26,7 +26,7 @@ always @(*) begin
             data_b_sel = 1'b0;
             data_type = 1'b0;
             case (instr[14:12])
-                3'b000: alu_sel = `ADD;
+                3'b000: alu_sel = `ADD16;
                 3'b111: alu_sel = `AND;
                 3'b110: begin
                     case (instr[31:25])
